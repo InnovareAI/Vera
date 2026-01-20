@@ -1,0 +1,18 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Next.js runtime is automatically configured by Netlify
+# https://docs.netlify.com/frameworks/next-js/overview/
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Dev settings
+[dev]
+  command = "npm run dev"
+  port = 3000
+  targetPort = 3000
