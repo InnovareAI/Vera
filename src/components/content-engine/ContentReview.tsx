@@ -232,6 +232,121 @@ export function ContentReview() {
         URL.revokeObjectURL(url)
     }
 
+    const exportAsPDF = async () => {
+        const approvedPosts = posts.filter(p => p.status === 'approved' || p.status === 'scheduled')
+        if (approvedPosts.length === 0) {
+            alert('No approved or scheduled posts to export')
+            return
+        }
+
+        // Convert images to base64 for fully self-contained document
+        const imageToBase64 = async (url: string): Promise<string> => {
+            try {
+                const response = await fetch(url)
+                const blob = await response.blob()
+                return new Promise((resolve) => {
+                    const reader = new FileReader()
+                    reader.onloadend = () => resolve(reader.result as string)
+                    reader.readAsDataURL(blob)
+                })
+            } catch {
+                return ''
+            }
+        }
+
+        // Pre-load all images as base64
+        const postsWithImages = await Promise.all(
+            approvedPosts.map(async (post) => {
+                if (post.imageUrl) {
+                    const base64Image = await imageToBase64(post.imageUrl)
+                    return { ...post, base64Image }
+                }
+                return { ...post, base64Image: '' }
+            })
+        )
+
+        // Generate print-optimized HTML
+        const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LinkedIn Content - Ready for Publishing</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: white; padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; padding: 30px; border-radius: 12px; margin-bottom: 24px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .header h1 { font-size: 24px; margin-bottom: 6px; }
+        .header p { opacity: 0.9; font-size: 14px; }
+        .post { background: #fafafa; border-radius: 12px; padding: 24px; margin-bottom: 24px; border: 1px solid #e5e5e5; page-break-inside: avoid; }
+        .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e5e5e5; }
+        .post-number { width: 32px; height: 32px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .post-theme { font-size: 16px; font-weight: 600; color: #1a1a1a; }
+        .post-platform { font-size: 11px; color: #666; }
+        .post-image { width: 100%; max-height: 300px; object-fit: cover; border-radius: 8px; margin-bottom: 16px; }
+        .post-content { white-space: pre-wrap; color: #333; font-size: 14px; margin-bottom: 16px; line-height: 1.7; }
+        .hashtags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .hashtag { background: #e0f2fe; color: #0369a1; padding: 3px 10px; border-radius: 16px; font-size: 12px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .cta { background: #f0fdf4; border: 1px solid #86efac; padding: 12px; border-radius: 8px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .cta-label { font-size: 10px; color: #16a34a; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; }
+        .cta-text { color: #166534; font-weight: 500; font-size: 13px; }
+        .footer { text-align: center; color: #888; font-size: 11px; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e5e5; }
+        @media print { 
+            body { padding: 0; } 
+            .post { break-inside: avoid; }
+            .header, .post-number, .hashtag, .cta { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>LinkedIn Content Series</h1>
+            <p>${postsWithImages.length} posts ready for publishing</p>
+        </div>
+        ${postsWithImages.map(post => `
+        <div class="post">
+            <div class="post-header">
+                <div class="post-number">${post.id}</div>
+                <div>
+                    <div class="post-theme">${post.theme}</div>
+                    <div class="post-platform">💼 LinkedIn • ${post.characterCount} characters</div>
+                </div>
+            </div>
+            ${post.base64Image ? `<img class="post-image" src="${post.base64Image}" alt="${post.theme}">` : ''}
+            <div class="post-content">${(post.editedContent || post.content).replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+            <div class="hashtags">
+                ${post.suggestedHashtags.map(tag => `<span class="hashtag">${tag}</span>`).join('')}
+            </div>
+            <div class="cta">
+                <div class="cta-label">Call to Action</div>
+                <div class="cta-text">${campaignData?.cta || 'Learn more'}</div>
+            </div>
+        </div>
+        `).join('')}
+        <div class="footer">
+            Content Export • ${new Date().toLocaleDateString()} • Ready for LinkedIn publishing
+        </div>
+    </div>
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        }
+    </script>
+</body>
+</html>`
+
+        // Open in new window and trigger print
+        const printWindow = window.open('', '_blank')
+        if (printWindow) {
+            printWindow.document.write(htmlContent)
+            printWindow.document.close()
+        }
+    }
+
     const stats = {
         total: posts.length,
         pending: posts.filter(p => p.status === 'pending').length,
@@ -262,12 +377,20 @@ export function ContentReview() {
                                 <span className="px-3 py-1 bg-blue-900/30 text-blue-400 rounded-full">{stats.scheduled} scheduled</span>
                             </div>
                             {(stats.approved > 0 || stats.scheduled > 0) && (
-                                <button
-                                    onClick={exportApprovedPosts}
-                                    className="px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white rounded-lg hover:from-violet-700 hover:to-purple-700 text-sm font-medium flex items-center gap-2 shadow-lg shadow-violet-500/20"
-                                >
-                                    📥 Export Document
-                                </button>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={exportAsPDF}
+                                        className="px-4 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 text-sm font-medium flex items-center gap-2 shadow-lg shadow-red-500/20"
+                                    >
+                                        📄 Export PDF
+                                    </button>
+                                    <button
+                                        onClick={exportApprovedPosts}
+                                        className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm font-medium flex items-center gap-2"
+                                    >
+                                        📥 HTML
+                                    </button>
+                                </div>
                             )}
                         </div>
                     </div>
