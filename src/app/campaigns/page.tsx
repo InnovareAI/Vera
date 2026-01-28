@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { CampaignSetup } from '@/components/campaigns/CampaignSetup'
 import { CampaignOutput } from '@/components/campaigns/CampaignOutput'
 import { CampaignSidebar } from '@/components/campaigns/CampaignSidebar'
+import { ContentReview } from '@/components/content-engine/ContentReview'
 
 export interface CampaignConfig {
     // Brand Info
@@ -51,7 +52,7 @@ export interface CampaignGeneration {
 }
 
 export default function CampaignsPage() {
-    const [activeView, setActiveView] = useState<'setup' | 'output'>('setup')
+    const [activeView, setActiveView] = useState<'setup' | 'output' | 'review'>('review')
     const [generation, setGeneration] = useState<CampaignGeneration | null>(null)
     const [isGenerating, setIsGenerating] = useState(false)
 
@@ -136,51 +137,98 @@ export default function CampaignsPage() {
         }
     }
 
+    const getViewTitle = () => {
+        switch (activeView) {
+            case 'setup': return '🎯 Campaign Setup'
+            case 'output': return '✨ Generated Campaign'
+            case 'review': return '📋 Content Review'
+        }
+    }
+
+    const getViewDescription = () => {
+        switch (activeView) {
+            case 'setup': return 'Define your brand, audience, and campaign goals'
+            case 'output': return 'Review and export your generated content'
+            case 'review': return 'Review, edit, approve or dismiss your generated posts'
+        }
+    }
+
     return (
         <div className="min-h-screen flex bg-[#0a0a0f]">
             <CampaignSidebar
                 activeView={activeView}
-                onViewChange={setActiveView}
+                onViewChange={(view) => setActiveView(view as 'setup' | 'output' | 'review')}
                 hasGeneration={!!generation}
             />
 
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-hidden flex flex-col">
                 {/* Header */}
                 <header className="sticky top-0 z-10 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-gray-800/50 px-8 py-5">
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-2xl font-bold text-white">
-                                {activeView === 'setup' ? '🎯 Campaign Setup' : '✨ Generated Campaign'}
+                                {getViewTitle()}
                             </h1>
                             <p className="text-gray-400 text-sm mt-1">
-                                {activeView === 'setup'
-                                    ? 'Define your brand, audience, and campaign goals'
-                                    : 'Review and export your generated content'
-                                }
+                                {getViewDescription()}
                             </p>
                         </div>
-                        {generation && activeView === 'output' && (
-                            <button
-                                onClick={() => setActiveView('setup')}
-                                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm transition-colors"
-                            >
-                                ← Back to Setup
-                            </button>
-                        )}
+                        <div className="flex gap-2">
+                            {/* View Tabs */}
+                            <div className="flex bg-gray-900 rounded-lg p-1">
+                                <button
+                                    onClick={() => setActiveView('review')}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeView === 'review'
+                                            ? 'bg-violet-600 text-white'
+                                            : 'text-gray-400 hover:text-white'
+                                        }`}
+                                >
+                                    📋 Review Posts
+                                </button>
+                                <button
+                                    onClick={() => setActiveView('setup')}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeView === 'setup'
+                                            ? 'bg-violet-600 text-white'
+                                            : 'text-gray-400 hover:text-white'
+                                        }`}
+                                >
+                                    🎯 New Campaign
+                                </button>
+                                {generation && (
+                                    <button
+                                        onClick={() => setActiveView('output')}
+                                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeView === 'output'
+                                                ? 'bg-violet-600 text-white'
+                                                : 'text-gray-400 hover:text-white'
+                                            }`}
+                                    >
+                                        ✨ Output
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
                 </header>
 
-                <div className="p-8">
-                    {activeView === 'setup' ? (
-                        <CampaignSetup
-                            onGenerate={handleStartGeneration}
-                            isGenerating={isGenerating}
-                        />
-                    ) : (
-                        <CampaignOutput
-                            generation={generation}
-                            isGenerating={isGenerating}
-                        />
+                <div className="flex-1 overflow-hidden">
+                    {activeView === 'setup' && (
+                        <div className="p-8 overflow-auto h-full">
+                            <CampaignSetup
+                                onGenerate={handleStartGeneration}
+                                isGenerating={isGenerating}
+                            />
+                        </div>
+                    )}
+                    {activeView === 'output' && (
+                        <div className="p-8 overflow-auto h-full">
+                            <CampaignOutput
+                                generation={generation}
+                                isGenerating={isGenerating}
+                            />
+                        </div>
+                    )}
+                    {activeView === 'review' && (
+                        <ContentReview />
                     )}
                 </div>
             </main>

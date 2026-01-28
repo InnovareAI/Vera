@@ -1,15 +1,16 @@
 'use client'
 
 interface CampaignSidebarProps {
-    activeView: 'setup' | 'output'
-    onViewChange: (view: 'setup' | 'output') => void
+    activeView: 'setup' | 'output' | 'review'
+    onViewChange: (view: 'setup' | 'output' | 'review') => void
     hasGeneration: boolean
 }
 
 export function CampaignSidebar({ activeView, onViewChange, hasGeneration }: CampaignSidebarProps) {
     const navItems = [
-        { id: 'setup', label: 'Campaign Setup', icon: '⚙️', available: true },
-        { id: 'output', label: 'Generated Content', icon: '✨', available: hasGeneration },
+        { id: 'review', label: 'Content Review', icon: '📋', available: true },
+        { id: 'setup', label: 'New Campaign', icon: '🎯', available: true },
+        { id: 'output', label: 'Generated Output', icon: '✨', available: hasGeneration },
     ]
 
     return (
@@ -33,13 +34,13 @@ export function CampaignSidebar({ activeView, onViewChange, hasGeneration }: Cam
                     {navItems.map(item => (
                         <button
                             key={item.id}
-                            onClick={() => item.available && onViewChange(item.id as 'setup' | 'output')}
+                            onClick={() => item.available && onViewChange(item.id as 'setup' | 'output' | 'review')}
                             disabled={!item.available}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${activeView === item.id
-                                    ? 'bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-white border border-violet-500/30'
-                                    : item.available
-                                        ? 'text-gray-400 hover:bg-gray-800/50 hover:text-white'
-                                        : 'text-gray-600 cursor-not-allowed'
+                                ? 'bg-gradient-to-r from-violet-500/20 to-purple-500/20 text-white border border-violet-500/30'
+                                : item.available
+                                    ? 'text-gray-400 hover:bg-gray-800/50 hover:text-white'
+                                    : 'text-gray-600 cursor-not-allowed'
                                 }`}
                         >
                             <span className="text-lg">{item.icon}</span>
