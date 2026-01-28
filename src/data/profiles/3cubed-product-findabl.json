@@ -1,0 +1,191 @@
+{
+    "id": "3cubed-product-findabl-001",
+    "type": "product",
+    "brand": "3cubed",
+    "createdAt": "2026-01-28T13:49:00Z",
+    "updatedAt": "2026-01-28T13:49:00Z",
+    "productInfo": {
+        "name": "Findabl",
+        "tagline": "Free SEO & GEO Analyzer | Optimize for Google + AI Search",
+        "url": "https://findabl.app/",
+        "category": "SEO/GEO Analysis Tool",
+        "pricing": "Free (with Pro tier available)",
+        "creator": "3Cubed.ai"
+    },
+    "description": {
+        "short": "Get your free SEO and GEO score. Discover how your website ranks on Google AND AI platforms like ChatGPT, Perplexity & Claude.",
+        "long": "Findabl is a free tool to analyze your website's SEO score and GEO score (AI-readiness for ChatGPT, Perplexity, and Claude). It provides actionable recommendations in 30 seconds.",
+        "valueProposition": "Measure visibility in both traditional search (Google) and AI search platforms (ChatGPT, Perplexity, Claude, Google AI Overviews)"
+    },
+    "keyFeatures": [
+        {
+            "name": "SEO Score",
+            "description": "Traditional search engine optimization analysis for Google rankings and backlinks"
+        },
+        {
+            "name": "GEO Score",
+            "description": "Generative Engine Optimization score measuring how likely AI systems will cite and recommend your website"
+        },
+        {
+            "name": "AI Search Visibility",
+            "description": "Analyze readiness for ChatGPT, Perplexity, Claude, and Google AI Overviews"
+        },
+        {
+            "name": "E-E-A-T Analysis",
+            "description": "Evaluate Experience, Expertise, Authoritativeness, and Trustworthiness signals"
+        },
+        {
+            "name": "Actionable Recommendations",
+            "description": "Get specific recommendations in 30 seconds"
+        },
+        {
+            "name": "Competitor Analysis (Pro)",
+            "description": "Benchmark SEO/GEO scores against competitors"
+        },
+        {
+            "name": "Automated Monitoring (Pro)",
+            "description": "Weekly and monthly monitoring with email reports tracking score changes"
+        }
+    ],
+    "productBenefits": [
+        "Discover how your website ranks on Google AND AI platforms",
+        "Get cited by AI assistants like ChatGPT and Perplexity",
+        "Optimize for Google AI Overviews (formerly SGE)",
+        "Track AI-specific factors like content citability",
+        "Measure signals that traditional SEO tools don't analyze",
+        "Free to use for basic analysis"
+    ],
+    "competitivePositioning": {
+        "competitors": [
+            "Semrush",
+            "Ahrefs",
+            "Moz"
+        ],
+        "differentiators": [
+            "Specifically designed for the AI search era",
+            "Unique GEO score for AI platform visibility",
+            "Analyzes AI-specific factors like content citability",
+            "Measures E-E-A-T signals that traditional tools miss",
+            "Free tier available"
+        ],
+        "gap": "Traditional SEO tools focus on Google rankings and backlinks but don't measure visibility in AI platforms"
+    },
+    "targetAudience": {
+        "primary": [
+            "Marketing leaders responsible for brand visibility",
+            "SEO professionals adapting to AI search",
+            "Healthcare/Life sciences marketers",
+            "Content marketing teams"
+        ],
+        "painPoints": [
+            "Don't know if their content appears in AI search results",
+            "Unsure how to optimize for ChatGPT and Perplexity",
+            "Need to track AI Overviews readiness",
+            "Want to get cited by AI assistants"
+        ]
+    },
+    "keyTerminology": {
+        "GEO": "Generative Engine Optimization - optimization for AI-powered search platforms",
+        "SEO": "Search Engine Optimization - optimization for traditional search engines",
+        "E-E-A-T": "Experience, Expertise, Authoritativeness, Trustworthiness - signals AI systems use to evaluate sources",
+        "AI Overviews": "Google's AI-generated answers at the top of search results (formerly SGE)",
+        "Content Citability": "How likely AI systems are to cite your content as a source"
+    },
+    "contentTopics": [
+        "AI search visibility and optimization",
+        "GEO vs SEO differences",
+        "How to get cited by ChatGPT, Perplexity, Claude",
+        "Google AI Overviews optimization",
+        "E-E-A-T best practices for AI",
+        "Content structure for AI readability",
+        "FAQ schema for AI search",
+        "Healthcare/pharma AI search visibility"
+    ],
+    "messagingFramework": {
+        "hook": "AI search is rapidly becoming the front door to information. Are you visible there?",
+        "problem": "Traditional SEO tools don't measure AI search visibility. Your brand might be invisible to ChatGPT, Perplexity, and Google AI Overviews.",
+        "solution": "Findabl provides both SEO and GEO scores, showing exactly how visible you are in both traditional search AND AI platforms.",
+        "proof": "Analyzes AI-specific factors like content citability, E-E-A-T signals, and conversational structure",
+        "cta": "Get your free SEO and GEO score in 30 seconds"
+    },
+    "tone": {
+        "primary": "Authoritative yet accessible",
+        "secondary": "Data-driven with clear actionable insights",
+        "avoid": [
+            "Overly technical jargon",
+            "Fear-mongering about AI replacing search",
+            "Vague promises without specifics"
+        ]
+    },
+    "exampleMessaging": [
+        "Get your free SEO and GEO score. Discover how your website ranks on Google AND AI platforms.",
+        "AI search is rapidly becoming the front door to healthcare information. If your brand isn't visible there, you're missing the first point of contact.",
+        "Traditional SEO tools miss the signals that matter for AI search. Findabl measures what ChatGPT, Perplexity, and Claude actually look for.",
+        "From a systems lens, Findabl caught my attention. Most organizations still think website visibility is only about Google."
+    ],
+    "videoContent": {
+        "title": "Invisible to AI?",
+        "duration": "6:51",
+        "source": "/Users/tvonlinz/Dev_Master/InnovareAI/Vera/Invisible_to_AI_.mp4",
+        "transcriptFile": "/Users/tvonlinz/Dev_Master/InnovareAI/Vera/Invisible_to_AI_audio.txt",
+        "keyQuotes": [
+            "For the past 20 years, we've all known the rules for getting found online. But well, everything's changing right now.",
+            "If your website isn't the source for that answer, you are for all intents and purposes invisible.",
+            "Your website has to become bilingual. It needs to keep speaking the old language of search engine crawlers, but now, it also has to become fluent in the brand new language of generative AI.",
+            "SEO was kind of like trying to game an old computer scanner. But GEO is like writing a killer resume for a sharp human hiring manager.",
+            "The single most important thing you have to get is that AI is our answer machines. That is their whole reason for being.",
+            "You can't just be an expert anymore. You have to structure your website to prove you're an expert in a way that a machine can easily read.",
+            "SEO is still the foundation of your house. What we're doing is building a second story on top of it.",
+            "The whole game is shifting. It's moving away from just being discoverable in a long list and toward becoming the definitive source for a single correct answer.",
+            "Is your content good enough, clear enough, and trustworthy enough for an AI to cite it as the truth?"
+        ],
+        "keyMessages": {
+            "theProblem": "Users are asking AI a question and getting a direct answer. If your website isn't the source for that answer, you are invisible.",
+            "theShift": "Welcome to the post-search era. Instead of scrolling through classic 10 blue links, users are asking an AI a question and getting a direct answer.",
+            "theSolution": "Your website has to become bilingual - speaking both SEO (crawler language) and GEO (AI language).",
+            "theFramework": "SEO is the foundation of your house. GEO is building a second story on top of it."
+        },
+        "seoVsGeo": {
+            "seo": [
+                "Keywords and backlinks",
+                "Technical structure",
+                "Climbing a ranked list",
+                "Gaming an old computer scanner"
+            ],
+            "geo": [
+                "Clear conversational answers",
+                "Proving real authority",
+                "Making content citable by AI",
+                "Writing for a sharp human hiring manager"
+            ]
+        },
+        "aiTrustSignals": [
+            {
+                "signal": "Q&A Patterns",
+                "description": "AIs actively scan for what's, how's, why's - structured content that provides direct answers",
+                "weight": "Up to 20 points"
+            },
+            {
+                "signal": "E-E-A-T Signals",
+                "description": "Experience, Expertise, Authority, Trust - machine-readable proof of expertise",
+                "examples": [
+                    "Written-by lines",
+                    "CEO/PhD credentials",
+                    "Solid about us page"
+                ]
+            },
+            {
+                "signal": "Authoritative Citations",
+                "description": "Linking to .gov, .edu, Forbes, McKinsey, Gartner",
+                "benefit": "Borrowing authority of sources makes your content more citable"
+            }
+        ],
+        "fourStepBlueprint": [
+            "Keep that SEO foundation strong. Don't neglect it.",
+            "Start weaving in all these GEO signals.",
+            "Actively structure your content to be a direct, citable answer.",
+            "Focus on building dual authority - trusted by both Google bots and AI models."
+        ],
+        "closingMessage": "In this post-search era, the only question that truly matters is: Is your content good enough, clear enough, and trustworthy enough for an AI to cite it as the truth?"
+    }
+}

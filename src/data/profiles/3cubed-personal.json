@@ -1,0 +1,217 @@
+{
+    "id": "3cubed-personal-001",
+    "type": "personal",
+    "brand": "3cubed",
+    "personName": "Noriko Yokoi, Ph.D.",
+    "linkedInProfile": "https://www.linkedin.com/in/noriko-yokoi",
+    "createdAt": "2026-01-28T13:44:00Z",
+    "updatedAt": "2026-01-28T13:49:00Z",
+    "identity": {
+        "archetype": "Strategic Big-Picture Thinker",
+        "headline": "Co-Founder of 3Cubed.ai | Empowering Marketing Leaders with Actionable AI Solutions & AI Adoption | GenAI Strategist & Startup Mentor",
+        "background": "Madison Avenue + Startup (Life Sciences/Healthcare)",
+        "education": "Ph.D., LSE",
+        "credentials": "Venture Partner at quadraScope",
+        "approach": "Learned yet Approachable",
+        "expertise": [
+            "Market research",
+            "Pattern recognition",
+            "Transformation strategy",
+            "GenAI in life sciences/healthcare",
+            "Agentic AI systems",
+            "Marketing operations automation"
+        ],
+        "corePositioning": "A strategic big-picture thinker who bridges the gap between complex AI technology (Agentic Systems) and practical business outcomes in Marketing and Life Sciences"
+    },
+    "writingStyle": {
+        "voiceType": "Connector / Educator",
+        "voiceDescription": "Draws parallels across industries, sees patterns, connects dots, adds 'why this matters' layer",
+        "engagementMode": "Educational thought leadership",
+        "visualStrategy": "Uses document carousels extensively to share 'Lessons Learned' or 'Tutorials'",
+        "toneSpectrum": {
+            "polish": "Agency-polished",
+            "perspective": "Practitioner",
+            "authoritySource": "Ph.D. + former agency leader",
+            "geography": "Global",
+            "formality": "Strictly Professional"
+        }
+    },
+    "keyThemes": [
+        "Content as infrastructure, not inventory",
+        "Fundamental transformation over incremental AI add-ons",
+        "Systems thinking over line-item budgeting",
+        "Marketing at the speed modern business requires",
+        "Moving beyond unit economics (per-email, per-banner, per-asset)",
+        "AI readiness over AI tools",
+        "Real-world deployment over demos",
+        "AI search visibility (GEO/Perplexity)"
+    ],
+    "contrarianPositions": {
+        "against": [
+            "GenAI as an add-on mentality",
+            "Agencies hiding AI usage while billing traditionally",
+            "Derivative content governed by unit economics",
+            "AI hype without real-world deployment rigor"
+        ],
+        "for": [
+            "Fundamental innovation and transformation",
+            "Operating content systems vs. producing individual assets",
+            "Content becoming infrastructure",
+            "Real-world agentic systems deployment"
+        ]
+    },
+    "writingPatterns": {
+        "structure": "Short, punchy sentences followed by context. Single-sentence paragraphs for emphasis.",
+        "rhythm": "Declarative statements → elaboration → call-to-action",
+        "vocabulary": [
+            "infrastructure",
+            "operating",
+            "scale",
+            "speed",
+            "efficiency",
+            "system",
+            "transformation",
+            "modern marketing",
+            "agentic systems",
+            "unit economics",
+            "MLR workflow",
+            "compliance",
+            "AI readiness"
+        ],
+        "formatting": "Uses line breaks for emphasis, avoids dense paragraphs"
+    },
+    "linkedInPosts": [
+        {
+            "content": "For years, derivative content has been governed by unit economics.\n\nPer-email. Per-banner. Per-asset.\n\nThat model no longer makes sense.\n\nContent becomes infrastructure, not inventory.\n\nYou stop budgeting for individual assets and start operating a system.\n\nWe've turned the traditional production model on its head. This isn't about doing more work or producing more content for the sake of volume. It's about leaving outdated, linear production models behind and operating at the speed modern marketing actually requires.\n\nJoin us for a LinkedIn Live conversation on what changes when content is treated as a system instead of a series of line items.\n\nFeaturing 3cubed.ai and K+M Creative Intelligence, and a first look at our new AI-powered content hub.\n\nIf you're responsible for scale, speed, or cost efficiency in marketing, this conversation is for you.",
+            "type": "thought_leadership",
+            "themes": [
+                "content infrastructure",
+                "systems thinking",
+                "AI transformation"
+            ]
+        },
+        {
+            "content": "After a year of deploying agentic systems in the real world... here's what actually matters.\n\nNot what works in demos.\n\nReal-world deployment requires a different level of rigor.",
+            "type": "lessons_learned",
+            "themes": [
+                "agentic systems",
+                "real-world deployment",
+                "practitioner insights"
+            ]
+        },
+        {
+            "content": "AI search is rapidly becoming the front door to healthcare information.\n\nIf your brand isn't visible there, you're missing the first point of contact with patients and providers.",
+            "type": "industry_insight",
+            "themes": [
+                "AI search",
+                "healthcare",
+                "GEO",
+                "Perplexity"
+            ]
+        },
+        {
+            "content": "Something fundamental about how pharma marketing teams produce emails, banner ads, and flyers is about to change...\n\nImagine paying the same amount whether you generate one email, or 10, or 100.\n\nFully integrated with your MLR workflow and compliance tools.",
+            "type": "product_announcement",
+            "themes": [
+                "pharma marketing",
+                "MLR compliance",
+                "content automation"
+            ]
+        }
+    ],
+    "influencers": [
+        {
+            "name": "Samantha Truman",
+            "linkedIn": "linkedin.com/in/samanthatruman",
+            "title": "True People Consulting",
+            "researched": true,
+            "styleAnalysis": {
+                "writingPatterns": [
+                    "Opens with bold, contrarian statements",
+                    "Uses systems thinking lens consistently",
+                    "Challenges conventional wisdom directly",
+                    "Short, declarative sentences for impact"
+                ],
+                "examplePosts": [
+                    "AI won't save a business with a broken vision.",
+                    "Efficiency at the cost of exhaustion isn't a win; it's a systemic failure.",
+                    "Precision is the only strategy. In 2026, 'average' strategy isn't just ineffective—it's a liability.",
+                    "Everyone's talking about AI tools. Almost no one is talking about AI readiness."
+                ],
+                "tone": "Strategic, systems-oriented, challenging conventional wisdom"
+            }
+        },
+        {
+            "name": "Mical Jeanlys-White",
+            "linkedIn": "linkedin.com/in/mical-jeanlys-white-9126366",
+            "title": "WealthMore",
+            "researched": true,
+            "styleAnalysis": {
+                "philosophyQuotes": [
+                    "You don't beat competitors by doing the same thing slightly better... you beat them by doing something different that matters more to your customer."
+                ],
+                "tone": "Strategic, community-focused, differentiation-minded"
+            }
+        },
+        {
+            "name": "Allie K. Miller",
+            "linkedIn": "linkedin.com/in/alliekmiller",
+            "title": "#1 Most Followed Voice in AI Business (2M+ followers)",
+            "researched": true,
+            "styleAnalysis": {
+                "writingPatterns": [
+                    "Opens with attention-grabbing alerts (🚨)",
+                    "Provides step-by-step practical tutorials",
+                    "Shares personal experiments and results",
+                    "Uses numbered lists for clarity"
+                ],
+                "examplePosts": [
+                    "🚨 Epic new multi-agent AI interface alert.",
+                    "I just saved hours per week with ONE hour and ONE button press inside Claude.",
+                    "Anthropic just released their Economic Index and there's one finding I can't stop thinking about."
+                ],
+                "tone": "Accessible AI expert, practical, shares personal experiments"
+            }
+        },
+        {
+            "name": "Sara Davison",
+            "linkedIn": "linkedin.com/in/sara-davison-21b41131",
+            "researched": false
+        }
+    ],
+    "influencerSynthesis": {
+        "commonPatterns": [
+            "Bold, contrarian opening statements",
+            "Systems-level thinking over tactical advice",
+            "Challenging the status quo directly",
+            "Short sentences for emphasis",
+            "Line breaks to create rhythm and impact",
+            "Personal experimentation and sharing results"
+        ],
+        "styleGuidance": "Combine Samantha Truman's systems-oriented challenger voice with Allie K. Miller's accessible expertise and practical demonstrations. Add Mical's focus on meaningful differentiation."
+    },
+    "guidelines": {
+        "do": [
+            "Draw parallels across industries",
+            "Connect dots between seemingly unrelated topics",
+            "Use short, punchy declarative statements",
+            "Challenge outdated thinking with data-backed alternatives",
+            "Maintain agency-level polish in all communications",
+            "Take a global perspective on market trends",
+            "Open with bold, contrarian statements",
+            "Add 'why this matters' layer to news and trends",
+            "Reference real-world deployment experience",
+            "Address specific pain points (MLR/Compliance for pharma)"
+        ],
+        "avoid": [
+            "Casual humor or colloquialisms",
+            "Academic jargon (practitioner-focused)",
+            "US-only market references",
+            "Overly long paragraphs",
+            "Surface-level AI hype",
+            "Incremental thinking ('slightly better')",
+            "Activity-focused advice (more campaigns, more content)",
+            "Demo-only claims without real-world backing"
+        ]
+    }
+}

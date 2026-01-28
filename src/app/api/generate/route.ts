@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
 
-const anthropic = new Anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || '';
 
 interface GenerateRequest {
     topic: {
@@ -67,6 +64,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Missing topic or platform' }, { status: 400 });
         }
 
+        if (!OPENROUTER_API_KEY) {
+            return NextResponse.json({ error: 'OpenRouter API key not configured' }, { status: 500 });
+        }
+
         const systemPrompt = PLATFORM_PROMPTS[platform];
 
         const userPrompt = `Based on this topic/post, create content:
@@ -81,16 +82,35 @@ Tone: ${tone}
 
 Generate the ${platform} content now:`;
 
-        const message = await anthropic.messages.create({
-            model: 'claude-sonnet-4-20250514',
-            max_tokens: 1024,
-            messages: [
-                { role: 'user', content: userPrompt }
-            ],
-            system: systemPrompt
+        const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                'HTTP-Referer': 'https://vera.innovare.ai',
+                'X-Title': 'VERA Content Generator'
+            },
+            body: JSON.stringify({
+                model: 'anthropic/claude-3.5-haiku', // Claude Haiku 4.5 - faster & cost-effective
+                max_tokens: 1024,
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userPrompt }
+                ]
+            })
         });
 
-        const content = message.content[0].type === 'text' ? message.content[0].text : '';
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('OpenRouter API error:', errorText);
+            return NextResponse.json({
+                error: 'Failed to generate content',
+                details: errorText
+            }, { status: 500 });
+        }
+
+        const data = await response.json();
+        const content = data.choices?.[0]?.message?.content || '';
 
         return NextResponse.json({
             success: true,

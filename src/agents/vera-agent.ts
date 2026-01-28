@@ -1,58 +1,63 @@
-import Anthropic from '@anthropic-ai/sdk'
 import { fetchRedditPosts } from './reddit-fetcher'
 import { evaluatePosts } from './relevance-evaluator'
 import { generateResearchSummary } from './summary-generator'
 import { ResearchOutput } from '@/types/research'
 
-const anthropic = new Anthropic()
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || ''
 
-// Define tools for VERA
-const tools: Anthropic.Tool[] = [
+// Tool definitions for function calling
+const tools = [
   {
-    name: 'research_reddit',
-    description: 'Research trending topics and discussions on Reddit. Use this when the user wants to find out what people are talking about on Reddit, discover trends, or gather insights from specific subreddits.',
-    input_schema: {
-      type: 'object' as const,
-      properties: {
-        topics: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'List of topics to research (e.g., ["AI agents", "automation", "MCP"])'
+    type: 'function',
+    function: {
+      name: 'research_reddit',
+      description: 'Research trending topics and discussions on Reddit. Use this when the user wants to find out what people are talking about on Reddit, discover trends, or gather insights from specific subreddits.',
+      parameters: {
+        type: 'object',
+        properties: {
+          topics: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'List of topics to research (e.g., ["AI agents", "automation", "MCP"])'
+          },
+          subreddits: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'List of subreddits to search (e.g., ["artificial", "ChatGPT", "LocalLLaMA"])'
+          },
+          time_window: {
+            type: 'string',
+            enum: ['6h', '24h', '72h', '7d'],
+            description: 'How far back to search (default: 24h)'
+          },
+          audience_context: {
+            type: 'string',
+            description: 'Description of the target audience to help evaluate relevance'
+          }
         },
-        subreddits: {
-          type: 'array',
-          items: { type: 'string' },
-          description: 'List of subreddits to search (e.g., ["artificial", "ChatGPT", "LocalLLaMA"])'
-        },
-        time_window: {
-          type: 'string',
-          enum: ['6h', '24h', '72h', '7d'],
-          description: 'How far back to search (default: 24h)'
-        },
-        audience_context: {
-          type: 'string',
-          description: 'Description of the target audience to help evaluate relevance'
-        }
-      },
-      required: ['topics', 'subreddits']
+        required: ['topics', 'subreddits']
+      }
     }
   },
   {
-    name: 'save_research',
-    description: 'Save research results for later reference',
-    input_schema: {
-      type: 'object' as const,
-      properties: {
-        research_id: {
-          type: 'string',
-          description: 'ID of the research to save'
+    type: 'function',
+    function: {
+      name: 'save_research',
+      description: 'Save research results for later reference',
+      parameters: {
+        type: 'object',
+        properties: {
+          research_id: {
+            type: 'string',
+            description: 'ID of the research to save'
+          },
+          name: {
+            type: 'string',
+            description: 'Name for the saved research'
+          }
         },
-        name: {
-          type: 'string',
-          description: 'Name for the saved research'
-        }
-      },
-      required: ['research_id', 'name']
+        required: ['research_id', 'name']
+      }
     }
   }
 ]
@@ -112,32 +117,53 @@ async function executeTool(
   }
 }
 
-// Format research output for display
-function formatResearchOutput(research: ResearchOutput): string {
-  let output = `## Research Results: ${research.topic}\n\n`
+interface OpenRouterMessage {
+  role: 'user' | 'assistant' | 'system' | 'tool'
+  content: string | null
+  tool_calls?: Array<{
+    id: string
+    type: 'function'
+    function: { name: string; arguments: string }
+  }>
+  tool_call_id?: string
+}
 
-  output += `**Summary:** ${research.summary}\n\n`
-
-  if (research.trends.length > 0) {
-    output += `**Key Trends:**\n`
-    research.trends.forEach((trend, i) => {
-      output += `${i + 1}. ${trend}\n`
+async function callOpenRouter(messages: OpenRouterMessage[], includeTools = true): Promise<{
+  content: string | null
+  tool_calls?: Array<{
+    id: string
+    type: 'function'
+    function: { name: string; arguments: string }
+  }>
+}> {
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+      'HTTP-Referer': 'https://vera.innovare.ai',
+      'X-Title': 'VERA Research Agent'
+    },
+    body: JSON.stringify({
+      model: 'anthropic/claude-sonnet-4-20250514',
+      max_tokens: 4096,
+      messages,
+      ...(includeTools ? { tools, tool_choice: 'auto' } : {})
     })
-    output += '\n'
+  })
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`OpenRouter API error: ${error}`)
   }
 
-  if (research.insights.length > 0) {
-    output += `**Top Insights (${research.insights.length}):**\n\n`
-    research.insights.slice(0, 5).forEach((insight, i) => {
-      output += `**${i + 1}. [${insight.title}](${insight.url})**\n`
-      output += `   - Source: ${insight.source} | Score: ${insight.score} | Relevance: ${(insight.relevanceScore * 100).toFixed(0)}%\n`
-      output += `   - ${insight.relevanceReason}\n\n`
-    })
+  const data = await response.json()
+  const choice = data.choices?.[0]?.message
+
+  return {
+    content: choice?.content || null,
+    tool_calls: choice?.tool_calls
   }
-
-  output += `\n*Research ID: ${research.id}*`
-
-  return output
 }
 
 export interface ChatMessage {
@@ -146,21 +172,7 @@ export interface ChatMessage {
   research?: ResearchOutput
 }
 
-export async function chat(
-  messages: ChatMessage[],
-  userMessage: string
-): Promise<{ response: string; research?: ResearchOutput }> {
-
-  // Build conversation history for Claude
-  const claudeMessages: Anthropic.MessageParam[] = messages.map(m => ({
-    role: m.role,
-    content: m.content
-  }))
-
-  // Add new user message
-  claudeMessages.push({ role: 'user', content: userMessage })
-
-  const systemPrompt = `You are VERA, an AI research assistant specializing in marketing intelligence and content research.
+const SYSTEM_PROMPT = `You are VERA, an AI research assistant specializing in marketing intelligence and content research.
 
 Your capabilities:
 - Research Reddit for trending topics, discussions, and insights
@@ -182,65 +194,72 @@ If the user's request is vague, suggest relevant subreddits based on their topic
 
 Always respond helpfully and format research results clearly with markdown.`
 
-  let response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 4096,
-    system: systemPrompt,
-    tools,
-    messages: claudeMessages
-  })
+export async function chat(
+  messages: ChatMessage[],
+  userMessage: string
+): Promise<{ response: string; research?: ResearchOutput }> {
+
+  // Build conversation history
+  const openRouterMessages: OpenRouterMessage[] = [
+    { role: 'system', content: SYSTEM_PROMPT },
+    ...messages.map(m => ({
+      role: m.role as 'user' | 'assistant',
+      content: m.content
+    })),
+    { role: 'user', content: userMessage }
+  ]
 
   let researchResult: ResearchOutput | undefined
+  let maxIterations = 5 // Prevent infinite loops
 
   // Agentic loop - handle tool calls
-  while (response.stop_reason === 'tool_use') {
-    const toolUseBlock = response.content.find(
-      block => block.type === 'tool_use'
-    ) as Anthropic.ToolUseBlock | undefined
+  while (maxIterations > 0) {
+    maxIterations--
 
-    if (!toolUseBlock) break
+    const response = await callOpenRouter(openRouterMessages)
 
-    const { result, error } = await executeTool(
-      toolUseBlock.name,
-      toolUseBlock.input as Record<string, unknown>
-    )
+    // Check if there are tool calls
+    if (response.tool_calls && response.tool_calls.length > 0) {
+      // Add assistant message with tool calls
+      openRouterMessages.push({
+        role: 'assistant',
+        content: null,
+        tool_calls: response.tool_calls
+      })
 
-    // Check if this is research output
-    if (toolUseBlock.name === 'research_reddit' && result && !error) {
-      researchResult = result as ResearchOutput
+      // Process each tool call
+      for (const toolCall of response.tool_calls) {
+        const functionName = toolCall.function.name
+        const functionArgs = JSON.parse(toolCall.function.arguments)
+
+        const { result, error } = await executeTool(functionName, functionArgs)
+
+        // Check if this is research output
+        if (functionName === 'research_reddit' && result && !error) {
+          researchResult = result as ResearchOutput
+        }
+
+        // Add tool result to conversation
+        openRouterMessages.push({
+          role: 'tool',
+          content: error || JSON.stringify(result),
+          tool_call_id: toolCall.id
+        })
+      }
+
+      // Continue the loop to get the next response
+      continue
     }
 
-    // Continue conversation with tool result
-    claudeMessages.push({
-      role: 'assistant',
-      content: response.content
-    })
-
-    claudeMessages.push({
-      role: 'user',
-      content: [{
-        type: 'tool_result',
-        tool_use_id: toolUseBlock.id,
-        content: error || JSON.stringify(result)
-      }]
-    })
-
-    response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4096,
-      system: systemPrompt,
-      tools,
-      messages: claudeMessages
-    })
+    // No tool calls - we have the final response
+    return {
+      response: response.content || 'I encountered an issue processing your request.',
+      research: researchResult
+    }
   }
 
-  // Extract final text response
-  const textBlock = response.content.find(
-    block => block.type === 'text'
-  ) as Anthropic.TextBlock | undefined
-
   return {
-    response: textBlock?.text || 'I encountered an issue processing your request.',
+    response: 'I encountered an issue processing your request (max iterations reached).',
     research: researchResult
   }
 }

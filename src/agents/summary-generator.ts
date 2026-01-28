@@ -1,7 +1,30 @@
-import Anthropic from '@anthropic-ai/sdk'
 import { EvaluatedPost, ResearchOutput, ResearchInsight } from '@/types/research'
 
-const anthropic = new Anthropic()
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || ''
+
+async function callOpenRouter(prompt: string): Promise<string> {
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+      'HTTP-Referer': 'https://vera.innovare.ai',
+      'X-Title': 'VERA Summary Generator'
+    },
+    body: JSON.stringify({
+      model: 'anthropic/claude-sonnet-4-20250514',
+      max_tokens: 1024,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+
+  if (!response.ok) {
+    throw new Error(`OpenRouter API error: ${response.status}`)
+  }
+
+  const data = await response.json()
+  return data.choices?.[0]?.message?.content || ''
+}
 
 export async function generateResearchSummary(
   posts: EvaluatedPost[],
@@ -42,18 +65,9 @@ Respond in JSON format:
 Be specific and cite sources. Every claim should reference at least one post.`
 
   try {
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 1024,
-      messages: [{ role: 'user', content: prompt }],
-    })
+    const content = await callOpenRouter(prompt)
 
-    const content = response.content[0]
-    if (content.type !== 'text') {
-      throw new Error('Unexpected response type')
-    }
-
-    const jsonMatch = content.text.match(/\{[\s\S]*\}/)
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
       throw new Error('Could not parse JSON response')
     }

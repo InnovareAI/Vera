@@ -1,7 +1,30 @@
-import Anthropic from '@anthropic-ai/sdk'
 import { RedditPost, EvaluatedPost } from '@/types/research'
 
-const anthropic = new Anthropic()
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY || ''
+
+async function callOpenRouter(prompt: string): Promise<string> {
+  const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+      'HTTP-Referer': 'https://vera.innovare.ai',
+      'X-Title': 'VERA Relevance Evaluator'
+    },
+    body: JSON.stringify({
+      model: 'anthropic/claude-sonnet-4-20250514',
+      max_tokens: 256,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+
+  if (!response.ok) {
+    throw new Error(`OpenRouter API error: ${response.status}`)
+  }
+
+  const data = await response.json()
+  return data.choices?.[0]?.message?.content || ''
+}
 
 export async function evaluatePostRelevance(
   post: RedditPost,
@@ -33,18 +56,9 @@ Respond in JSON format:
 }`
 
   try {
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 256,
-      messages: [{ role: 'user', content: prompt }],
-    })
+    const content = await callOpenRouter(prompt)
 
-    const content = response.content[0]
-    if (content.type !== 'text') {
-      return { ...post, relevanceScore: 0.5, relevanceReason: 'Could not evaluate' }
-    }
-
-    const jsonMatch = content.text.match(/\{[\s\S]*\}/)
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
     if (!jsonMatch) {
       return { ...post, relevanceScore: 0.5, relevanceReason: 'Could not parse response' }
     }

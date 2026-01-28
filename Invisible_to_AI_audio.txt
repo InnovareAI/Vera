@@ -1,0 +1,171 @@
+For the past 20 years, we've all known the rules
+for getting found online.
+But well, everything's changing right now.
+There's a massive shift happening
+that could make all that hard work kind of pointless.
+So let's dive into this brand new world
+and figure out how to make sure you're still seen.
+I really want to start with this question
+because it kind of hits at the core of everything
+we've been taught.
+For as long as I can remember being number one on Google,
+that was it.
+That was the goal.
+But what if that's not even the game we're playing anymore?
+Welcome to what people are calling the post search era.
+And this isn't some sci-fi movie concept.
+It's here, right now.
+Instead of scrolling through those classic 10 blue links,
+users are just asking an AI a question
+and getting a direct answer.
+Now, here's the really crucial part.
+If your website isn't the source for that answer,
+you are for all intents and purposes invisible.
+So what do we do?
+How do we adapt?
+Well, it really boils down to this.
+Your website has to become bilingual.
+It needs to keep speaking the old language of search engine
+crawlers, you know, Google's bots.
+But now, it also has to become fluent
+in the brand new language of generative AI.
+OK, so we all know SEO, search engine optimization.
+That's the language of the crawlers
+we've been speaking for years.
+But now, we've got to get good at GEO, which
+stands for generative engine optimization.
+This is the language that AI assistants, like chat GPT,
+actually understand and more importantly, trust.
+They're two totally different things,
+but both are absolutely critical now.
+Let's just break that down a bit.
+SEO, you know the drill.
+It's all about keywords, getting backlinks,
+making sure your site's technical structure is perfect.
+It's all about climbing a ranked list.
+GEO though, it's a whole different ballgame.
+It's about giving clear conversational answers,
+proving you're a real authority, and making your content
+so good that an AI feels confident enough to actually cite it.
+You know, here's a good way to think about it.
+SEO was kind of like trying to game an old computer scanner.
+You'd stuff your resume with keywords, hoping the machine
+would pick them up.
+But GEO, GEO is like writing a killer resume
+for a sharp human hiring manager.
+It's not about tricking a system.
+It's about clearly and convincingly
+communicating your value to an intelligent reader.
+In this case, the AI.
+OK, so how do we actually start speaking this new language?
+I mean, how does an AI even decide
+which content it should trust?
+It all comes down to a specific set of signals.
+So let's decode this and look at the key factors
+that these generative engines use to figure out
+if your content is, you know, AI ready.
+All right, first things first.
+The single most important thing you have to get
+is that AI is our answer machines.
+That is their whole reason for being.
+They exist to give a user a direct answer.
+So it should be no surprise that the number one thing
+they look for is content that's structured
+to do exactly that.
+And what's really fascinating here
+is that the AI's are literally trained
+to find content that's written the way we talk.
+They are actively scanning your pages
+for these Q&A patterns, the what's the hows, the whys,
+because it's a huge clue that your content is there
+to provide a straight-up answer.
+And believe me, this isn't just a minor tweak.
+In the systems that analyze this stuff,
+just having these Q&A patterns can be worth up to 20 points.
+That's a huge chunk of your score.
+It just goes to show how much these new engines value
+content that's built from the ground up to be an answer.
+Next up, an AI cannot afford to be wrong.
+I mean, its entire reputation is on the line
+with every answer it gives.
+It has to ground its answers in reality.
+So it's absolutely desperate to verify
+that your content is coming from a real legitimate expert.
+This is where those signals of experience, expertise,
+authority, and trust, what we call EET,
+become so important.
+And the AI is not just guessing.
+It's a machine, so it's looking for machine-readable clues.
+Stuff like a super-clear, written-by line
+with an author's name, credentials like CEO or PhD
+right there in the text.
+And of course, a solid about us page
+that shows there are real qualified people behind the curtain.
+And again, look at the points.
+This is another heavily-weighted factor.
+You can't just be an expert anymore.
+You have to structure your website to prove you're an expert
+in a way that a machine can easily read and tick off
+its checklist.
+So this next one is just common sense when you think about it.
+Just like AI's want to be a trusted source,
+they also trust content that sites other trusted sources.
+When you link out to high-authority websites,
+it's a massive signal that you've done your homework,
+and your content is grounded in facts.
+And we're not talking about linking to just any old blog
+post.
+The AI is specifically on the lookout
+for citations to the big guns.
+Think.gov and .edu websites.
+Top to your publications like Forbes,
+and major research firms like McKinsey or Gartner.
+Linking to these guys is like a credibility shortcut.
+When you back up your claims with hard data
+and link out to these kinds of authoritative sources,
+wow, that is a powerful one-two punch.
+You're basically telling the AI, hey,
+this isn't just my opinion.
+This is well-researched factual information.
+In a way, you're borrowing the authority of your sources,
+which makes your own content that much more citable.
+OK, so how do we actually pull all this together
+into a real strategy?
+The most important thing to remember
+is that we're not throwing SEO out the window.
+Not at all.
+SEO is still the foundation of your house.
+What we're doing is building a second story on top of it.
+We're integrating Geo, so we're optimized
+for the crawlers of today and the AIs of tomorrow.
+And this chart here gives you a pretty clear target
+to shoot for.
+If you can get your Geo score into that good or even better,
+excellent range, it means you're in a fantastic spot.
+It means you're not just showing up in old school search.
+You're also very, very likely to be picked up and cited
+by AI.
+So here it is, your four-step blueprint
+for this new post-search world.
+First, keep that SEO foundation strong.
+Don't neglect it.
+Second, start weaving in all these Geo signals
+we've been talking about.
+Third, actively think about structuring your content
+so it can be a direct, citable answer.
+And finally, number four, focus on building
+what you could call dual authority,
+where you're trusted by both Google spots and the AI models.
+This quote just nails it, doesn't it?
+The whole game is shifting.
+It's moving away from just being discoverable in a long list
+and toward becoming the definitive source
+for a single correct answer.
+That's the mindset we all need to have now.
+And that's really what I want to leave you with.
+It's not good enough anymore for your content
+to just be findable with a few keywords.
+In this post-search era, the only question that truly matters
+is this one.
+Is your content good enough, clear enough,
+and trustworthy enough for an AI to cite it as the truth?
