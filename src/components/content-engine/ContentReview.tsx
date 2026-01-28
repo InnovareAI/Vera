@@ -9,8 +9,9 @@ interface ContentPost {
     content: string
     characterCount: number
     suggestedHashtags: string[]
-    status: 'pending' | 'editing' | 'approved' | 'dismissed'
+    status: 'pending' | 'approved' | 'dismissed' | 'scheduled'
     editedContent?: string
+    imageUrl?: string
 }
 
 interface CampaignData {
@@ -22,12 +23,12 @@ interface CampaignData {
     posts: ContentPost[]
 }
 
-const STATUS_STYLES = {
-    pending: { bg: 'bg-yellow-500/20', text: 'text-yellow-400', label: '📝 Pending Review' },
-    editing: { bg: 'bg-blue-500/20', text: 'text-blue-400', label: '✏️ Editing' },
-    approved: { bg: 'bg-green-500/20', text: 'text-green-400', label: '✅ Approved' },
-    dismissed: { bg: 'bg-gray-500/20', text: 'text-gray-400', label: '❌ Dismissed' },
-}
+const COLUMNS = [
+    { id: 'pending', title: '📝 Pending Review', color: 'from-yellow-600/20 to-orange-600/20', border: 'border-yellow-500/30' },
+    { id: 'approved', title: '✅ Approved', color: 'from-green-600/20 to-emerald-600/20', border: 'border-green-500/30' },
+    { id: 'scheduled', title: '📅 Scheduled', color: 'from-blue-600/20 to-cyan-600/20', border: 'border-blue-500/30' },
+    { id: 'dismissed', title: '❌ Dismissed', color: 'from-gray-600/20 to-gray-700/20', border: 'border-gray-500/30' },
+]
 
 export function ContentReview() {
     const [campaignData, setCampaignData] = useState<CampaignData | null>(null)
@@ -35,8 +36,8 @@ export function ContentReview() {
     const [selectedPost, setSelectedPost] = useState<ContentPost | null>(null)
     const [isEditing, setIsEditing] = useState(false)
     const [editContent, setEditContent] = useState('')
-    const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'dismissed'>('all')
     const [copyFeedback, setCopyFeedback] = useState<number | null>(null)
+    const [draggedPost, setDraggedPost] = useState<ContentPost | null>(null)
 
     useEffect(() => {
         loadPosts()
@@ -44,7 +45,6 @@ export function ContentReview() {
 
     const loadPosts = async () => {
         try {
-            // Load the generated posts from the JSON file
             const postsData = await import('@/data/content/findabl-linkedin-posts.json')
             setCampaignData({
                 campaign: postsData.campaign,
@@ -104,183 +104,211 @@ export function ContentReview() {
         setTimeout(() => setCopyFeedback(null), 2000)
     }
 
-    const approveAll = () => {
-        setPosts(prev => prev.map(post =>
-            post.status === 'pending' ? { ...post, status: 'approved' as const } : post
-        ))
+    const handleDragStart = (post: ContentPost) => {
+        setDraggedPost(post)
     }
 
-    const getFilteredPosts = () => {
-        if (filter === 'all') return posts
-        return posts.filter(p => p.status === filter)
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault()
+    }
+
+    const handleDrop = (status: ContentPost['status']) => {
+        if (draggedPost) {
+            updatePostStatus(draggedPost.id, status)
+            setDraggedPost(null)
+        }
+    }
+
+    const getPostsByStatus = (status: string) => {
+        return posts.filter(p => p.status === status)
     }
 
     const stats = {
         total: posts.length,
         pending: posts.filter(p => p.status === 'pending').length,
         approved: posts.filter(p => p.status === 'approved').length,
+        scheduled: posts.filter(p => p.status === 'scheduled').length,
         dismissed: posts.filter(p => p.status === 'dismissed').length,
     }
 
     return (
         <div className="flex h-full bg-gray-950">
-            {/* Main Content List */}
-            <div className="flex-1 flex flex-col">
+            {/* Kanban Board */}
+            <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className="p-6 border-b border-gray-800">
-                    <div className="flex items-center justify-between mb-4">
+                <div className="p-6 border-b border-gray-800 flex-shrink-0">
+                    <div className="flex items-center justify-between">
                         <div>
                             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                                📋 Content Review Queue
+                                📋 Content Review Board
                             </h2>
                             <p className="text-gray-500 text-sm mt-1">
-                                {campaignData?.campaign || 'Loading...'} • {campaignData?.source}
+                                {campaignData?.campaign || 'Loading...'} • Drag cards between columns
                             </p>
                         </div>
-                        <div className="flex gap-2">
-                            {stats.pending > 0 && (
-                                <button
-                                    onClick={approveAll}
-                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
-                                >
-                                    ✅ Approve All ({stats.pending})
-                                </button>
-                            )}
+                        <div className="flex items-center gap-4">
+                            <div className="flex gap-2 text-sm">
+                                <span className="px-3 py-1 bg-yellow-900/30 text-yellow-400 rounded-full">{stats.pending} pending</span>
+                                <span className="px-3 py-1 bg-green-900/30 text-green-400 rounded-full">{stats.approved} approved</span>
+                                <span className="px-3 py-1 bg-blue-900/30 text-blue-400 rounded-full">{stats.scheduled} scheduled</span>
+                            </div>
                         </div>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="grid grid-cols-4 gap-4 mb-4">
-                        <div className="bg-gray-900 rounded-lg p-3 text-center">
-                            <div className="text-2xl font-bold text-white">{stats.total}</div>
-                            <div className="text-gray-500 text-xs">Total Posts</div>
-                        </div>
-                        <div className="bg-yellow-900/20 rounded-lg p-3 text-center border border-yellow-800/30">
-                            <div className="text-2xl font-bold text-yellow-400">{stats.pending}</div>
-                            <div className="text-yellow-600 text-xs">Pending</div>
-                        </div>
-                        <div className="bg-green-900/20 rounded-lg p-3 text-center border border-green-800/30">
-                            <div className="text-2xl font-bold text-green-400">{stats.approved}</div>
-                            <div className="text-green-600 text-xs">Approved</div>
-                        </div>
-                        <div className="bg-gray-900 rounded-lg p-3 text-center border border-gray-800">
-                            <div className="text-2xl font-bold text-gray-400">{stats.dismissed}</div>
-                            <div className="text-gray-600 text-xs">Dismissed</div>
-                        </div>
-                    </div>
-
-                    {/* Filters */}
-                    <div className="flex gap-2">
-                        {(['all', 'pending', 'approved', 'dismissed'] as const).map(f => (
-                            <button
-                                key={f}
-                                onClick={() => setFilter(f)}
-                                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${filter === f
-                                        ? 'bg-violet-600 text-white'
-                                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                                    }`}
-                            >
-                                {f.charAt(0).toUpperCase() + f.slice(1)}
-                                {f !== 'all' && ` (${stats[f as keyof typeof stats] || 0})`}
-                            </button>
-                        ))}
                     </div>
                 </div>
 
-                {/* Posts List */}
-                <div className="flex-1 overflow-y-auto">
-                    {getFilteredPosts().length === 0 ? (
-                        <div className="p-8 text-center text-gray-500">
-                            <p className="text-4xl mb-4">✨</p>
-                            <p>No posts with this filter</p>
-                        </div>
-                    ) : (
-                        <div className="divide-y divide-gray-800">
-                            {getFilteredPosts().map(post => (
-                                <div
-                                    key={post.id}
-                                    onClick={() => {
-                                        setSelectedPost(post)
-                                        setIsEditing(false)
-                                        setEditContent(post.editedContent || post.content)
-                                    }}
-                                    className={`p-4 hover:bg-gray-900/50 cursor-pointer transition-colors ${selectedPost?.id === post.id ? 'bg-gray-900 border-l-2 border-l-violet-500' : ''
-                                        }`}
-                                >
-                                    <div className="flex items-start gap-4">
-                                        {/* Post Number */}
-                                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-lg font-bold ${post.status === 'approved' ? 'bg-green-900/30 text-green-400' :
-                                                post.status === 'dismissed' ? 'bg-gray-800 text-gray-500' :
-                                                    'bg-violet-900/30 text-violet-400'
-                                            }`}>
-                                            {post.id}
-                                        </div>
-
-                                        {/* Content Preview */}
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1">
-                                                <h3 className="text-white font-medium">{post.theme}</h3>
-                                                <span className={`px-2 py-0.5 text-xs rounded ${STATUS_STYLES[post.status].bg} ${STATUS_STYLES[post.status].text}`}>
-                                                    {STATUS_STYLES[post.status].label}
-                                                </span>
-                                            </div>
-                                            <p className="text-gray-400 text-sm line-clamp-2">
-                                                {(post.editedContent || post.content).substring(0, 150)}...
-                                            </p>
-                                            <div className="flex items-center gap-3 mt-2">
-                                                <span className="text-gray-600 text-xs">
-                                                    {post.characterCount} chars
-                                                </span>
-                                                <span className="text-gray-600 text-xs">
-                                                    💼 LinkedIn
-                                                </span>
-                                                <div className="flex gap-1">
-                                                    {post.suggestedHashtags.slice(0, 2).map((tag, i) => (
-                                                        <span key={i} className="text-blue-400 text-xs">{tag}</span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Quick Actions */}
-                                        <div className="flex gap-2">
-                                            {post.status !== 'approved' && (
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        updatePostStatus(post.id, 'approved')
-                                                    }}
-                                                    className="px-3 py-1.5 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 text-sm"
-                                                >
-                                                    ✓ Approve
-                                                </button>
-                                            )}
-                                            {post.status === 'approved' && (
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation()
-                                                        copyContent(post)
-                                                    }}
-                                                    className={`px-3 py-1.5 rounded-lg text-sm ${copyFeedback === post.id
-                                                            ? 'bg-green-600 text-white'
-                                                            : 'bg-violet-500/20 text-violet-400 hover:bg-violet-500/30'
-                                                        }`}
-                                                >
-                                                    {copyFeedback === post.id ? '✓ Copied!' : '📋 Copy'}
-                                                </button>
-                                            )}
-                                        </div>
+                {/* Kanban Columns */}
+                <div className="flex-1 overflow-x-auto p-6">
+                    <div className="flex gap-4 h-full min-w-max">
+                        {COLUMNS.map(column => (
+                            <div
+                                key={column.id}
+                                className={`w-80 flex flex-col bg-gradient-to-b ${column.color} rounded-xl border ${column.border} flex-shrink-0`}
+                                onDragOver={handleDragOver}
+                                onDrop={() => handleDrop(column.id as ContentPost['status'])}
+                            >
+                                {/* Column Header */}
+                                <div className="p-4 border-b border-gray-700/50">
+                                    <div className="flex items-center justify-between">
+                                        <h3 className="font-semibold text-white">{column.title}</h3>
+                                        <span className="text-gray-400 text-sm bg-gray-800/50 px-2 py-0.5 rounded">
+                                            {getPostsByStatus(column.id).length}
+                                        </span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
+
+                                {/* Cards */}
+                                <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                                    {getPostsByStatus(column.id).map(post => (
+                                        <div
+                                            key={post.id}
+                                            draggable
+                                            onDragStart={() => handleDragStart(post)}
+                                            onClick={() => {
+                                                setSelectedPost(post)
+                                                setIsEditing(false)
+                                                setEditContent(post.editedContent || post.content)
+                                            }}
+                                            className={`bg-gray-900/80 backdrop-blur rounded-xl p-4 cursor-pointer border border-gray-700/50 hover:border-violet-500/50 transition-all hover:shadow-lg hover:shadow-violet-500/10 ${selectedPost?.id === post.id ? 'ring-2 ring-violet-500 border-violet-500' : ''
+                                                } ${draggedPost?.id === post.id ? 'opacity-50' : ''}`}
+                                        >
+                                            {/* Card Header */}
+                                            <div className="flex items-start gap-3 mb-3">
+                                                <div className="w-8 h-8 bg-violet-600/30 rounded-lg flex items-center justify-center text-violet-400 font-bold text-sm flex-shrink-0">
+                                                    {post.id}
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="text-white font-medium text-sm truncate">{post.theme}</h4>
+                                                    <p className="text-gray-500 text-xs">💼 LinkedIn</p>
+                                                </div>
+                                            </div>
+
+                                            {/* Content Preview */}
+                                            <p className="text-gray-400 text-xs line-clamp-3 mb-3">
+                                                {(post.editedContent || post.content).substring(0, 120)}...
+                                            </p>
+
+                                            {/* Card Footer */}
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex gap-1">
+                                                    {post.suggestedHashtags.slice(0, 2).map((tag, i) => (
+                                                        <span key={i} className="text-blue-400 text-xs bg-blue-900/30 px-1.5 py-0.5 rounded">
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                                <span className="text-gray-600 text-xs">{post.characterCount} chars</span>
+                                            </div>
+
+                                            {/* Quick Actions */}
+                                            <div className="flex gap-2 mt-3 pt-3 border-t border-gray-700/50">
+                                                {column.id === 'pending' && (
+                                                    <>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                updatePostStatus(post.id, 'approved')
+                                                            }}
+                                                            className="flex-1 px-2 py-1.5 bg-green-600/20 text-green-400 rounded-lg hover:bg-green-600/30 text-xs font-medium"
+                                                        >
+                                                            ✓ Approve
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                updatePostStatus(post.id, 'dismissed')
+                                                            }}
+                                                            className="px-2 py-1.5 bg-gray-700/50 text-gray-400 rounded-lg hover:bg-gray-700 text-xs"
+                                                        >
+                                                            ✕
+                                                        </button>
+                                                    </>
+                                                )}
+                                                {column.id === 'approved' && (
+                                                    <>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                copyContent(post)
+                                                            }}
+                                                            className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium ${copyFeedback === post.id
+                                                                    ? 'bg-green-600 text-white'
+                                                                    : 'bg-violet-600/20 text-violet-400 hover:bg-violet-600/30'
+                                                                }`}
+                                                        >
+                                                            {copyFeedback === post.id ? '✓ Copied!' : '📋 Copy'}
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                updatePostStatus(post.id, 'scheduled')
+                                                            }}
+                                                            className="px-2 py-1.5 bg-blue-600/20 text-blue-400 rounded-lg hover:bg-blue-600/30 text-xs"
+                                                        >
+                                                            📅
+                                                        </button>
+                                                    </>
+                                                )}
+                                                {column.id === 'scheduled' && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            copyContent(post)
+                                                        }}
+                                                        className="flex-1 px-2 py-1.5 bg-blue-600/20 text-blue-400 rounded-lg hover:bg-blue-600/30 text-xs font-medium"
+                                                    >
+                                                        🚀 Ready to Post
+                                                    </button>
+                                                )}
+                                                {column.id === 'dismissed' && (
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation()
+                                                            updatePostStatus(post.id, 'pending')
+                                                        }}
+                                                        className="flex-1 px-2 py-1.5 bg-gray-700/50 text-gray-400 rounded-lg hover:bg-gray-700 text-xs font-medium"
+                                                    >
+                                                        ↩️ Restore
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {getPostsByStatus(column.id).length === 0 && (
+                                        <div className="flex items-center justify-center h-32 text-gray-600 text-sm border-2 border-dashed border-gray-700/50 rounded-xl">
+                                            Drop cards here
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
             {/* Detail Panel */}
             {selectedPost && (
-                <div className="w-[550px] border-l border-gray-800 flex flex-col bg-gray-950">
+                <div className="w-[480px] border-l border-gray-800 flex flex-col bg-gray-950 flex-shrink-0">
                     <div className="p-4 border-b border-gray-800 flex items-center justify-between">
                         <div>
                             <h3 className="text-white font-medium">Post #{selectedPost.id}</h3>
@@ -288,20 +316,13 @@ export function ContentReview() {
                         </div>
                         <button
                             onClick={() => setSelectedPost(null)}
-                            className="text-gray-500 hover:text-white"
+                            className="text-gray-500 hover:text-white w-8 h-8 rounded-lg hover:bg-gray-800 flex items-center justify-center"
                         >
                             ✕
                         </button>
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                        {/* Status Badge */}
-                        <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg ${STATUS_STYLES[selectedPost.status].bg}`}>
-                            <span className={STATUS_STYLES[selectedPost.status].text}>
-                                {STATUS_STYLES[selectedPost.status].label}
-                            </span>
-                        </div>
-
                         {/* Content */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
@@ -324,9 +345,8 @@ export function ContentReview() {
                                     <textarea
                                         value={editContent}
                                         onChange={(e) => setEditContent(e.target.value)}
-                                        rows={16}
+                                        rows={14}
                                         className="w-full px-4 py-3 bg-gray-900 border border-violet-500/50 rounded-xl text-gray-200 text-sm font-sans resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
-                                        placeholder="Edit your content..."
                                     />
                                     <div className="flex items-center justify-between">
                                         <span className="text-gray-500 text-xs">{editContent.length} characters</span>
@@ -341,13 +361,13 @@ export function ContentReview() {
                                                 onClick={() => saveEdit(selectedPost.id)}
                                                 className="px-3 py-1.5 bg-violet-600 text-white rounded-lg hover:bg-violet-700 text-sm"
                                             >
-                                                Save Changes
+                                                Save
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="bg-gray-900 rounded-xl p-4 border border-gray-800">
+                                <div className="bg-gray-900 rounded-xl p-4 border border-gray-800 max-h-80 overflow-y-auto">
                                     <pre className="text-gray-200 text-sm whitespace-pre-wrap font-sans leading-relaxed">
                                         {selectedPost.editedContent || selectedPost.content}
                                     </pre>
@@ -357,7 +377,7 @@ export function ContentReview() {
 
                         {/* Hashtags */}
                         <div>
-                            <label className="block text-gray-500 text-xs uppercase tracking-wide mb-2">Suggested Hashtags</label>
+                            <label className="block text-gray-500 text-xs uppercase tracking-wide mb-2">Hashtags</label>
                             <div className="flex flex-wrap gap-2">
                                 {selectedPost.suggestedHashtags.map((tag, i) => (
                                     <span key={i} className="px-3 py-1 bg-blue-900/30 text-blue-400 text-sm rounded-full border border-blue-800/30">
@@ -367,10 +387,10 @@ export function ContentReview() {
                             </div>
                         </div>
 
-                        {/* Meta Info */}
-                        <div className="grid grid-cols-2 gap-4">
+                        {/* Meta */}
+                        <div className="grid grid-cols-2 gap-3">
                             <div className="bg-gray-900 rounded-lg p-3 border border-gray-800">
-                                <div className="text-gray-500 text-xs mb-1">Character Count</div>
+                                <div className="text-gray-500 text-xs mb-1">Characters</div>
                                 <div className="text-white font-medium">{selectedPost.characterCount}</div>
                             </div>
                             <div className="bg-gray-900 rounded-lg p-3 border border-gray-800">
@@ -379,7 +399,7 @@ export function ContentReview() {
                             </div>
                         </div>
 
-                        {/* CTA Info */}
+                        {/* CTA */}
                         {campaignData && (
                             <div className="bg-violet-900/20 rounded-lg p-4 border border-violet-800/30">
                                 <div className="text-violet-400 text-xs mb-1">Call to Action</div>
@@ -397,37 +417,23 @@ export function ContentReview() {
                     </div>
 
                     {/* Actions */}
-                    <div className="p-4 border-t border-gray-800">
+                    <div className="p-4 border-t border-gray-800 space-y-2">
                         <div className="grid grid-cols-3 gap-2">
-                            {selectedPost.status !== 'dismissed' && (
-                                <button
-                                    onClick={() => updatePostStatus(selectedPost.id, 'dismissed')}
-                                    className="px-4 py-2.5 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 flex items-center justify-center gap-2"
-                                >
-                                    ❌ Dismiss
-                                </button>
-                            )}
-                            {selectedPost.status === 'dismissed' && (
-                                <button
-                                    onClick={() => updatePostStatus(selectedPost.id, 'pending')}
-                                    className="px-4 py-2.5 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 flex items-center justify-center gap-2"
-                                >
-                                    ↩️ Restore
-                                </button>
-                            )}
-
-                            {selectedPost.status !== 'approved' && (
-                                <button
-                                    onClick={() => updatePostStatus(selectedPost.id, 'approved')}
-                                    className="px-4 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2"
-                                >
-                                    ✅ Approve
-                                </button>
-                            )}
-
+                            <button
+                                onClick={() => updatePostStatus(selectedPost.id, 'dismissed')}
+                                className="px-3 py-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 text-sm"
+                            >
+                                ❌ Dismiss
+                            </button>
+                            <button
+                                onClick={() => updatePostStatus(selectedPost.id, 'approved')}
+                                className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                            >
+                                ✅ Approve
+                            </button>
                             <button
                                 onClick={() => copyContent(selectedPost)}
-                                className={`px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 ${copyFeedback === selectedPost.id
+                                className={`px-3 py-2 rounded-lg text-sm ${copyFeedback === selectedPost.id
                                         ? 'bg-green-600 text-white'
                                         : 'bg-violet-600 text-white hover:bg-violet-700'
                                     }`}
@@ -435,12 +441,12 @@ export function ContentReview() {
                                 {copyFeedback === selectedPost.id ? '✓ Copied!' : '📋 Copy'}
                             </button>
                         </div>
-
                         {selectedPost.status === 'approved' && (
                             <button
-                                className="w-full mt-2 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-lg hover:from-blue-700 hover:to-violet-700 flex items-center justify-center gap-2 font-medium"
+                                onClick={() => updatePostStatus(selectedPost.id, 'scheduled')}
+                                className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-lg hover:from-blue-700 hover:to-violet-700 text-sm font-medium"
                             >
-                                🚀 Schedule to Publish
+                                📅 Schedule for Publishing
                             </button>
                         )}
                     </div>
