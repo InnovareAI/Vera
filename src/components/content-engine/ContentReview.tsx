@@ -191,6 +191,17 @@ export function ContentReview() {
                                             className={`bg-gray-900/80 backdrop-blur rounded-xl p-4 cursor-pointer border border-gray-700/50 hover:border-violet-500/50 transition-all hover:shadow-lg hover:shadow-violet-500/10 ${selectedPost?.id === post.id ? 'ring-2 ring-violet-500 border-violet-500' : ''
                                                 } ${draggedPost?.id === post.id ? 'opacity-50' : ''}`}
                                         >
+                                            {/* Image Thumbnail */}
+                                            {post.imageUrl && (
+                                                <div className="mb-3 rounded-lg overflow-hidden">
+                                                    <img
+                                                        src={post.imageUrl}
+                                                        alt={post.theme}
+                                                        className="w-full h-32 object-cover"
+                                                    />
+                                                </div>
+                                            )}
+
                                             {/* Card Header */}
                                             <div className="flex items-start gap-3 mb-3">
                                                 <div className="w-8 h-8 bg-violet-600/30 rounded-lg flex items-center justify-center text-violet-400 font-bold text-sm flex-shrink-0">
@@ -203,8 +214,8 @@ export function ContentReview() {
                                             </div>
 
                                             {/* Content Preview */}
-                                            <p className="text-gray-400 text-xs line-clamp-3 mb-3">
-                                                {(post.editedContent || post.content).substring(0, 120)}...
+                                            <p className="text-gray-400 text-xs line-clamp-2 mb-3">
+                                                {(post.editedContent || post.content).substring(0, 100)}...
                                             </p>
 
                                             {/* Card Footer */}
@@ -251,8 +262,8 @@ export function ContentReview() {
                                                                 copyContent(post)
                                                             }}
                                                             className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium ${copyFeedback === post.id
-                                                                    ? 'bg-green-600 text-white'
-                                                                    : 'bg-violet-600/20 text-violet-400 hover:bg-violet-600/30'
+                                                                ? 'bg-green-600 text-white'
+                                                                : 'bg-violet-600/20 text-violet-400 hover:bg-violet-600/30'
                                                                 }`}
                                                         >
                                                             {copyFeedback === post.id ? '✓ Copied!' : '📋 Copy'}
@@ -323,6 +334,29 @@ export function ContentReview() {
                     </div>
 
                     <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        {/* Image Preview */}
+                        {selectedPost.imageUrl && (
+                            <div>
+                                <div className="flex items-center justify-between mb-2">
+                                    <label className="block text-gray-500 text-xs uppercase tracking-wide">Post Image</label>
+                                    <a
+                                        href={selectedPost.imageUrl}
+                                        download={`${selectedPost.theme.replace(/\s+/g, '-').toLowerCase()}.png`}
+                                        className="text-xs text-violet-400 hover:text-violet-300"
+                                    >
+                                        ⬇️ Download
+                                    </a>
+                                </div>
+                                <div className="rounded-xl overflow-hidden border border-gray-800">
+                                    <img
+                                        src={selectedPost.imageUrl}
+                                        alt={selectedPost.theme}
+                                        className="w-full h-auto"
+                                    />
+                                </div>
+                            </div>
+                        )}
+
                         {/* Content */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
@@ -434,8 +468,8 @@ export function ContentReview() {
                             <button
                                 onClick={() => copyContent(selectedPost)}
                                 className={`px-3 py-2 rounded-lg text-sm ${copyFeedback === selectedPost.id
-                                        ? 'bg-green-600 text-white'
-                                        : 'bg-violet-600 text-white hover:bg-violet-700'
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-violet-600 text-white hover:bg-violet-700'
                                     }`}
                             >
                                 {copyFeedback === selectedPost.id ? '✓ Copied!' : '📋 Copy'}
