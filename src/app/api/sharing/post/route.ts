@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { createLinkedInPost } from '@/lib/unipile'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
+
+export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
     try {
@@ -13,10 +15,7 @@ export async function POST(req: Request) {
             )
         }
 
-        const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY! // Use service role to write to engagement tasks
-        )
+        const supabase = createAdminClient()
 
         // 1. Create the post via Unipile
         const result = await createLinkedInPost(accountId, content)
