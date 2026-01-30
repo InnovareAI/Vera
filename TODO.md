@@ -101,8 +101,19 @@
 - [ ] **Microsoft Ads API** - Connect to Microsoft Advertising
 - [ ] **Bing Search Ads** - Text ads on Bing
 - [ ] **Microsoft Audience Network** - Native ads
-- [ ] **LinkedIn Ads** - B2B targeting via Microsoft
 - [ ] **Import from Google** - Sync Google Ads campaigns
+
+### LinkedIn Ads Integration
+
+- [ ] **LinkedIn Marketing API** - Connect to Campaign Manager
+- [ ] **Sponsored Content** - Native feed ads
+- [ ] **Sponsored Messaging** - InMail ads
+- [ ] **Text Ads** - Sidebar text ads
+- [ ] **Dynamic Ads** - Personalized follower/spotlight ads
+- [ ] **Lead Gen Forms** - Native lead capture
+- [ ] **Matched Audiences** - Website retargeting, contact lists
+- [ ] **Account-Based Marketing** - Target by company
+- [ ] **Conversion tracking** - LinkedIn Insight Tag
 
 ### Other Ad Platforms
 
