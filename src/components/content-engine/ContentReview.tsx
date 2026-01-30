@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { getSupabase } from '@/lib/supabase/client'
 
 interface ContentPost {
     id: number
@@ -30,7 +31,22 @@ const COLUMNS = [
     { id: 'dismissed', title: '❌ Dismissed', color: 'from-gray-600/20 to-gray-700/20', border: 'border-gray-500/30' },
 ]
 
-export function ContentReview() {
+type ViewMode = 'kanban' | 'cards' | 'list' | 'timeline' | 'gantt'
+
+const VIEWS: { id: ViewMode; icon: string; label: string }[] = [
+    { id: 'kanban', icon: '▦', label: 'Kanban' },
+    { id: 'cards', icon: '▣', label: 'Cards' },
+    { id: 'list', icon: '☰', label: 'List' },
+    { id: 'timeline', icon: '⟿', label: 'Timeline' },
+    { id: 'gantt', icon: '▤', label: 'Gantt' },
+]
+
+interface ContentReviewProps {
+    workspaceId?: string
+}
+
+export function ContentReview({ workspaceId }: ContentReviewProps) {
+    const supabase = getSupabase()
     const [campaignData, setCampaignData] = useState<CampaignData | null>(null)
     const [posts, setPosts] = useState<ContentPost[]>([])
     const [selectedPost, setSelectedPost] = useState<ContentPost | null>(null)
@@ -38,13 +54,55 @@ export function ContentReview() {
     const [editContent, setEditContent] = useState('')
     const [copyFeedback, setCopyFeedback] = useState<number | null>(null)
     const [draggedPost, setDraggedPost] = useState<ContentPost | null>(null)
+    const [viewMode, setViewMode] = useState<ViewMode>('kanban')
+    const [postingId, setPostingId] = useState<number | null>(null)
+    const [postingError, setPostingError] = useState<string | null>(null)
+    const [postingSuccess, setPostingSuccess] = useState<number | null>(null)
 
     useEffect(() => {
         loadPosts()
-    }, [])
+    }, [workspaceId])
 
     const loadPosts = async () => {
         try {
+            // If workspaceId provided, try to load from database first
+            if (workspaceId) {
+                const { data: contentItems, error } = await supabase
+                    .from('content_items')
+                    .select('*, campaign:campaigns(*)')
+                    .eq('workspace_id', workspaceId)
+                    .order('created_at', { ascending: false })
+
+                if (!error && contentItems && contentItems.length > 0) {
+                    // Map database items to our ContentPost format
+                    const dbPosts: ContentPost[] = contentItems.map((item: any, index: number) => ({
+                        id: index + 1,
+                        theme: item.theme || 'Content',
+                        hook: item.hook || '',
+                        content: item.content,
+                        characterCount: item.character_count || item.content.length,
+                        suggestedHashtags: item.hashtags || [],
+                        status: item.status as ContentPost['status'],
+                        imageUrl: item.image_url,
+                        editedContent: item.content
+                    }))
+
+                    // Get campaign info from first item if available
+                    const firstCampaign = contentItems[0]?.campaign
+                    setCampaignData({
+                        campaign: firstCampaign?.name || 'Workspace Content',
+                        source: firstCampaign?.source_url || 'Generated',
+                        generatedAt: contentItems[0]?.created_at || new Date().toISOString(),
+                        cta: 'Learn more',
+                        ctaUrl: firstCampaign?.source_url || '#',
+                        posts: dbPosts
+                    })
+                    setPosts(dbPosts)
+                    return
+                }
+            }
+
+            // Fall back to demo data from JSON file
             const postsData = await import('@/data/content/findabl-linkedin-posts.json')
             setCampaignData({
                 campaign: postsData.campaign,
@@ -102,6 +160,46 @@ export function ContentReview() {
         navigator.clipboard.writeText(fullContent)
         setCopyFeedback(post.id)
         setTimeout(() => setCopyFeedback(null), 2000)
+    }
+
+    const postToLinkedIn = async (post: ContentPost) => {
+        setPostingId(post.id)
+        setPostingError(null)
+        setPostingSuccess(null)
+
+        try {
+            // Build the full post content with hashtags
+            const fullContent = `${post.editedContent || post.content}\n\n${post.suggestedHashtags.join(' ')}`
+
+            const response = await fetch('/api/linkedin/post', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    text: fullContent,
+                    imageUrl: post.imageUrl,
+                    workspaceId
+                })
+            })
+
+            const data = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Failed to post to LinkedIn')
+            }
+
+            // Mark as success
+            setPostingSuccess(post.id)
+            setTimeout(() => setPostingSuccess(null), 3000)
+
+            // Update post status to indicate it was published
+            updatePostStatus(post.id, 'scheduled')
+        } catch (error: any) {
+            console.error('LinkedIn post error:', error)
+            setPostingError(error.message)
+            setTimeout(() => setPostingError(null), 5000)
+        } finally {
+            setPostingId(null)
+        }
     }
 
     const handleDragStart = (post: ContentPost) => {
@@ -371,6 +469,23 @@ export function ContentReview() {
                             </p>
                         </div>
                         <div className="flex items-center gap-4">
+                            {/* View Switcher */}
+                            <div className="flex bg-gray-800 rounded-lg p-1">
+                                {VIEWS.map(view => (
+                                    <button
+                                        key={view.id}
+                                        onClick={() => setViewMode(view.id)}
+                                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${viewMode === view.id
+                                            ? 'bg-violet-600 text-white shadow-lg'
+                                            : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                                            }`}
+                                        title={view.label}
+                                    >
+                                        <span className="text-base">{view.icon}</span>
+                                        <span className="hidden lg:inline">{view.label}</span>
+                                    </button>
+                                ))}
+                            </div>
                             <div className="flex gap-2 text-sm">
                                 <span className="px-3 py-1 bg-yellow-900/30 text-yellow-400 rounded-full">{stats.pending} pending</span>
                                 <span className="px-3 py-1 bg-green-900/30 text-green-400 rounded-full">{stats.approved} approved</span>
@@ -396,164 +511,397 @@ export function ContentReview() {
                     </div>
                 </div>
 
-                {/* Kanban Columns */}
-                <div className="flex-1 overflow-x-auto p-6">
-                    <div className="flex gap-4 h-full min-w-max">
-                        {COLUMNS.map(column => (
-                            <div
-                                key={column.id}
-                                className={`w-80 flex flex-col bg-gradient-to-b ${column.color} rounded-xl border ${column.border} flex-shrink-0`}
-                                onDragOver={handleDragOver}
-                                onDrop={() => handleDrop(column.id as ContentPost['status'])}
-                            >
-                                {/* Column Header */}
-                                <div className="p-4 border-b border-gray-700/50">
-                                    <div className="flex items-center justify-between">
-                                        <h3 className="font-semibold text-white">{column.title}</h3>
-                                        <span className="text-gray-400 text-sm bg-gray-800/50 px-2 py-0.5 rounded">
-                                            {getPostsByStatus(column.id).length}
-                                        </span>
+                {/* View Content */}
+                <div className="flex-1 overflow-auto p-6">
+                    {/* Kanban View */}
+                    {viewMode === 'kanban' && (
+                        <div className="flex gap-4 h-full min-w-max">
+                            {COLUMNS.map(column => (
+                                <div
+                                    key={column.id}
+                                    className={`w-80 flex flex-col bg-gradient-to-b ${column.color} rounded-xl border ${column.border} flex-shrink-0`}
+                                    onDragOver={handleDragOver}
+                                    onDrop={() => handleDrop(column.id as ContentPost['status'])}
+                                >
+                                    {/* Column Header */}
+                                    <div className="p-4 border-b border-gray-700/50">
+                                        <div className="flex items-center justify-between">
+                                            <h3 className="font-semibold text-white">{column.title}</h3>
+                                            <span className="text-gray-400 text-sm bg-gray-800/50 px-2 py-0.5 rounded">
+                                                {getPostsByStatus(column.id).length}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Cards */}
+                                    <div className="flex-1 overflow-y-auto p-3 space-y-3">
+                                        {getPostsByStatus(column.id).map(post => (
+                                            <div
+                                                key={post.id}
+                                                draggable
+                                                onDragStart={() => handleDragStart(post)}
+                                                onClick={() => {
+                                                    setSelectedPost(post)
+                                                    setIsEditing(false)
+                                                    setEditContent(post.editedContent || post.content)
+                                                }}
+                                                className={`bg-gray-900/80 backdrop-blur rounded-xl p-4 cursor-pointer border border-gray-700/50 hover:border-violet-500/50 transition-all hover:shadow-lg hover:shadow-violet-500/10 ${selectedPost?.id === post.id ? 'ring-2 ring-violet-500 border-violet-500' : ''
+                                                    } ${draggedPost?.id === post.id ? 'opacity-50' : ''}`}
+                                            >
+                                                {/* Image Thumbnail */}
+                                                {post.imageUrl && (
+                                                    <div className="mb-3 rounded-lg overflow-hidden">
+                                                        <img
+                                                            src={post.imageUrl}
+                                                            alt={post.theme}
+                                                            className="w-full h-32 object-cover"
+                                                        />
+                                                    </div>
+                                                )}
+
+                                                {/* Card Header */}
+                                                <div className="flex items-start gap-3 mb-3">
+                                                    <div className="w-8 h-8 bg-violet-600/30 rounded-lg flex items-center justify-center text-violet-400 font-bold text-sm flex-shrink-0">
+                                                        {post.id}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="text-white font-medium text-sm truncate">{post.theme}</h4>
+                                                        <p className="text-gray-500 text-xs">💼 LinkedIn</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* Content Preview */}
+                                                <p className="text-gray-400 text-xs line-clamp-2 mb-3">
+                                                    {(post.editedContent || post.content).substring(0, 100)}...
+                                                </p>
+
+                                                {/* Card Footer */}
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex gap-1">
+                                                        {post.suggestedHashtags.slice(0, 2).map((tag, i) => (
+                                                            <span key={i} className="text-blue-400 text-xs bg-blue-900/30 px-1.5 py-0.5 rounded">
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                    <span className="text-gray-600 text-xs">{post.characterCount} chars</span>
+                                                </div>
+
+                                                {/* Quick Actions */}
+                                                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-700/50">
+                                                    {column.id === 'pending' && (
+                                                        <>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    updatePostStatus(post.id, 'approved')
+                                                                }}
+                                                                className="flex-1 px-2 py-1.5 bg-green-600/20 text-green-400 rounded-lg hover:bg-green-600/30 text-xs font-medium"
+                                                            >
+                                                                ✓ Approve
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    updatePostStatus(post.id, 'dismissed')
+                                                                }}
+                                                                className="px-2 py-1.5 bg-gray-700/50 text-gray-400 rounded-lg hover:bg-gray-700 text-xs"
+                                                            >
+                                                                ✕
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                    {column.id === 'approved' && (
+                                                        <>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    postToLinkedIn(post)
+                                                                }}
+                                                                disabled={postingId === post.id}
+                                                                className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium ${postingId === post.id
+                                                                    ? 'bg-blue-600/50 text-blue-300 cursor-wait'
+                                                                    : postingSuccess === post.id
+                                                                        ? 'bg-green-600 text-white'
+                                                                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                                                                    }`}
+                                                            >
+                                                                {postingId === post.id ? '⏳ Posting...' : postingSuccess === post.id ? '✓ Posted!' : '💼 Post'}
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    copyContent(post)
+                                                                }}
+                                                                className={`px-2 py-1.5 rounded-lg text-xs ${copyFeedback === post.id
+                                                                    ? 'bg-green-600 text-white'
+                                                                    : 'bg-violet-600/20 text-violet-400 hover:bg-violet-600/30'
+                                                                    }`}
+                                                            >
+                                                                {copyFeedback === post.id ? '✓' : '📋'}
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                    {column.id === 'scheduled' && (
+                                                        <>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    postToLinkedIn(post)
+                                                                }}
+                                                                disabled={postingId === post.id}
+                                                                className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium ${postingId === post.id
+                                                                    ? 'bg-blue-600/50 text-blue-300 cursor-wait'
+                                                                    : postingSuccess === post.id
+                                                                        ? 'bg-green-600 text-white'
+                                                                        : 'bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:from-blue-700 hover:to-violet-700'
+                                                                    }`}
+                                                            >
+                                                                {postingId === post.id ? '⏳ Posting...' : postingSuccess === post.id ? '✓ Posted!' : '🚀 Post Now'}
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation()
+                                                                    copyContent(post)
+                                                                }}
+                                                                className={`px-2 py-1.5 rounded-lg text-xs ${copyFeedback === post.id
+                                                                    ? 'bg-green-600 text-white'
+                                                                    : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                                                                    }`}
+                                                            >
+                                                                📋
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                    {column.id === 'dismissed' && (
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
+                                                                updatePostStatus(post.id, 'pending')
+                                                            }}
+                                                            className="flex-1 px-2 py-1.5 bg-gray-700/50 text-gray-400 rounded-lg hover:bg-gray-700 text-xs font-medium"
+                                                        >
+                                                            ↩️ Restore
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+
+                                        {getPostsByStatus(column.id).length === 0 && (
+                                            <div className="flex items-center justify-center h-32 text-gray-600 text-sm border-2 border-dashed border-gray-700/50 rounded-xl">
+                                                Drop cards here
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
+                            ))}
+                        </div>
+                    )}
 
-                                {/* Cards */}
-                                <div className="flex-1 overflow-y-auto p-3 space-y-3">
-                                    {getPostsByStatus(column.id).map(post => (
-                                        <div
-                                            key={post.id}
-                                            draggable
-                                            onDragStart={() => handleDragStart(post)}
-                                            onClick={() => {
-                                                setSelectedPost(post)
-                                                setIsEditing(false)
-                                                setEditContent(post.editedContent || post.content)
-                                            }}
-                                            className={`bg-gray-900/80 backdrop-blur rounded-xl p-4 cursor-pointer border border-gray-700/50 hover:border-violet-500/50 transition-all hover:shadow-lg hover:shadow-violet-500/10 ${selectedPost?.id === post.id ? 'ring-2 ring-violet-500 border-violet-500' : ''
-                                                } ${draggedPost?.id === post.id ? 'opacity-50' : ''}`}
-                                        >
-                                            {/* Image Thumbnail */}
-                                            {post.imageUrl && (
-                                                <div className="mb-3 rounded-lg overflow-hidden">
-                                                    <img
-                                                        src={post.imageUrl}
-                                                        alt={post.theme}
-                                                        className="w-full h-32 object-cover"
-                                                    />
-                                                </div>
-                                            )}
-
-                                            {/* Card Header */}
-                                            <div className="flex items-start gap-3 mb-3">
-                                                <div className="w-8 h-8 bg-violet-600/30 rounded-lg flex items-center justify-center text-violet-400 font-bold text-sm flex-shrink-0">
-                                                    {post.id}
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                    <h4 className="text-white font-medium text-sm truncate">{post.theme}</h4>
-                                                    <p className="text-gray-500 text-xs">💼 LinkedIn</p>
-                                                </div>
-                                            </div>
-
-                                            {/* Content Preview */}
-                                            <p className="text-gray-400 text-xs line-clamp-2 mb-3">
-                                                {(post.editedContent || post.content).substring(0, 100)}...
-                                            </p>
-
-                                            {/* Card Footer */}
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex gap-1">
-                                                    {post.suggestedHashtags.slice(0, 2).map((tag, i) => (
-                                                        <span key={i} className="text-blue-400 text-xs bg-blue-900/30 px-1.5 py-0.5 rounded">
-                                                            {tag}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                                <span className="text-gray-600 text-xs">{post.characterCount} chars</span>
-                                            </div>
-
-                                            {/* Quick Actions */}
-                                            <div className="flex gap-2 mt-3 pt-3 border-t border-gray-700/50">
-                                                {column.id === 'pending' && (
-                                                    <>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                updatePostStatus(post.id, 'approved')
-                                                            }}
-                                                            className="flex-1 px-2 py-1.5 bg-green-600/20 text-green-400 rounded-lg hover:bg-green-600/30 text-xs font-medium"
-                                                        >
-                                                            ✓ Approve
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                updatePostStatus(post.id, 'dismissed')
-                                                            }}
-                                                            className="px-2 py-1.5 bg-gray-700/50 text-gray-400 rounded-lg hover:bg-gray-700 text-xs"
-                                                        >
-                                                            ✕
-                                                        </button>
-                                                    </>
-                                                )}
-                                                {column.id === 'approved' && (
-                                                    <>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                copyContent(post)
-                                                            }}
-                                                            className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium ${copyFeedback === post.id
-                                                                ? 'bg-green-600 text-white'
-                                                                : 'bg-violet-600/20 text-violet-400 hover:bg-violet-600/30'
-                                                                }`}
-                                                        >
-                                                            {copyFeedback === post.id ? '✓ Copied!' : '📋 Copy'}
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation()
-                                                                updatePostStatus(post.id, 'scheduled')
-                                                            }}
-                                                            className="px-2 py-1.5 bg-blue-600/20 text-blue-400 rounded-lg hover:bg-blue-600/30 text-xs"
-                                                        >
-                                                            📅
-                                                        </button>
-                                                    </>
-                                                )}
-                                                {column.id === 'scheduled' && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            copyContent(post)
-                                                        }}
-                                                        className="flex-1 px-2 py-1.5 bg-blue-600/20 text-blue-400 rounded-lg hover:bg-blue-600/30 text-xs font-medium"
-                                                    >
-                                                        🚀 Ready to Post
-                                                    </button>
-                                                )}
-                                                {column.id === 'dismissed' && (
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation()
-                                                            updatePostStatus(post.id, 'pending')
-                                                        }}
-                                                        className="flex-1 px-2 py-1.5 bg-gray-700/50 text-gray-400 rounded-lg hover:bg-gray-700 text-xs font-medium"
-                                                    >
-                                                        ↩️ Restore
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    ))}
-
-                                    {getPostsByStatus(column.id).length === 0 && (
-                                        <div className="flex items-center justify-center h-32 text-gray-600 text-sm border-2 border-dashed border-gray-700/50 rounded-xl">
-                                            Drop cards here
-                                        </div>
+                    {/* Cards View - Grid of all posts */}
+                    {viewMode === 'cards' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {posts.map(post => (
+                                <div
+                                    key={post.id}
+                                    onClick={() => {
+                                        setSelectedPost(post)
+                                        setIsEditing(false)
+                                        setEditContent(post.editedContent || post.content)
+                                    }}
+                                    className={`bg-gray-900 rounded-xl overflow-hidden cursor-pointer border border-gray-700/50 hover:border-violet-500/50 transition-all hover:shadow-xl ${selectedPost?.id === post.id ? 'ring-2 ring-violet-500' : ''
+                                        }`}
+                                >
+                                    {post.imageUrl && (
+                                        <img src={post.imageUrl} alt={post.theme} className="w-full h-48 object-cover" />
                                     )}
+                                    <div className="p-4">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${post.status === 'approved' ? 'bg-green-600/20 text-green-400' :
+                                                post.status === 'scheduled' ? 'bg-blue-600/20 text-blue-400' :
+                                                    post.status === 'dismissed' ? 'bg-gray-600/20 text-gray-400' :
+                                                        'bg-yellow-600/20 text-yellow-400'
+                                                }`}>
+                                                {post.status}
+                                            </span>
+                                            <span className="text-gray-500 text-xs">#{post.id}</span>
+                                        </div>
+                                        <h4 className="text-white font-medium mb-2">{post.theme}</h4>
+                                        <p className="text-gray-400 text-sm line-clamp-3">{(post.editedContent || post.content).substring(0, 120)}...</p>
+                                        <div className="flex gap-2 mt-3">
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); updatePostStatus(post.id, 'approved') }}
+                                                className="flex-1 px-3 py-1.5 bg-green-600/20 text-green-400 rounded-lg text-xs hover:bg-green-600/30"
+                                            >✓ Approve</button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); updatePostStatus(post.id, 'dismissed') }}
+                                                className="px-3 py-1.5 bg-gray-700 text-gray-400 rounded-lg text-xs hover:bg-gray-600"
+                                            >✕</button>
+                                        </div>
+                                    </div>
                                 </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* List View - Compact table-like view */}
+                    {viewMode === 'list' && (
+                        <div className="bg-gray-900 rounded-xl border border-gray-700/50 overflow-hidden">
+                            <div className="grid grid-cols-12 gap-4 p-4 bg-gray-800/50 text-gray-400 text-sm font-medium border-b border-gray-700">
+                                <div className="col-span-1">#</div>
+                                <div className="col-span-3">Theme</div>
+                                <div className="col-span-4">Content Preview</div>
+                                <div className="col-span-1">Chars</div>
+                                <div className="col-span-1">Status</div>
+                                <div className="col-span-2">Actions</div>
                             </div>
-                        ))}
-                    </div>
+                            {posts.map(post => (
+                                <div
+                                    key={post.id}
+                                    onClick={() => {
+                                        setSelectedPost(post)
+                                        setIsEditing(false)
+                                        setEditContent(post.editedContent || post.content)
+                                    }}
+                                    className={`grid grid-cols-12 gap-4 p-4 border-b border-gray-700/50 hover:bg-gray-800/50 cursor-pointer transition-colors ${selectedPost?.id === post.id ? 'bg-violet-900/20' : ''
+                                        }`}
+                                >
+                                    <div className="col-span-1 text-violet-400 font-medium">{post.id}</div>
+                                    <div className="col-span-3 text-white font-medium truncate">{post.theme}</div>
+                                    <div className="col-span-4 text-gray-400 text-sm truncate">{(post.editedContent || post.content).substring(0, 80)}...</div>
+                                    <div className="col-span-1 text-gray-500 text-sm">{post.characterCount}</div>
+                                    <div className="col-span-1">
+                                        <span className={`px-2 py-1 rounded-full text-xs ${post.status === 'approved' ? 'bg-green-600/20 text-green-400' :
+                                            post.status === 'scheduled' ? 'bg-blue-600/20 text-blue-400' :
+                                                post.status === 'dismissed' ? 'bg-gray-600/20 text-gray-400' :
+                                                    'bg-yellow-600/20 text-yellow-400'
+                                            }`}>{post.status}</span>
+                                    </div>
+                                    <div className="col-span-2 flex gap-2">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); updatePostStatus(post.id, 'approved') }}
+                                            className="px-2 py-1 bg-green-600/20 text-green-400 rounded text-xs hover:bg-green-600/30"
+                                        >✓</button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); updatePostStatus(post.id, 'scheduled') }}
+                                            className="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-xs hover:bg-blue-600/30"
+                                        >📅</button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); copyContent(post) }}
+                                            className="px-2 py-1 bg-violet-600/20 text-violet-400 rounded text-xs hover:bg-violet-600/30"
+                                        >📋</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Timeline View */}
+                    {viewMode === 'timeline' && (
+                        <div className="space-y-0 relative">
+                            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-700"></div>
+                            {posts.map((post, index) => (
+                                <div
+                                    key={post.id}
+                                    onClick={() => {
+                                        setSelectedPost(post)
+                                        setIsEditing(false)
+                                        setEditContent(post.editedContent || post.content)
+                                    }}
+                                    className={`relative flex gap-6 p-4 cursor-pointer hover:bg-gray-800/30 rounded-lg transition-colors ${selectedPost?.id === post.id ? 'bg-violet-900/20' : ''
+                                        }`}
+                                >
+                                    <div className={`w-16 h-16 rounded-full flex items-center justify-center font-bold text-lg z-10 ${post.status === 'approved' ? 'bg-green-600 text-white' :
+                                        post.status === 'scheduled' ? 'bg-blue-600 text-white' :
+                                            post.status === 'dismissed' ? 'bg-gray-600 text-white' :
+                                                'bg-yellow-600 text-black'
+                                        }`}>
+                                        {post.id}
+                                    </div>
+                                    <div className="flex-1 bg-gray-900 rounded-xl p-4 border border-gray-700/50">
+                                        <div className="flex items-start gap-4">
+                                            {post.imageUrl && (
+                                                <img src={post.imageUrl} alt={post.theme} className="w-24 h-24 rounded-lg object-cover" />
+                                            )}
+                                            <div className="flex-1">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <h4 className="text-white font-medium">{post.theme}</h4>
+                                                    <span className={`px-2 py-0.5 rounded-full text-xs ${post.status === 'approved' ? 'bg-green-600/20 text-green-400' :
+                                                        post.status === 'scheduled' ? 'bg-blue-600/20 text-blue-400' :
+                                                            post.status === 'dismissed' ? 'bg-gray-600/20 text-gray-400' :
+                                                                'bg-yellow-600/20 text-yellow-400'
+                                                        }`}>{post.status}</span>
+                                                </div>
+                                                <p className="text-gray-400 text-sm line-clamp-2">{(post.editedContent || post.content).substring(0, 150)}...</p>
+                                                <div className="flex gap-2 mt-3">
+                                                    <button onClick={(e) => { e.stopPropagation(); updatePostStatus(post.id, 'approved') }} className="px-3 py-1 bg-green-600/20 text-green-400 rounded text-xs">✓ Approve</button>
+                                                    <button onClick={(e) => { e.stopPropagation(); updatePostStatus(post.id, 'scheduled') }} className="px-3 py-1 bg-blue-600/20 text-blue-400 rounded text-xs">📅 Schedule</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* Gantt View */}
+                    {viewMode === 'gantt' && (
+                        <div className="bg-gray-900 rounded-xl border border-gray-700/50 overflow-hidden">
+                            <div className="p-4 bg-gray-800/50 border-b border-gray-700">
+                                <h3 className="text-white font-medium">Content Publishing Schedule</h3>
+                                <p className="text-gray-500 text-sm">Visual timeline of your content pipeline</p>
+                            </div>
+                            <div className="p-4">
+                                {/* Gantt Header */}
+                                <div className="flex border-b border-gray-700 pb-2 mb-4">
+                                    <div className="w-48 text-gray-400 text-sm font-medium">Post</div>
+                                    <div className="flex-1 flex">
+                                        {['Week 1', 'Week 2', 'Week 3', 'Week 4'].map((week, i) => (
+                                            <div key={i} className="flex-1 text-center text-gray-400 text-sm font-medium">{week}</div>
+                                        ))}
+                                    </div>
+                                </div>
+                                {/* Gantt Rows */}
+                                {posts.map((post, index) => (
+                                    <div
+                                        key={post.id}
+                                        onClick={() => {
+                                            setSelectedPost(post)
+                                            setIsEditing(false)
+                                            setEditContent(post.editedContent || post.content)
+                                        }}
+                                        className={`flex items-center py-2 hover:bg-gray-800/30 cursor-pointer rounded ${selectedPost?.id === post.id ? 'bg-violet-900/20' : ''
+                                            }`}
+                                    >
+                                        <div className="w-48 flex items-center gap-2">
+                                            <span className="w-6 h-6 bg-violet-600/30 rounded flex items-center justify-center text-violet-400 text-xs font-bold">{post.id}</span>
+                                            <span className="text-white text-sm truncate">{post.theme.substring(0, 20)}</span>
+                                        </div>
+                                        <div className="flex-1 flex relative h-8">
+                                            {/* Bar representing post status */}
+                                            <div
+                                                className={`absolute h-6 rounded-full top-1 ${post.status === 'approved' ? 'bg-gradient-to-r from-green-600 to-green-500' :
+                                                    post.status === 'scheduled' ? 'bg-gradient-to-r from-blue-600 to-cyan-500' :
+                                                        post.status === 'dismissed' ? 'bg-gray-600' :
+                                                            'bg-gradient-to-r from-yellow-600 to-orange-500'
+                                                    }`}
+                                                style={{
+                                                    left: `${(index % 4) * 25}%`,
+                                                    width: `${Math.min(25 + (index % 2) * 12.5, 50)}%`
+                                                }}
+                                            >
+                                                <span className="absolute inset-0 flex items-center justify-center text-xs text-white font-medium truncate px-2">
+                                                    {post.status}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -715,13 +1063,35 @@ export function ContentReview() {
                                 {copyFeedback === selectedPost.id ? '✓ Copied!' : '📋 Copy'}
                             </button>
                         </div>
-                        {selectedPost.status === 'approved' && (
+                        {(selectedPost.status === 'approved' || selectedPost.status === 'scheduled') && (
                             <button
-                                onClick={() => updatePostStatus(selectedPost.id, 'scheduled')}
-                                className="w-full px-4 py-2.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-lg hover:from-blue-700 hover:to-violet-700 text-sm font-medium"
+                                onClick={() => postToLinkedIn(selectedPost)}
+                                disabled={postingId === selectedPost.id}
+                                className={`w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${postingId === selectedPost.id
+                                    ? 'bg-blue-600/50 text-blue-300 cursor-wait'
+                                    : postingSuccess === selectedPost.id
+                                        ? 'bg-green-600 text-white'
+                                        : 'bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:from-blue-700 hover:to-violet-700'
+                                    }`}
                             >
-                                📅 Schedule for Publishing
+                                {postingId === selectedPost.id ? (
+                                    <span className="flex items-center justify-center gap-2">
+                                        <span className="w-4 h-4 border-2 border-blue-300/30 border-t-blue-300 rounded-full animate-spin" />
+                                        Posting to LinkedIn...
+                                    </span>
+                                ) : postingSuccess === selectedPost.id ? (
+                                    '✅ Posted to LinkedIn!'
+                                ) : (
+                                    '💼 Post to LinkedIn Now'
+                                )}
                             </button>
+                        )}
+
+                        {/* Error message */}
+                        {postingError && (
+                            <div className="bg-red-900/30 border border-red-800/50 rounded-lg p-3 text-red-400 text-sm">
+                                ⚠️ {postingError}
+                            </div>
                         )}
                     </div>
                 </div>

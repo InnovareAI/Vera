@@ -1,7 +1,10 @@
 'use client'
 
 import { useState } from 'react'
-import { CampaignGeneration, GeneratedContent } from '@/app/campaigns/page'
+import { CampaignGeneration, GeneratedContent, ContentVariation, ImageVariation, VideoVariation } from '@/app/campaigns/page'
+import { VariationPicker } from './VariationPicker'
+import { ImageVariationPicker } from './ImageVariationPicker'
+import { VideoVariationPicker } from './VideoVariationPicker'
 
 interface CampaignOutputProps {
     generation: CampaignGeneration | null
@@ -142,8 +145,19 @@ async function sendToN8n(generation: CampaignGeneration) {
     }
 }
 
-function ContentCard({ content, index }: { content: GeneratedContent; index: number }) {
+interface ContentCardProps {
+    content: GeneratedContent
+    index: number
+    onSelectVariation?: (contentIndex: number, variationIndex: number) => void
+    onSelectImageVariation?: (contentIndex: number, imageIndex: number) => void
+    onSelectVideoVariation?: (contentIndex: number, videoIndex: number) => void
+}
+
+function ContentCard({ content, index, onSelectVariation, onSelectImageVariation, onSelectVideoVariation }: ContentCardProps) {
     const [copied, setCopied] = useState(false)
+    const [showVariationPicker, setShowVariationPicker] = useState(false)
+    const [showImagePicker, setShowImagePicker] = useState(false)
+    const [showVideoPicker, setShowVideoPicker] = useState(false)
 
     const copyToClipboard = (text: string) => {
         navigator.clipboard.writeText(text)
@@ -158,43 +172,87 @@ function ContentCard({ content, index }: { content: GeneratedContent; index: num
         a.click()
     }
 
+    const hasVariations = content.variations && content.variations.length > 1
+    const hasImageVariations = content.imageVariations && content.imageVariations.length > 1
+    const hasVideoVariations = content.videoVariations && content.videoVariations.length > 1
+
     return (
-        <div className="bg-gradient-to-br from-gray-900 to-gray-900/50 border border-gray-800/50 rounded-2xl overflow-hidden">
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-800/50">
-                <div className="flex items-center gap-3">
-                    <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
-                        style={{ backgroundColor: `${platformColors[content.platform] || '#6366f1'}20` }}
-                    >
-                        {platformIcons[content.platform] || '📱'}
-                    </div>
-                    <div>
-                        <p className="text-white font-medium capitalize">{content.platform}</p>
-                        <p className="text-gray-500 text-xs flex items-center gap-1">
-                            {contentTypeIcons[content.type]} {content.type.charAt(0).toUpperCase() + content.type.slice(1)}
-                        </p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    {content.status === 'generating' && (
-                        <div className="flex items-center gap-2 text-violet-400 text-sm">
-                            <div className="w-4 h-4 border-2 border-violet-400/30 border-t-violet-400 rounded-full animate-spin" />
-                            Generating...
+        <>
+            <div className="bg-gradient-to-br from-gray-900 to-gray-900/50 border border-gray-800/50 rounded-2xl overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-800/50">
+                    <div className="flex items-center gap-3">
+                        <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center text-xl"
+                            style={{ backgroundColor: `${platformColors[content.platform] || '#6366f1'}20` }}
+                        >
+                            {platformIcons[content.platform] || '📱'}
                         </div>
-                    )}
-                    {content.status === 'complete' && (
-                        <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">
-                            ✓ Complete
-                        </span>
-                    )}
-                    {content.status === 'error' && (
-                        <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-medium">
-                            Error
-                        </span>
-                    )}
+                        <div>
+                            <p className="text-white font-medium capitalize">{content.platform}</p>
+                            <p className="text-gray-500 text-xs flex items-center gap-1">
+                                {contentTypeIcons[content.type]} {content.type.charAt(0).toUpperCase() + content.type.slice(1)}
+                                {hasVariations && (
+                                    <span className="ml-2 px-1.5 py-0.5 bg-indigo-500/20 text-indigo-400 rounded text-xs">
+                                        {content.variations!.length} text variations
+                                    </span>
+                                )}
+                                {hasImageVariations && (
+                                    <span className="ml-2 px-1.5 py-0.5 bg-purple-500/20 text-purple-400 rounded text-xs">
+                                        {content.imageVariations!.length} image styles
+                                    </span>
+                                )}
+                                {hasVideoVariations && (
+                                    <span className="ml-2 px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded text-xs">
+                                        {content.videoVariations!.length} video styles
+                                    </span>
+                                )}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        {hasVariations && (
+                            <button
+                                onClick={() => setShowVariationPicker(true)}
+                                className="px-3 py-1.5 bg-indigo-500/20 text-indigo-400 rounded-lg text-xs font-medium hover:bg-indigo-500/30 transition-colors"
+                            >
+                                🤖 Compare Text
+                            </button>
+                        )}
+                        {hasImageVariations && (
+                            <button
+                                onClick={() => setShowImagePicker(true)}
+                                className="px-3 py-1.5 bg-purple-500/20 text-purple-400 rounded-lg text-xs font-medium hover:bg-purple-500/30 transition-colors"
+                            >
+                                🖼️ Compare Images
+                            </button>
+                        )}
+                        {hasVideoVariations && (
+                            <button
+                                onClick={() => setShowVideoPicker(true)}
+                                className="px-3 py-1.5 bg-blue-500/20 text-blue-400 rounded-lg text-xs font-medium hover:bg-blue-500/30 transition-colors"
+                            >
+                                🎬 Compare Videos
+                            </button>
+                        )}
+                        {content.status === 'generating' && (
+                            <div className="flex items-center gap-2 text-violet-400 text-sm">
+                                <div className="w-4 h-4 border-2 border-violet-400/30 border-t-violet-400 rounded-full animate-spin" />
+                                Generating...
+                            </div>
+                        )}
+                        {content.status === 'complete' && (
+                            <span className="px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs font-medium">
+                                ✓ Complete
+                            </span>
+                        )}
+                        {content.status === 'error' && (
+                            <span className="px-2 py-1 bg-red-500/20 text-red-400 rounded-full text-xs font-medium">
+                                Error
+                            </span>
+                        )}
+                    </div>
                 </div>
-            </div>
 
             {/* Content */}
             <div className="p-4">
@@ -250,34 +308,122 @@ function ContentCard({ content, index }: { content: GeneratedContent; index: num
                 )}
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2 p-4 border-t border-gray-800/50 bg-gray-900/50">
-                {content.type === 'text' && (
-                    <button
-                        onClick={() => copyToClipboard(content.content)}
-                        className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-                    >
-                        {copied ? '✓ Copied!' : '📋 Copy Text'}
+                {/* Actions */}
+                <div className="flex items-center gap-2 p-4 border-t border-gray-800/50 bg-gray-900/50">
+                    {content.type === 'text' && (
+                        <button
+                            onClick={() => copyToClipboard(content.content)}
+                            className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                        >
+                            {copied ? '✓ Copied!' : '📋 Copy Text'}
+                        </button>
+                    )}
+                    {(content.type === 'image' || content.type === 'video') && content.mediaUrl && (
+                        <button
+                            onClick={() => downloadMedia(content.mediaUrl!, `${content.platform}-${content.type}-${Date.now()}.${content.type === 'image' ? 'png' : 'mp4'}`)}
+                            className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
+                        >
+                            ⬇️ Download
+                        </button>
+                    )}
+                    <button className="px-4 py-2 bg-violet-500/20 hover:bg-violet-500/30 text-violet-400 rounded-lg text-sm font-medium transition-colors">
+                        🔄 Regenerate
                     </button>
-                )}
-                {(content.type === 'image' || content.type === 'video') && content.mediaUrl && (
-                    <button
-                        onClick={() => downloadMedia(content.mediaUrl!, `${content.platform}-${content.type}-${Date.now()}.${content.type === 'image' ? 'png' : 'mp4'}`)}
-                        className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-                    >
-                        ⬇️ Download
-                    </button>
-                )}
-                <button className="px-4 py-2 bg-violet-500/20 hover:bg-violet-500/30 text-violet-400 rounded-lg text-sm font-medium transition-colors">
-                    🔄 Regenerate
-                </button>
+                </div>
             </div>
-        </div>
+
+            {/* Variation Picker Modal (Text) */}
+            {showVariationPicker && content.variations && (
+                <VariationPicker
+                    platform={content.platform}
+                    variations={content.variations}
+                    selectedIndex={content.selectedVariationIndex || 0}
+                    onSelect={(variationIndex) => {
+                        onSelectVariation?.(index, variationIndex)
+                    }}
+                    onClose={() => setShowVariationPicker(false)}
+                />
+            )}
+
+            {/* Image Variation Picker Modal */}
+            {showImagePicker && content.imageVariations && (
+                <ImageVariationPicker
+                    platform={content.platform}
+                    variations={content.imageVariations}
+                    selectedIndex={content.selectedImageIndex || 0}
+                    onSelect={(imageIndex) => {
+                        onSelectImageVariation?.(index, imageIndex)
+                    }}
+                    onClose={() => setShowImagePicker(false)}
+                />
+            )}
+
+            {/* Video Variation Picker Modal */}
+            {showVideoPicker && content.videoVariations && (
+                <VideoVariationPicker
+                    platform={content.platform}
+                    variations={content.videoVariations}
+                    selectedIndex={content.selectedVideoIndex || 0}
+                    onSelect={(videoIndex) => {
+                        onSelectVideoVariation?.(index, videoIndex)
+                    }}
+                    onClose={() => setShowVideoPicker(false)}
+                />
+            )}
+        </>
     )
 }
 
 export function CampaignOutput({ generation, isGenerating }: CampaignOutputProps) {
     const [selectedPlatform, setSelectedPlatform] = useState<string | null>(null)
+    const [localContents, setLocalContents] = useState<GeneratedContent[]>([])
+
+    // Sync localContents with generation.contents
+    if (generation && localContents.length === 0 && generation.contents.length > 0) {
+        setLocalContents([...generation.contents])
+    }
+
+    const handleSelectVariation = (contentIndex: number, variationIndex: number) => {
+        setLocalContents(prev => {
+            const updated = [...prev]
+            const content = updated[contentIndex]
+            if (content.variations && content.variations[variationIndex]) {
+                // Update the main content with the selected variation
+                content.content = content.variations[variationIndex].content
+                content.selectedVariationIndex = variationIndex
+            }
+            return updated
+        })
+    }
+
+    const handleSelectImageVariation = (contentIndex: number, imageIndex: number) => {
+        setLocalContents(prev => {
+            const updated = [...prev]
+            const content = updated[contentIndex]
+            if (content.imageVariations && content.imageVariations[imageIndex]) {
+                // Update the main mediaUrl with the selected image
+                content.mediaUrl = content.imageVariations[imageIndex].imageUrl
+                content.selectedImageIndex = imageIndex
+            }
+            return updated
+        })
+    }
+
+    const handleSelectVideoVariation = (contentIndex: number, videoIndex: number) => {
+        setLocalContents(prev => {
+            const updated = [...prev]
+            const content = updated[contentIndex]
+            if (content.videoVariations && content.videoVariations[videoIndex]) {
+                // Update the main mediaUrl with the selected video
+                content.mediaUrl = content.videoVariations[videoIndex].videoUrl
+                content.selectedVideoIndex = videoIndex
+            }
+            return updated
+        })
+    }
+
+    // Use localContents if available, otherwise fall back to generation.contents
+    const contents = localContents.length > 0 ? localContents : generation?.contents || []
 
     if (!generation) {
         return (
@@ -291,18 +437,23 @@ export function CampaignOutput({ generation, isGenerating }: CampaignOutputProps
         )
     }
 
-    const platforms = Array.from(new Set(generation.contents.map(c => c.platform)))
+    const platforms = Array.from(new Set(contents.map(c => c.platform)))
     const filteredContents = selectedPlatform
-        ? generation.contents.filter(c => c.platform === selectedPlatform)
-        : generation.contents
+        ? contents.filter(c => c.platform === selectedPlatform)
+        : contents
 
     const getStats = () => {
-        const total = generation.contents.length
-        const complete = generation.contents.filter(c => c.status === 'complete').length
-        const textCount = generation.contents.filter(c => c.type === 'text').length
-        const imageCount = generation.contents.filter(c => c.type === 'image').length
-        const videoCount = generation.contents.filter(c => c.type === 'video').length
-        return { total, complete, textCount, imageCount, videoCount }
+        const total = contents.length
+        const complete = contents.filter(c => c.status === 'complete').length
+        const textCount = contents.filter(c => c.type === 'text').length
+        const imageCount = contents.filter(c => c.type === 'image').length
+        const videoCount = contents.filter(c => c.type === 'video').length
+        const variationCount = contents.filter(c =>
+            (c.variations && c.variations.length > 1) ||
+            (c.imageVariations && c.imageVariations.length > 1) ||
+            (c.videoVariations && c.videoVariations.length > 1)
+        ).length
+        return { total, complete, textCount, imageCount, videoCount, variationCount }
     }
 
     const stats = getStats()
@@ -334,7 +485,7 @@ export function CampaignOutput({ generation, isGenerating }: CampaignOutputProps
             )}
 
             {/* Stats */}
-            <div className="grid grid-cols-5 gap-4">
+            <div className="grid grid-cols-6 gap-4">
                 <div className="bg-gradient-to-br from-gray-900 to-gray-900/50 border border-gray-800/50 rounded-xl p-4">
                     <p className="text-gray-400 text-sm">Total Items</p>
                     <p className="text-2xl font-bold text-white">{stats.total}</p>
@@ -355,6 +506,12 @@ export function CampaignOutput({ generation, isGenerating }: CampaignOutputProps
                     <p className="text-gray-400 text-sm">🎬 Videos</p>
                     <p className="text-2xl font-bold text-white">{stats.videoCount}</p>
                 </div>
+                {stats.variationCount > 0 && (
+                    <div className="bg-gradient-to-br from-indigo-900/30 to-purple-900/30 border border-indigo-500/30 rounded-xl p-4">
+                        <p className="text-indigo-400 text-sm">🤖 Multi-Model</p>
+                        <p className="text-2xl font-bold text-indigo-300">{stats.variationCount}</p>
+                    </div>
+                )}
             </div>
 
             {/* Platform Filter */}
@@ -385,9 +542,22 @@ export function CampaignOutput({ generation, isGenerating }: CampaignOutputProps
 
             {/* Content Grid */}
             <div className="grid grid-cols-2 gap-6">
-                {filteredContents.map((content, index) => (
-                    <ContentCard key={`${content.platform}-${content.type}-${index}`} content={content} index={index} />
-                ))}
+                {filteredContents.map((content, filteredIndex) => {
+                    // Find the actual index in the full contents array
+                    const actualIndex = contents.findIndex(c =>
+                        c.platform === content.platform && c.type === content.type && c.content === content.content
+                    )
+                    return (
+                        <ContentCard
+                            key={`${content.platform}-${content.type}-${filteredIndex}`}
+                            content={content}
+                            index={actualIndex}
+                            onSelectVariation={handleSelectVariation}
+                            onSelectImageVariation={handleSelectImageVariation}
+                            onSelectVideoVariation={handleSelectVideoVariation}
+                        />
+                    )
+                })}
             </div>
 
             {/* Export Actions */}

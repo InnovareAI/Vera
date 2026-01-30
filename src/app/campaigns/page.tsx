@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
+import { useWorkspace } from '@/contexts/AuthContext'
 import { CampaignSetup } from '@/components/campaigns/CampaignSetup'
 import { CampaignOutput } from '@/components/campaigns/CampaignOutput'
 import { CampaignSidebar } from '@/components/campaigns/CampaignSidebar'
@@ -30,6 +32,55 @@ export interface CampaignConfig {
 
     // Platforms
     platforms: ('linkedin' | 'twitter' | 'medium' | 'instagram')[]
+    selectedStyles?: Record<string, string>
+
+    // Content format per platform (story vs feed post)
+    contentFormats?: Record<string, 'story' | 'post'>
+
+    // Multi-model generation settings
+    enableMultiModel?: boolean
+    selectedModels?: string[]
+
+    // Voice Profile (from ToV analysis)
+    voiceProfile?: {
+        personality: string[]
+        doList: string[]
+        dontList: string[]
+        keyPhrases: string[]
+        avoidPhrases: string[]
+        writingStyle: {
+            sentenceLength: 'short' | 'medium' | 'long' | 'varied'
+            formality: 'casual' | 'professional' | 'conversational' | 'formal'
+            useOfEmoji: boolean
+            useOfHashtags: boolean
+            perspective: 'first_person' | 'second_person' | 'third_person' | 'mixed'
+        }
+        summary: string
+    }
+}
+
+export interface ContentVariation {
+    modelId: string
+    modelName: string
+    provider: string
+    content: string
+    generatedAt: string
+}
+
+export interface ImageVariation {
+    modelId: string
+    modelName: string
+    imageUrl: string
+    prompt: string
+    generatedAt: string
+}
+
+export interface VideoVariation {
+    modelId: string
+    modelName: string
+    videoUrl: string
+    prompt: string
+    generatedAt: string
 }
 
 export interface GeneratedContent {
@@ -40,6 +91,15 @@ export interface GeneratedContent {
     caption?: string
     hashtags?: string[]
     status: 'generating' | 'complete' | 'error'
+    // Multi-model variations (text)
+    variations?: ContentVariation[]
+    selectedVariationIndex?: number
+    // Multi-model variations (images)
+    imageVariations?: ImageVariation[]
+    selectedImageIndex?: number
+    // Multi-model variations (videos)
+    videoVariations?: VideoVariation[]
+    selectedVideoIndex?: number
 }
 
 export interface CampaignGeneration {
@@ -52,6 +112,7 @@ export interface CampaignGeneration {
 }
 
 export default function CampaignsPage() {
+    const { currentWorkspace, currentOrganization } = useWorkspace()
     const [activeView, setActiveView] = useState<'setup' | 'output' | 'review'>('review')
     const [generation, setGeneration] = useState<CampaignGeneration | null>(null)
     const [isGenerating, setIsGenerating] = useState(false)
@@ -166,6 +227,19 @@ export default function CampaignsPage() {
                 <header className="sticky top-0 z-10 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-gray-800/50 px-8 py-5">
                     <div className="flex items-center justify-between">
                         <div>
+                            <div className="flex items-center gap-3 mb-1">
+                                <Link href="/dashboard" className="text-gray-500 hover:text-gray-300 text-sm">
+                                    ← Dashboard
+                                </Link>
+                                {currentWorkspace && (
+                                    <span className="text-gray-600">|</span>
+                                )}
+                                {currentWorkspace && (
+                                    <span className="text-violet-400 text-sm font-medium">
+                                        {currentWorkspace.name}
+                                    </span>
+                                )}
+                            </div>
                             <h1 className="text-2xl font-bold text-white">
                                 {getViewTitle()}
                             </h1>
@@ -179,8 +253,8 @@ export default function CampaignsPage() {
                                 <button
                                     onClick={() => setActiveView('review')}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeView === 'review'
-                                            ? 'bg-violet-600 text-white'
-                                            : 'text-gray-400 hover:text-white'
+                                        ? 'bg-violet-600 text-white'
+                                        : 'text-gray-400 hover:text-white'
                                         }`}
                                 >
                                     📋 Review Posts
@@ -188,8 +262,8 @@ export default function CampaignsPage() {
                                 <button
                                     onClick={() => setActiveView('setup')}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeView === 'setup'
-                                            ? 'bg-violet-600 text-white'
-                                            : 'text-gray-400 hover:text-white'
+                                        ? 'bg-violet-600 text-white'
+                                        : 'text-gray-400 hover:text-white'
                                         }`}
                                 >
                                     🎯 New Campaign
@@ -198,8 +272,8 @@ export default function CampaignsPage() {
                                     <button
                                         onClick={() => setActiveView('output')}
                                         className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeView === 'output'
-                                                ? 'bg-violet-600 text-white'
-                                                : 'text-gray-400 hover:text-white'
+                                            ? 'bg-violet-600 text-white'
+                                            : 'text-gray-400 hover:text-white'
                                             }`}
                                     >
                                         ✨ Output
@@ -228,7 +302,7 @@ export default function CampaignsPage() {
                         </div>
                     )}
                     {activeView === 'review' && (
-                        <ContentReview />
+                        <ContentReview workspaceId={currentWorkspace?.id} />
                     )}
                 </div>
             </main>

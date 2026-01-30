@@ -219,6 +219,7 @@ function Sidebar({ activeView, onViewChange }: { activeView: string; onViewChang
     { id: 'trends', label: 'Trends', icon: '📈' },
     { id: 'news', label: 'News Updates', icon: '📰' },
     { id: 'campaigns', label: 'Campaigns', icon: '🚀', href: '/campaigns' },
+    { id: 'personas', label: 'Personas', icon: '🎭', href: '/personas' },
     { id: 'competitors', label: 'Competitors', icon: '🎯' },
     { id: 'industries', label: 'Industries', icon: '🏢' },
     { id: 'search', label: 'Instant Search', icon: '🔍' },

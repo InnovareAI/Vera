@@ -1,4 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
+import { buildPrompt, getModelForContentType, getPlatformConfig, getParallelModels, ContentVariation, ModelConfig, PARALLEL_IMAGE_MODELS, ImageModelConfig, ImageVariation, PARALLEL_VIDEO_MODELS, VideoModelConfig, VideoVariation, getParallelVideoModels } from '@/lib/platform-prompts'
+
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 // Campaign configuration type
 interface CampaignConfig {
@@ -16,6 +23,28 @@ interface CampaignConfig {
     keyMessages: string[]
     callToAction: string
     platforms: string[]
+    selectedStyles?: Record<string, string>
+    // Content format per platform (story vs feed post)
+    contentFormats?: Record<string, 'story' | 'post'>
+    // Multi-model generation settings
+    enableMultiModel?: boolean
+    selectedModels?: string[]  // Model IDs to use for parallel generation
+    // Voice profile from ToV analysis
+    voiceProfile?: {
+        personality: string[]
+        doList: string[]
+        dontList: string[]
+        keyPhrases: string[]
+        avoidPhrases: string[]
+        writingStyle: {
+            sentenceLength: string
+            formality: string
+            useOfEmoji: boolean
+            useOfHashtags: boolean
+            perspective: string
+        }
+        summary: string
+    }
 }
 
 interface GeneratedContent {
@@ -26,6 +55,15 @@ interface GeneratedContent {
     caption?: string
     hashtags?: string[]
     status: 'generating' | 'complete' | 'error'
+    // Multi-model variations (text)
+    variations?: ContentVariation[]
+    selectedVariationIndex?: number
+    // Multi-model variations (images)
+    imageVariations?: ImageVariation[]
+    selectedImageIndex?: number
+    // Multi-model variations (videos)
+    videoVariations?: VideoVariation[]
+    selectedVideoIndex?: number
 }
 
 // Platform content specifications
@@ -37,7 +75,7 @@ const platformSpecs: Record<string, { textLimit: number; outputs: string[] }> = 
 }
 
 // OpenRouter API call for text generation
-async function generateText(prompt: string, systemPrompt: string): Promise<string> {
+async function generateText(prompt: string, systemPrompt: string, model: string = 'anthropic/claude-3.5-haiku'): Promise<string> {
     const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 
     if (!OPENROUTER_API_KEY) {
@@ -53,7 +91,7 @@ async function generateText(prompt: string, systemPrompt: string): Promise<strin
             'X-Title': 'VERA Campaign Generator'
         },
         body: JSON.stringify({
-            model: 'anthropic/claude-3.5-haiku', // Claude Haiku 4.5 - faster & cost-effective for content generation
+            model: model,
             max_tokens: 2048,
             messages: [
                 { role: 'system', content: systemPrompt },
@@ -71,14 +109,86 @@ async function generateText(prompt: string, systemPrompt: string): Promise<strin
     return data.choices?.[0]?.message?.content || ''
 }
 
+// Multi-model parallel generation - calls multiple models simultaneously
+async function generateTextMultiModel(
+    prompt: string,
+    systemPrompt: string,
+    models: ModelConfig[]
+): Promise<ContentVariation[]> {
+    const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
+
+    if (!OPENROUTER_API_KEY) {
+        throw new Error('OPENROUTER_API_KEY not configured')
+    }
+
+    // Call all models in parallel
+    const promises = models.map(async (model): Promise<ContentVariation> => {
+        try {
+            const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                    'HTTP-Referer': 'https://vera.innovare.ai',
+                    'X-Title': 'VERA Campaign Generator'
+                },
+                body: JSON.stringify({
+                    model: model.id,
+                    max_tokens: 2048,
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: prompt }
+                    ]
+                })
+            })
+
+            if (!response.ok) {
+                const error = await response.text()
+                console.error(`Model ${model.id} failed:`, error)
+                return {
+                    modelId: model.id,
+                    modelName: model.name,
+                    provider: model.provider,
+                    content: `[Generation failed for ${model.name}]`,
+                    generatedAt: new Date().toISOString()
+                }
+            }
+
+            const data = await response.json()
+            return {
+                modelId: model.id,
+                modelName: model.name,
+                provider: model.provider,
+                content: data.choices?.[0]?.message?.content || '',
+                generatedAt: new Date().toISOString()
+            }
+        } catch (error) {
+            console.error(`Model ${model.id} error:`, error)
+            return {
+                modelId: model.id,
+                modelName: model.name,
+                provider: model.provider,
+                content: `[Generation failed for ${model.name}]`,
+                generatedAt: new Date().toISOString()
+            }
+        }
+    })
+
+    return Promise.all(promises)
+}
+
 // FAL.AI API call for image generation
-async function generateImage(prompt: string): Promise<string> {
+async function generateImage(prompt: string, format: 'story' | 'post' = 'post'): Promise<string> {
     const FAL_API_KEY = process.env.FAL_API_KEY
+
+    // Determine image size based on format
+    const imageSize = format === 'story' ? 'portrait_9_16' : 'landscape_16_9'
+    const placeholderSize = format === 'story' ? '630x1120' : '1200x630'
 
     if (!FAL_API_KEY) {
         // Return a placeholder if FAL is not configured
         console.warn('FAL_API_KEY not configured, using placeholder')
-        return `https://placehold.co/1200x630/6366f1/ffffff?text=${encodeURIComponent('Generated Image')}`
+        return `https://placehold.co/${placeholderSize}/6366f1/ffffff?text=${encodeURIComponent('Generated Image')}`
     }
 
     try {
@@ -90,7 +200,7 @@ async function generateImage(prompt: string): Promise<string> {
             },
             body: JSON.stringify({
                 prompt: prompt,
-                image_size: 'landscape_16_9',
+                image_size: imageSize,
                 num_images: 1,
                 enable_safety_checker: true,
                 safety_tolerance: '2'
@@ -139,9 +249,113 @@ async function generateImage(prompt: string): Promise<string> {
     }
 }
 
-// FAL.AI API call for video generation
-async function generateVideo(prompt: string): Promise<string> {
+// Multi-model image generation - calls multiple FAL.AI models in parallel
+async function generateImageMultiModel(
+    prompt: string,
+    models: ImageModelConfig[],
+    format: 'story' | 'post' = 'post'
+): Promise<ImageVariation[]> {
     const FAL_API_KEY = process.env.FAL_API_KEY
+
+    // Determine image size based on format
+    const imageSize = format === 'story' ? 'portrait_9_16' : 'landscape_16_9'
+
+    if (!FAL_API_KEY) {
+        console.warn('FAL_API_KEY not configured')
+        return []
+    }
+
+    const generateWithModel = async (model: ImageModelConfig): Promise<ImageVariation> => {
+        try {
+            const response = await fetch(`https://queue.fal.run/${model.endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Key ${FAL_API_KEY}`
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    image_size: imageSize,
+                    num_images: 1,
+                    enable_safety_checker: true,
+                    safety_tolerance: '2'
+                })
+            })
+
+            if (!response.ok) {
+                console.error(`Image model ${model.id} failed`)
+                return {
+                    modelId: model.id,
+                    modelName: model.name,
+                    imageUrl: `https://placehold.co/1200x630/ef4444/ffffff?text=${encodeURIComponent(`${model.name} Failed`)}`,
+                    prompt,
+                    generatedAt: new Date().toISOString()
+                }
+            }
+
+            const data = await response.json()
+
+            // Handle queue response
+            if (data.request_id) {
+                const resultUrl = `https://queue.fal.run/${model.endpoint}/requests/${data.request_id}`
+                let attempts = 0
+                while (attempts < 30) {
+                    await new Promise(resolve => setTimeout(resolve, 2000))
+                    const statusResponse = await fetch(resultUrl, {
+                        headers: { 'Authorization': `Key ${FAL_API_KEY}` }
+                    })
+                    const statusData = await statusResponse.json()
+
+                    if (statusData.status === 'COMPLETED' && statusData.images?.[0]?.url) {
+                        return {
+                            modelId: model.id,
+                            modelName: model.name,
+                            imageUrl: statusData.images[0].url,
+                            prompt,
+                            generatedAt: new Date().toISOString()
+                        }
+                    }
+                    if (statusData.status === 'FAILED') {
+                        throw new Error('Generation failed')
+                    }
+                    attempts++
+                }
+            }
+
+            // Direct response
+            if (data.images?.[0]?.url) {
+                return {
+                    modelId: model.id,
+                    modelName: model.name,
+                    imageUrl: data.images[0].url,
+                    prompt,
+                    generatedAt: new Date().toISOString()
+                }
+            }
+
+            throw new Error('No image URL in response')
+        } catch (error) {
+            console.error(`Image model ${model.id} error:`, error)
+            return {
+                modelId: model.id,
+                modelName: model.name,
+                imageUrl: `https://placehold.co/1200x630/ef4444/ffffff?text=${encodeURIComponent(`${model.name} Error`)}`,
+                prompt,
+                generatedAt: new Date().toISOString()
+            }
+        }
+    }
+
+    // Call all models in parallel
+    return Promise.all(models.map(generateWithModel))
+}
+
+// FAL.AI API call for video generation
+async function generateVideo(prompt: string, format: 'story' | 'post' = 'post'): Promise<string> {
+    const FAL_API_KEY = process.env.FAL_API_KEY
+
+    // Determine aspect ratio based on format
+    const aspectRatio = format === 'story' ? '9:16' : '16:9'
 
     if (!FAL_API_KEY) {
         console.warn('FAL_API_KEY not configured, video generation skipped')
@@ -159,7 +373,7 @@ async function generateVideo(prompt: string): Promise<string> {
             body: JSON.stringify({
                 prompt: prompt,
                 duration: '5', // 5 second video
-                aspect_ratio: '16:9'
+                aspect_ratio: aspectRatio
             })
         })
 
@@ -204,6 +418,108 @@ async function generateVideo(prompt: string): Promise<string> {
     }
 }
 
+// Multi-model video generation - calls multiple FAL.AI video models in parallel
+async function generateVideoMultiModel(
+    prompt: string,
+    models: VideoModelConfig[],
+    format: 'story' | 'post' = 'post'
+): Promise<VideoVariation[]> {
+    const FAL_API_KEY = process.env.FAL_API_KEY
+
+    // Determine aspect ratio based on format
+    const aspectRatio = format === 'story' ? '9:16' : '16:9'
+
+    if (!FAL_API_KEY) {
+        console.warn('FAL_API_KEY not configured')
+        return []
+    }
+
+    const generateWithModel = async (model: VideoModelConfig): Promise<VideoVariation> => {
+        try {
+            // Determine duration based on model
+            const duration = model.duration?.replace('s', '') || '5'
+
+            const response = await fetch(`https://queue.fal.run/${model.endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Key ${FAL_API_KEY}`
+                },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    duration: duration,
+                    aspect_ratio: aspectRatio
+                })
+            })
+
+            if (!response.ok) {
+                console.error(`Video model ${model.id} failed`)
+                return {
+                    modelId: model.id,
+                    modelName: model.name,
+                    videoUrl: '',
+                    prompt,
+                    generatedAt: new Date().toISOString()
+                }
+            }
+
+            const data = await response.json()
+
+            // Handle queue response
+            if (data.request_id) {
+                const resultUrl = `https://queue.fal.run/${model.endpoint}/requests/${data.request_id}`
+                let attempts = 0
+                while (attempts < 60) { // Videos take longer
+                    await new Promise(resolve => setTimeout(resolve, 3000))
+                    const statusResponse = await fetch(resultUrl, {
+                        headers: { 'Authorization': `Key ${FAL_API_KEY}` }
+                    })
+                    const statusData = await statusResponse.json()
+
+                    if (statusData.status === 'COMPLETED' && statusData.video?.url) {
+                        return {
+                            modelId: model.id,
+                            modelName: model.name,
+                            videoUrl: statusData.video.url,
+                            prompt,
+                            generatedAt: new Date().toISOString()
+                        }
+                    }
+                    if (statusData.status === 'FAILED') {
+                        throw new Error('Generation failed')
+                    }
+                    attempts++
+                }
+            }
+
+            // Direct response
+            if (data.video?.url) {
+                return {
+                    modelId: model.id,
+                    modelName: model.name,
+                    videoUrl: data.video.url,
+                    prompt,
+                    generatedAt: new Date().toISOString()
+                }
+            }
+
+            throw new Error('No video URL in response')
+        } catch (error) {
+            console.error(`Video model ${model.id} error:`, error)
+            return {
+                modelId: model.id,
+                modelName: model.name,
+                videoUrl: '',
+                prompt,
+                generatedAt: new Date().toISOString()
+            }
+        }
+    }
+
+    // Call all models in parallel
+    return Promise.all(models.map(generateWithModel))
+}
+
 // Extract hashtags from content
 function extractHashtags(content: string): string[] {
     const matches = content.match(/#\w+/g) || []
@@ -237,12 +553,22 @@ Key Messages: ${config.keyMessages?.join('; ') || 'None specified'}
 Call to Action: ${config.callToAction}
 `
 
-    const systemPrompt = `You are an expert social media marketing copywriter and content strategist. 
-You create engaging, platform-optimized content that drives ${config.campaignGoal}.
-Your tone is ${config.tonality}.
-Always tailor content to the specific platform's best practices and character limits.
-Include relevant hashtags where appropriate.
-Never use placeholder text or [brackets] - always write complete, ready-to-publish content.`
+    // Voice profile for injection into platform prompts
+    const voiceProfile = config.voiceProfile ? {
+        personality: config.voiceProfile.personality,
+        doList: config.voiceProfile.doList,
+        dontList: config.voiceProfile.dontList,
+        keyPhrases: config.voiceProfile.keyPhrases,
+        avoidPhrases: config.voiceProfile.avoidPhrases,
+        writingStyle: {
+            sentenceLength: config.voiceProfile.writingStyle.sentenceLength,
+            formality: config.voiceProfile.writingStyle.formality,
+            useOfEmoji: config.voiceProfile.writingStyle.useOfEmoji,
+            useOfHashtags: config.voiceProfile.writingStyle.useOfHashtags,
+            perspective: config.voiceProfile.writingStyle.perspective
+        },
+        summary: config.voiceProfile.summary
+    } : undefined
 
     let totalItems = 0
     config.platforms.forEach(platform => {
@@ -259,27 +585,82 @@ Never use placeholder text or [brackets] - always write complete, ready-to-publi
         const spec = platformSpecs[platform]
         if (!spec) continue
 
-        // 1. Generate text content
+        // Get platform config
+        const platformConfig = getPlatformConfig(platform)
+
+        // Check for custom prompt override from database
+        const styleId = config.selectedStyles?.[platform]
+        let customPromptOverride: string | null = null
+        let customModel: string | null = null
+
+        if (styleId) {
+            try {
+                const { data: customPrompt } = await supabase
+                    .from('prompts')
+                    .select('system_prompt, preferred_model_id')
+                    .eq('id', styleId)
+                    .single()
+
+                if (customPrompt) {
+                    customPromptOverride = customPrompt.system_prompt
+                    customModel = customPrompt.preferred_model_id
+                }
+            } catch (error) {
+                console.error('Error fetching custom prompt:', error)
+            }
+        }
+
+        // Get content format for this platform (story vs post)
+        const contentFormat = config.contentFormats?.[platform] || 'post'
+
+        // 1. Generate text content (with optional multi-model)
         await sendEvent({
             type: 'progress',
             progress: Math.round((completedItems / totalItems) * 100),
-            message: `Generating ${platform} text content...`
+            message: config.enableMultiModel
+                ? `Generating ${platform} text from multiple models...`
+                : `Generating ${platform} text content...`
         })
 
         try {
-            const textPrompt = `Create a compelling ${platform} post for the following campaign:
-${brandContext}
+            // Build the unified prompt with voice profile and brand context
+            const fullPrompt = customPromptOverride || buildPrompt(platform, brandContext, voiceProfile)
 
-Requirements:
-- Maximum ${spec.textLimit} characters
-- ${platform === 'twitter' ? 'Create a thread of 3-5 tweets' : 'Single engaging post'}
-- Include 3-5 relevant hashtags
-- End with a clear call to action: "${config.callToAction}"
-- Make it ${config.tonality} in tone
+            // Select model based on content type (longform for blog/newsletter, text for others)
+            const contentType = ['medium', 'newsletter'].includes(platform) ? 'longform' : 'text'
 
-Write the complete post now:`
+            // Minimal system prompt - the full instructions are in the user prompt
+            const systemPrompt = 'You are an expert content creator. Follow all instructions precisely. Output only the requested content - no explanations, no meta-commentary.'
 
-            const textContent = await generateText(textPrompt, systemPrompt)
+            let textContent: string
+            let variations: ContentVariation[] | undefined
+
+            // Multi-model generation if enabled
+            if (config.enableMultiModel) {
+                // Get models to use - either user-selected or defaults
+                let modelsToUse = getParallelModels(contentType)
+
+                // Filter to user-selected models if specified
+                if (config.selectedModels && config.selectedModels.length > 0) {
+                    modelsToUse = modelsToUse.filter(m => config.selectedModels!.includes(m.id))
+                    // If none match, fall back to defaults
+                    if (modelsToUse.length === 0) {
+                        modelsToUse = getParallelModels(contentType)
+                    }
+                }
+
+                // Generate from all models in parallel
+                variations = await generateTextMultiModel(fullPrompt, systemPrompt, modelsToUse)
+
+                // Use first successful variation as default content
+                const firstSuccess = variations.find(v => !v.content.startsWith('[Generation failed'))
+                textContent = firstSuccess?.content || variations[0]?.content || ''
+            } else {
+                // Single model generation (original behavior)
+                const model = customModel || getModelForContentType(contentType)
+                textContent = await generateText(fullPrompt, systemPrompt, model)
+            }
+
             const hashtags = extractHashtags(textContent)
 
             const textItem: GeneratedContent = {
@@ -287,7 +668,9 @@ Write the complete post now:`
                 type: 'text',
                 content: textContent,
                 hashtags,
-                status: 'complete'
+                status: 'complete',
+                variations,
+                selectedVariationIndex: variations ? 0 : undefined
             }
             contents.push(textItem)
             completedItems++
@@ -308,12 +691,14 @@ Write the complete post now:`
             completedItems++
         }
 
-        // 2. Generate image content
+        // 2. Generate image content (with optional multi-model)
         if (spec.outputs.includes('image')) {
             await sendEvent({
                 type: 'progress',
                 progress: Math.round((completedItems / totalItems) * 100),
-                message: `Generating ${platform} image...`
+                message: config.enableMultiModel
+                    ? `Generating ${platform} images from multiple models...`
+                    : `Generating ${platform} image...`
             })
 
             try {
@@ -329,17 +714,37 @@ The image should:
 
 Output ONLY the image prompt, nothing else. Be specific about visual elements, composition, and style.`
 
-                const imagePrompt = await generateText(imagePromptRequest,
-                    'You are an expert at writing prompts for AI image generation. Write detailed, visual prompts that result in stunning marketing images. Never include text in images.')
+                const imagePrompt = await generateText(
+                    imagePromptRequest,
+                    'You are an expert at writing prompts for AI image generation. Write detailed, visual prompts that result in stunning marketing images. Never include text in images.',
+                    getModelForContentType('image_prompt')
+                )
 
-                const imageUrl = await generateImage(imagePrompt.slice(0, 500))
+                let imageUrl: string
+                let imageVariations: ImageVariation[] | undefined
 
-                // Generate caption
+                // Multi-model image generation if enabled
+                if (config.enableMultiModel) {
+                    // Generate from multiple image models in parallel
+                    imageVariations = await generateImageMultiModel(imagePrompt.slice(0, 500), PARALLEL_IMAGE_MODELS, contentFormat)
+
+                    // Use first successful image as default
+                    const firstSuccess = imageVariations.find(v => !v.imageUrl.includes('placehold.co'))
+                    imageUrl = firstSuccess?.imageUrl || imageVariations[0]?.imageUrl || ''
+                } else {
+                    imageUrl = await generateImage(imagePrompt.slice(0, 500), contentFormat)
+                }
+
+                // Generate caption using platform voice
                 const captionPrompt = `Write a short, engaging caption for an image being posted on ${platform}.
 ${brandContext}
-Keep it under 150 characters and include a call to action.`
+Keep it under 150 characters. Match the platform's tone and include a call to action.`
 
-                const caption = await generateText(captionPrompt, systemPrompt)
+                const caption = await generateText(
+                    captionPrompt,
+                    buildPrompt(platform, '', voiceProfile),
+                    getModelForContentType('caption')
+                )
 
                 const imageItem: GeneratedContent = {
                     platform,
@@ -347,7 +752,9 @@ Keep it under 150 characters and include a call to action.`
                     content: imagePrompt.slice(0, 500),
                     mediaUrl: imageUrl,
                     caption: caption.slice(0, 200),
-                    status: 'complete'
+                    status: 'complete',
+                    imageVariations,
+                    selectedImageIndex: imageVariations ? 0 : undefined
                 }
                 contents.push(imageItem)
                 completedItems++
@@ -374,7 +781,9 @@ Keep it under 150 characters and include a call to action.`
             await sendEvent({
                 type: 'progress',
                 progress: Math.round((completedItems / totalItems) * 100),
-                message: `Generating ${platform} video...`
+                message: config.enableMultiModel
+                    ? `Generating ${platform} videos from multiple models...`
+                    : `Generating ${platform} video...`
             })
 
             try {
@@ -390,26 +799,51 @@ The video should:
 
 Output ONLY the video prompt, nothing else. Describe the motion, transitions, and visual elements.`
 
-                const videoPrompt = await generateText(videoPromptRequest,
-                    'You are an expert at writing prompts for AI video generation. Write prompts that result in dynamic, engaging short-form marketing videos.')
+                const videoPrompt = await generateText(
+                    videoPromptRequest,
+                    'You are an expert at writing prompts for AI video generation. Write prompts that result in dynamic, engaging short-form marketing videos.',
+                    getModelForContentType('video_prompt')
+                )
 
-                const videoUrl = await generateVideo(videoPrompt.slice(0, 300))
+                let videoUrl: string
+                let videoVariations: VideoVariation[] | undefined
 
-                // Generate caption
+                // Multi-model video generation if enabled
+                if (config.enableMultiModel) {
+                    // Generate from multiple video models in parallel (limited to 2)
+                    videoVariations = await generateVideoMultiModel(videoPrompt.slice(0, 300), getParallelVideoModels(), contentFormat)
+
+                    // Use first successful video as default
+                    const firstSuccess = videoVariations.find(v => v.videoUrl && v.videoUrl !== '')
+                    videoUrl = firstSuccess?.videoUrl || ''
+                } else {
+                    videoUrl = await generateVideo(videoPrompt.slice(0, 300), contentFormat)
+                }
+
+                // Generate caption using platform voice
                 const captionPrompt = `Write a short, engaging caption for a video being posted on ${platform}.
 ${brandContext}
-Keep it under 100 characters and include a call to action.`
+Keep it under 100 characters. Match the platform's tone and include a call to action.`
 
-                const caption = await generateText(captionPrompt, systemPrompt)
+                const caption = await generateText(
+                    captionPrompt,
+                    buildPrompt(platform, '', voiceProfile),
+                    getModelForContentType('caption')
+                )
 
-                if (videoUrl) {
+                // Check if we have at least one video (either single or from variations)
+                const hasVideo = videoUrl || (videoVariations && videoVariations.some(v => v.videoUrl))
+
+                if (hasVideo) {
                     const videoItem: GeneratedContent = {
                         platform,
                         type: 'video',
                         content: videoPrompt.slice(0, 300),
                         mediaUrl: videoUrl,
                         caption: caption.slice(0, 150),
-                        status: 'complete'
+                        status: 'complete',
+                        videoVariations,
+                        selectedVideoIndex: videoVariations ? 0 : undefined
                     }
                     contents.push(videoItem)
                     completedItems++

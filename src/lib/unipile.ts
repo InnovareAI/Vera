@@ -197,6 +197,152 @@ export async function researchLinkedInProfile(
     }
 }
 
+// ============================================================================
+// POSTING FUNCTIONS
+// ============================================================================
+
+export interface PostResult {
+    success: boolean
+    post_id?: string
+    error?: string
+}
+
+export interface PostAttachment {
+    type: 'image' | 'video' | 'document'
+    url: string
+}
+
+// Create a LinkedIn post
+export async function createLinkedInPost(
+    accountId: string,
+    text: string,
+    attachments?: PostAttachment[]
+): Promise<PostResult> {
+    try {
+        const body: any = {
+            account_id: accountId,
+            text: text,
+        }
+
+        // Add attachments if provided
+        if (attachments && attachments.length > 0) {
+            body.attachments = attachments.map(att => ({
+                type: att.type,
+                url: att.url
+            }))
+        }
+
+        const response = await fetch(
+            `${UNIPILE_DSN}/api/v1/posts`,
+            {
+                method: 'POST',
+                headers: {
+                    ...getHeaders(),
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(body)
+            }
+        )
+
+        if (!response.ok) {
+            const errorData = await response.text()
+            console.error('Unipile post creation failed:', response.status, errorData)
+            return {
+                success: false,
+                error: `Failed to create post: ${response.status} - ${errorData}`
+            }
+        }
+
+        const data = await response.json()
+        console.log('✅ LinkedIn post created:', data)
+
+        return {
+            success: true,
+            post_id: data.post_id || data.id
+        }
+    } catch (error: any) {
+        console.error('LinkedIn post creation error:', error)
+        return {
+            success: false,
+            error: error.message || 'Unknown error creating post'
+        }
+    }
+}
+
+// Get connected LinkedIn accounts
+export async function getConnectedAccounts(): Promise<{
+    id: string
+    provider: string
+    name?: string
+    email?: string
+    status?: string
+}[]> {
+    try {
+        const response = await fetch(
+            `${UNIPILE_DSN}/api/v1/accounts`,
+            {
+                method: 'GET',
+                headers: getHeaders()
+            }
+        )
+
+        if (!response.ok) {
+            console.error('Unipile accounts fetch failed:', response.status)
+            return []
+        }
+
+        const data = await response.json()
+        return (data.items || data || []).map((acc: any) => ({
+            id: acc.id,
+            provider: acc.provider,
+            name: acc.name,
+            email: acc.email,
+            status: acc.status
+        }))
+    } catch (error) {
+        console.error('Error fetching connected accounts:', error)
+        return []
+    }
+}
+
+// Get account details
+export async function getAccountDetails(accountId: string): Promise<{
+    id: string
+    provider: string
+    name?: string
+    email?: string
+    status?: string
+    profile_url?: string
+} | null> {
+    try {
+        const response = await fetch(
+            `${UNIPILE_DSN}/api/v1/accounts/${accountId}`,
+            {
+                method: 'GET',
+                headers: getHeaders()
+            }
+        )
+
+        if (!response.ok) {
+            console.error('Unipile account details fetch failed:', response.status)
+            return null
+        }
+
+        const data = await response.json()
+        return {
+            id: data.id,
+            provider: data.provider,
+            name: data.name,
+            email: data.email,
+            status: data.status,
+            profile_url: data.profile_url
+        }
+    } catch (error) {
+        console.error('Error fetching account details:', error)
+        return null
+    }
+}
+
 // Analyze writing style from samples (used for tone of voice creation)
 export function analyzeWritingStyle(samples: string[]): {
     avgWordCount: number

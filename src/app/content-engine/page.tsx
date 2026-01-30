@@ -3,11 +3,12 @@
 import { useState } from 'react'
 import { PromptManager } from '@/components/content-engine/PromptManager'
 import { ContentQueue } from '@/components/content-engine/ContentQueue'
+import { AIOBlogGenerator } from '@/components/content-engine/AIOBlogGenerator'
 
-type Tab = 'queue' | 'prompts' | 'tone'
+type Tab = 'queue' | 'prompts' | 'tone' | 'aio'
 
 export default function ContentEnginePage() {
-    const [activeTab, setActiveTab] = useState<Tab>('queue')
+    const [activeTab, setActiveTab] = useState<Tab>('aio')
 
     return (
         <div className="min-h-screen bg-gray-950 flex flex-col">
@@ -25,10 +26,19 @@ export default function ContentEnginePage() {
                     {/* Tabs */}
                     <nav className="flex items-center gap-1 bg-gray-900 rounded-xl p-1">
                         <button
+                            onClick={() => setActiveTab('aio')}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'aio'
+                                ? 'bg-violet-500 text-white'
+                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                }`}
+                        >
+                            🚀 AIO Blog Machine
+                        </button>
+                        <button
                             onClick={() => setActiveTab('queue')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'queue'
-                                    ? 'bg-violet-500 text-white'
-                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                ? 'bg-violet-500 text-white'
+                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                 }`}
                         >
                             📝 Content Queue
@@ -36,8 +46,8 @@ export default function ContentEnginePage() {
                         <button
                             onClick={() => setActiveTab('prompts')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'prompts'
-                                    ? 'bg-violet-500 text-white'
-                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                ? 'bg-violet-500 text-white'
+                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                 }`}
                         >
                             📋 Prompts
@@ -45,8 +55,8 @@ export default function ContentEnginePage() {
                         <button
                             onClick={() => setActiveTab('tone')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === 'tone'
-                                    ? 'bg-violet-500 text-white'
-                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                ? 'bg-violet-500 text-white'
+                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
                                 }`}
                         >
                             🎤 Tone of Voice
@@ -66,6 +76,7 @@ export default function ContentEnginePage() {
 
             {/* Main Content */}
             <main className="flex-1 overflow-hidden">
+                {activeTab === 'aio' && <AIOBlogGenerator />}
                 {activeTab === 'queue' && <ContentQueue />}
                 {activeTab === 'prompts' && <PromptManager />}
                 {activeTab === 'tone' && (

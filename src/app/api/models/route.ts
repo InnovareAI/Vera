@@ -10,7 +10,7 @@ const supabase = createClient(
 export async function GET() {
     try {
         const { data, error } = await supabase
-            .from('ai_models')
+            .from('models')
             .select('*')
             .eq('is_active', true)
             .order('provider', { ascending: true })
