@@ -2,6 +2,23 @@
 
 > Last updated: 2026-01-30
 
+## 🎯 Strategic Vision
+
+**VERA** = Paid Ads + Social Media (Marketing)  
+**SAM** = Sales + Outreach (Sales)
+
+VERA is the autonomous marketing team handling:
+
+- 📢 **Paid Advertising** - Meta, Google, Microsoft, LinkedIn ad campaigns
+- 📱 **Social Media** - Content creation, scheduling, publishing
+- 📊 **Media Planning** - Budget allocation, channel strategy, optimization
+- 🎨 **Creative Production** - Banners, videos, commercials
+- 📈 **Performance Marketing** - Attribution, ROI, optimization
+
+**Key Question:** Can AI agents fully automate media planning, buying, and optimization?
+
+---
+
 ## 🐛 Bugs & Issues
 
 - [ ] **Fix `/api/content-queue` 500 Errors** - Investigate and resolve the 500 errors on the content queue API endpoint
@@ -64,6 +81,40 @@
 - [ ] **Text overlay** - Add headlines, CTAs to banners
 - [ ] **Export options** - PNG, JPG, WebP with quality settings
 - [ ] **Batch generation** - Create multiple banner variants at once
+
+## 📊 Media Planning (Agent-Driven)
+
+### Strategy & Planning
+
+- [ ] **Campaign strategy agent** - AI-driven campaign planning
+- [ ] **Channel mix optimization** - Recommend optimal channel allocation
+- [ ] **Audience analysis** - Deep audience insights for targeting
+- [ ] **Competitive intelligence** - Monitor competitor ad spend and strategy
+- [ ] **Trend forecasting** - Predict market trends and opportunities
+
+### Budget Management
+
+- [ ] **Budget allocation** - AI-optimized spend across channels
+- [ ] **Pacing control** - Daily/weekly spend pacing
+- [ ] **Budget reallocation** - Real-time optimization based on performance
+- [ ] **Cost forecasting** - Predict CPC, CPM, CPA trends
+- [ ] **Waste detection** - Identify underperforming spend
+
+### Media Buying (Autonomous)
+
+- [ ] **Programmatic bidding** - Automated bid management
+- [ ] **Real-time optimization** - Auto-adjust bids based on performance
+- [ ] **Cross-channel orchestration** - Coordinate campaigns across platforms
+- [ ] **Dayparting** - Time-based ad scheduling optimization
+- [ ] **Geo-targeting** - Location-based spend optimization
+
+### Reporting & Attribution
+
+- [ ] **Unified reporting** - Cross-platform performance dashboard
+- [ ] **Multi-touch attribution** - Track customer journey
+- [ ] **ROAS tracking** - Return on ad spend by channel
+- [ ] **Incrementality testing** - Measure true campaign lift
+- [ ] **Executive summaries** - AI-generated performance insights
 
 ## 💰 Paid Ads & Paid Search
 
