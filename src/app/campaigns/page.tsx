@@ -215,7 +215,7 @@ export default function CampaignsPage() {
     }
 
     return (
-        <div className="min-h-screen flex bg-[#0a0a0f]">
+        <div className="min-h-screen flex bg-gradient-to-br from-slate-50 via-white to-gray-50">
             <CampaignSidebar
                 activeView={activeView}
                 onViewChange={(view) => setActiveView(view as 'setup' | 'output' | 'review')}
@@ -224,46 +224,46 @@ export default function CampaignsPage() {
 
             <main className="flex-1 overflow-hidden flex flex-col">
                 {/* Header */}
-                <header className="sticky top-0 z-10 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-gray-800/50 px-8 py-5">
+                <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-xl border-b border-gray-200 px-8 py-5">
                     <div className="flex items-center justify-between">
                         <div>
                             <div className="flex items-center gap-3 mb-1">
-                                <Link href="/dashboard" className="text-gray-500 hover:text-gray-300 text-sm">
+                                <Link href="/dashboard" className="text-gray-500 hover:text-gray-700 text-sm transition-colors">
                                     ← Dashboard
                                 </Link>
                                 {currentWorkspace && (
-                                    <span className="text-gray-600">|</span>
+                                    <span className="text-gray-300">|</span>
                                 )}
                                 {currentWorkspace && (
-                                    <span className="text-violet-400 text-sm font-medium">
+                                    <span className="text-violet-600 text-sm font-medium">
                                         {currentWorkspace.name}
                                     </span>
                                 )}
                             </div>
-                            <h1 className="text-2xl font-bold text-white">
+                            <h1 className="text-2xl font-bold text-gray-900">
                                 {getViewTitle()}
                             </h1>
-                            <p className="text-gray-400 text-sm mt-1">
+                            <p className="text-gray-500 text-sm mt-1">
                                 {getViewDescription()}
                             </p>
                         </div>
                         <div className="flex gap-2">
                             {/* View Tabs */}
-                            <div className="flex bg-gray-900 rounded-lg p-1">
+                            <div className="flex bg-gray-100 rounded-xl p-1">
                                 <button
                                     onClick={() => setActiveView('review')}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeView === 'review'
-                                        ? 'bg-violet-600 text-white'
-                                        : 'text-gray-400 hover:text-white'
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'review'
+                                        ? 'bg-white text-violet-700 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     📋 Review Posts
                                 </button>
                                 <button
                                     onClick={() => setActiveView('setup')}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeView === 'setup'
-                                        ? 'bg-violet-600 text-white'
-                                        : 'text-gray-400 hover:text-white'
+                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'setup'
+                                        ? 'bg-white text-violet-700 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
                                         }`}
                                 >
                                     🎯 New Campaign
@@ -271,9 +271,9 @@ export default function CampaignsPage() {
                                 {generation && (
                                     <button
                                         onClick={() => setActiveView('output')}
-                                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${activeView === 'output'
-                                            ? 'bg-violet-600 text-white'
-                                            : 'text-gray-400 hover:text-white'
+                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'output'
+                                            ? 'bg-white text-violet-700 shadow-sm'
+                                            : 'text-gray-500 hover:text-gray-700'
                                             }`}
                                     >
                                         ✨ Output

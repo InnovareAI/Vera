@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { getSupabase } from '@/lib/supabase/client'
+import { useWorkspace, useAuth } from '@/contexts/AuthContext'
+import { ApprovalPanel, RoleBadge, StatusBadge } from './ApprovalPanel'
+import { useApproval, getStatusConfig } from '@/hooks/useApproval'
 
 interface ContentPost {
     id: number
@@ -25,10 +28,10 @@ interface CampaignData {
 }
 
 const COLUMNS = [
-    { id: 'pending', title: '📝 Pending Review', color: 'from-yellow-600/20 to-orange-600/20', border: 'border-yellow-500/30' },
-    { id: 'approved', title: '✅ Approved', color: 'from-green-600/20 to-emerald-600/20', border: 'border-green-500/30' },
-    { id: 'scheduled', title: '📅 Scheduled', color: 'from-blue-600/20 to-cyan-600/20', border: 'border-blue-500/30' },
-    { id: 'dismissed', title: '❌ Dismissed', color: 'from-gray-600/20 to-gray-700/20', border: 'border-gray-500/30' },
+    { id: 'pending', title: '📝 Pending Review', color: 'bg-amber-50', border: 'border-amber-200', headerBg: 'bg-amber-100', accent: 'text-amber-700' },
+    { id: 'approved', title: '✅ Approved', color: 'bg-emerald-50', border: 'border-emerald-200', headerBg: 'bg-emerald-100', accent: 'text-emerald-700' },
+    { id: 'scheduled', title: '📅 Scheduled', color: 'bg-sky-50', border: 'border-sky-200', headerBg: 'bg-sky-100', accent: 'text-sky-700' },
+    { id: 'dismissed', title: '❌ Dismissed', color: 'bg-gray-50', border: 'border-gray-200', headerBg: 'bg-gray-100', accent: 'text-gray-500' },
 ]
 
 type ViewMode = 'kanban' | 'cards' | 'list' | 'timeline' | 'gantt'
@@ -47,6 +50,19 @@ interface ContentReviewProps {
 
 export function ContentReview({ workspaceId }: ContentReviewProps) {
     const supabase = getSupabase()
+    const { user } = useAuth()
+    const { currentWorkspace } = useWorkspace()
+
+    // Use provided workspaceId or fall back to current workspace
+    const activeWorkspaceId = workspaceId || currentWorkspace?.id || ''
+    const userId = user?.id || ''
+
+    // HITL Approval System
+    const approval = useApproval({
+        workspaceId: activeWorkspaceId,
+        userId
+    })
+
     const [campaignData, setCampaignData] = useState<CampaignData | null>(null)
     const [posts, setPosts] = useState<ContentPost[]>([])
     const [selectedPost, setSelectedPost] = useState<ContentPost | null>(null)
@@ -58,6 +74,7 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
     const [postingId, setPostingId] = useState<number | null>(null)
     const [postingError, setPostingError] = useState<string | null>(null)
     const [postingSuccess, setPostingSuccess] = useState<number | null>(null)
+    const [approvalFeedback, setApprovalFeedback] = useState<{ id: number; type: 'success' | 'error'; message: string } | null>(null)
 
     useEffect(() => {
         loadPosts()
@@ -219,6 +236,94 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
 
     const getPostsByStatus = (status: string) => {
         return posts.filter(p => p.status === status)
+    }
+
+    // HITL Approval Actions with role-based permissions
+    const handleApprovalAction = async (
+        postId: number,
+        action: 'approve' | 'reject' | 'request_changes' | 'submit',
+        notes?: string
+    ) => {
+        // For now, map the numeric local ID - in production this would be the UUID
+        const contentId = String(postId) // This should be the actual UUID from the database
+
+        let result
+        switch (action) {
+            case 'approve':
+                if (!approval.canPerform('approve')) {
+                    setApprovalFeedback({
+                        id: postId,
+                        type: 'error',
+                        message: 'Only admins and owners can approve content'
+                    })
+                    setTimeout(() => setApprovalFeedback(null), 5000)
+                    return
+                }
+                result = await approval.approve(contentId, notes)
+                if (result.success) {
+                    updatePostStatus(postId, 'approved')
+                    setApprovalFeedback({ id: postId, type: 'success', message: 'Content approved!' })
+                }
+                break
+            case 'reject':
+                if (!approval.canPerform('reject')) {
+                    setApprovalFeedback({
+                        id: postId,
+                        type: 'error',
+                        message: 'You do not have permission to reject content'
+                    })
+                    setTimeout(() => setApprovalFeedback(null), 5000)
+                    return
+                }
+                result = await approval.reject(contentId, notes)
+                if (result.success) {
+                    updatePostStatus(postId, 'dismissed')
+                    setApprovalFeedback({ id: postId, type: 'success', message: 'Content rejected' })
+                }
+                break
+            case 'request_changes':
+                if (!approval.canPerform('request_changes')) {
+                    setApprovalFeedback({
+                        id: postId,
+                        type: 'error',
+                        message: 'You do not have permission to request changes'
+                    })
+                    setTimeout(() => setApprovalFeedback(null), 5000)
+                    return
+                }
+                result = await approval.requestChanges(contentId, notes || 'Changes needed')
+                if (result.success) {
+                    updatePostStatus(postId, 'pending')
+                    setApprovalFeedback({ id: postId, type: 'success', message: 'Changes requested' })
+                }
+                break
+            case 'submit':
+                if (!approval.canPerform('submit')) {
+                    setApprovalFeedback({
+                        id: postId,
+                        type: 'error',
+                        message: 'You do not have permission to submit content'
+                    })
+                    setTimeout(() => setApprovalFeedback(null), 5000)
+                    return
+                }
+                result = await approval.submitForReview(contentId, notes)
+                if (result.success) {
+                    updatePostStatus(postId, 'pending')
+                    setApprovalFeedback({ id: postId, type: 'success', message: 'Submitted for review' })
+                }
+                break
+        }
+
+        if (result && !result.success) {
+            setApprovalFeedback({
+                id: postId,
+                type: 'error',
+                message: result.error || 'Action failed'
+            })
+        }
+
+        setTimeout(() => setApprovalFeedback(null), 3000)
     }
 
     const exportApprovedPosts = async () => {
@@ -454,15 +559,24 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
     }
 
     return (
-        <div className="flex h-full bg-gray-950">
+        <div className="flex h-full bg-gradient-to-br from-slate-50 to-white">
             {/* Kanban Board */}
             <div className="flex-1 flex flex-col overflow-hidden">
                 {/* Header */}
-                <div className="p-6 border-b border-gray-800 flex-shrink-0">
+                <div className="p-6 border-b border-gray-200 flex-shrink-0 bg-white/80 backdrop-blur-sm">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                                 📋 Content Review Board
+                                {approval.userInfo && (
+                                    <span className={`ml-3 px-3 py-1 text-xs font-medium rounded-full ${approval.userInfo.role === 'owner' ? 'bg-purple-100 text-purple-700' :
+                                        approval.userInfo.role === 'admin' ? 'bg-indigo-100 text-indigo-700' :
+                                            approval.userInfo.role === 'editor' ? 'bg-blue-100 text-blue-700' :
+                                                'bg-gray-100 text-gray-600'
+                                        }`}>
+                                        {approval.userInfo.role.charAt(0).toUpperCase() + approval.userInfo.role.slice(1)}
+                                    </span>
+                                )}
                             </h2>
                             <p className="text-gray-500 text-sm mt-1">
                                 {campaignData?.campaign || 'Loading...'} • Drag cards between columns
@@ -470,14 +584,14 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                         </div>
                         <div className="flex items-center gap-4">
                             {/* View Switcher */}
-                            <div className="flex bg-gray-800 rounded-lg p-1">
+                            <div className="flex bg-gray-100 rounded-xl p-1 shadow-inner">
                                 {VIEWS.map(view => (
                                     <button
                                         key={view.id}
                                         onClick={() => setViewMode(view.id)}
-                                        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center gap-1.5 ${viewMode === view.id
-                                            ? 'bg-violet-600 text-white shadow-lg'
-                                            : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                                        className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-all flex items-center gap-1.5 ${viewMode === view.id
+                                            ? 'bg-white text-violet-600 shadow-sm'
+                                            : 'text-gray-500 hover:text-gray-700'
                                             }`}
                                         title={view.label}
                                     >
@@ -487,21 +601,21 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                                 ))}
                             </div>
                             <div className="flex gap-2 text-sm">
-                                <span className="px-3 py-1 bg-yellow-900/30 text-yellow-400 rounded-full">{stats.pending} pending</span>
-                                <span className="px-3 py-1 bg-green-900/30 text-green-400 rounded-full">{stats.approved} approved</span>
-                                <span className="px-3 py-1 bg-blue-900/30 text-blue-400 rounded-full">{stats.scheduled} scheduled</span>
+                                <span className="px-3 py-1.5 bg-amber-100 text-amber-700 rounded-full font-medium">{stats.pending} pending</span>
+                                <span className="px-3 py-1.5 bg-emerald-100 text-emerald-700 rounded-full font-medium">{stats.approved} approved</span>
+                                <span className="px-3 py-1.5 bg-sky-100 text-sky-700 rounded-full font-medium">{stats.scheduled} scheduled</span>
                             </div>
                             {(stats.approved > 0 || stats.scheduled > 0) && (
                                 <div className="flex gap-2">
                                     <button
                                         onClick={exportAsPDF}
-                                        className="px-4 py-2 bg-gradient-to-r from-red-600 to-orange-600 text-white rounded-lg hover:from-red-700 hover:to-orange-700 text-sm font-medium flex items-center gap-2 shadow-lg shadow-red-500/20"
+                                        className="px-4 py-2 bg-gradient-to-r from-rose-500 to-orange-500 text-white rounded-xl hover:from-rose-600 hover:to-orange-600 text-sm font-medium flex items-center gap-2 shadow-lg shadow-rose-500/20 transition-all hover:shadow-rose-500/30"
                                     >
                                         📄 Export PDF
                                     </button>
                                     <button
                                         onClick={exportApprovedPosts}
-                                        className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 text-sm font-medium flex items-center gap-2"
+                                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 text-sm font-medium flex items-center gap-2 border border-gray-200"
                                     >
                                         📥 HTML
                                     </button>
@@ -512,22 +626,22 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                 </div>
 
                 {/* View Content */}
-                <div className="flex-1 overflow-auto p-6">
+                <div className="flex-1 overflow-auto p-6 bg-gradient-to-br from-slate-50/50 to-white">
                     {/* Kanban View */}
                     {viewMode === 'kanban' && (
-                        <div className="flex gap-4 h-full min-w-max">
+                        <div className="flex gap-5 h-full min-w-max">
                             {COLUMNS.map(column => (
                                 <div
                                     key={column.id}
-                                    className={`w-80 flex flex-col bg-gradient-to-b ${column.color} rounded-xl border ${column.border} flex-shrink-0`}
+                                    className={`w-80 flex flex-col ${column.color} rounded-2xl border-2 ${column.border} flex-shrink-0 shadow-sm`}
                                     onDragOver={handleDragOver}
                                     onDrop={() => handleDrop(column.id as ContentPost['status'])}
                                 >
                                     {/* Column Header */}
-                                    <div className="p-4 border-b border-gray-700/50">
+                                    <div className={`p-4 border-b ${column.border} ${column.headerBg} rounded-t-2xl`}>
                                         <div className="flex items-center justify-between">
-                                            <h3 className="font-semibold text-white">{column.title}</h3>
-                                            <span className="text-gray-400 text-sm bg-gray-800/50 px-2 py-0.5 rounded">
+                                            <h3 className={`font-semibold ${column.accent}`}>{column.title}</h3>
+                                            <span className={`${column.accent} text-sm bg-white/60 px-2.5 py-0.5 rounded-full font-medium`}>
                                                 {getPostsByStatus(column.id).length}
                                             </span>
                                         </div>
@@ -545,12 +659,12 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                                                     setIsEditing(false)
                                                     setEditContent(post.editedContent || post.content)
                                                 }}
-                                                className={`bg-gray-900/80 backdrop-blur rounded-xl p-4 cursor-pointer border border-gray-700/50 hover:border-violet-500/50 transition-all hover:shadow-lg hover:shadow-violet-500/10 ${selectedPost?.id === post.id ? 'ring-2 ring-violet-500 border-violet-500' : ''
+                                                className={`bg-white rounded-xl p-4 cursor-pointer border border-gray-100 hover:border-violet-300 transition-all hover:shadow-lg hover:shadow-violet-100 ${selectedPost?.id === post.id ? 'ring-2 ring-violet-400 border-violet-400' : ''
                                                     } ${draggedPost?.id === post.id ? 'opacity-50' : ''}`}
                                             >
                                                 {/* Image Thumbnail */}
                                                 {post.imageUrl && (
-                                                    <div className="mb-3 rounded-lg overflow-hidden">
+                                                    <div className="mb-3 rounded-lg overflow-hidden shadow-sm">
                                                         <img
                                                             src={post.imageUrl}
                                                             alt={post.theme}
@@ -561,17 +675,17 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
 
                                                 {/* Card Header */}
                                                 <div className="flex items-start gap-3 mb-3">
-                                                    <div className="w-8 h-8 bg-violet-600/30 rounded-lg flex items-center justify-center text-violet-400 font-bold text-sm flex-shrink-0">
+                                                    <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-sm">
                                                         {post.id}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h4 className="text-white font-medium text-sm truncate">{post.theme}</h4>
-                                                        <p className="text-gray-500 text-xs">💼 LinkedIn</p>
+                                                        <h4 className="text-gray-900 font-medium text-sm truncate">{post.theme}</h4>
+                                                        <p className="text-gray-400 text-xs">💼 LinkedIn</p>
                                                     </div>
                                                 </div>
 
                                                 {/* Content Preview */}
-                                                <p className="text-gray-400 text-xs line-clamp-2 mb-3">
+                                                <p className="text-gray-600 text-xs line-clamp-2 mb-3">
                                                     {(post.editedContent || post.content).substring(0, 100)}...
                                                 </p>
 
@@ -579,33 +693,42 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex gap-1">
                                                         {post.suggestedHashtags.slice(0, 2).map((tag, i) => (
-                                                            <span key={i} className="text-blue-400 text-xs bg-blue-900/30 px-1.5 py-0.5 rounded">
+                                                            <span key={i} className="text-blue-600 text-xs bg-blue-50 px-1.5 py-0.5 rounded">
                                                                 {tag}
                                                             </span>
                                                         ))}
                                                     </div>
-                                                    <span className="text-gray-600 text-xs">{post.characterCount} chars</span>
+                                                    <span className="text-gray-400 text-xs">{post.characterCount} chars</span>
                                                 </div>
 
                                                 {/* Quick Actions */}
-                                                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-700/50">
+                                                <div className="flex gap-2 mt-3 pt-3 border-t border-gray-100">
                                                     {column.id === 'pending' && (
                                                         <>
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation()
-                                                                    updatePostStatus(post.id, 'approved')
+                                                                    handleApprovalAction(post.id, 'approve')
                                                                 }}
-                                                                className="flex-1 px-2 py-1.5 bg-green-600/20 text-green-400 rounded-lg hover:bg-green-600/30 text-xs font-medium"
+                                                                disabled={!approval.canPerform('approve')}
+                                                                className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all ${approval.canPerform('approve')
+                                                                    ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200'
+                                                                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                                    }`}
+                                                                title={!approval.canPerform('approve') ? 'Only admins/owners can approve' : ''}
                                                             >
                                                                 ✓ Approve
                                                             </button>
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation()
-                                                                    updatePostStatus(post.id, 'dismissed')
+                                                                    handleApprovalAction(post.id, 'reject')
                                                                 }}
-                                                                className="px-2 py-1.5 bg-gray-700/50 text-gray-400 rounded-lg hover:bg-gray-700 text-xs"
+                                                                disabled={!approval.canPerform('reject')}
+                                                                className={`px-2 py-1.5 rounded-lg text-xs transition-all ${approval.canPerform('reject')
+                                                                    ? 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                                                                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                                                                    }`}
                                                             >
                                                                 ✕
                                                             </button>
@@ -907,15 +1030,15 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
 
             {/* Detail Panel */}
             {selectedPost && (
-                <div className="w-[480px] border-l border-gray-800 flex flex-col bg-gray-950 flex-shrink-0">
-                    <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+                <div className="w-[480px] border-l border-gray-200 flex flex-col bg-white flex-shrink-0 shadow-xl">
+                    <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-violet-50 to-purple-50">
                         <div>
-                            <h3 className="text-white font-medium">Post #{selectedPost.id}</h3>
+                            <h3 className="text-gray-900 font-medium">Post #{selectedPost.id}</h3>
                             <p className="text-gray-500 text-sm">{selectedPost.theme}</p>
                         </div>
                         <button
                             onClick={() => setSelectedPost(null)}
-                            className="text-gray-500 hover:text-white w-8 h-8 rounded-lg hover:bg-gray-800 flex items-center justify-center"
+                            className="text-gray-400 hover:text-gray-600 w-8 h-8 rounded-lg hover:bg-white/60 flex items-center justify-center transition-all"
                         >
                             ✕
                         </button>
@@ -926,16 +1049,16 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                         {selectedPost.imageUrl && (
                             <div>
                                 <div className="flex items-center justify-between mb-2">
-                                    <label className="block text-gray-500 text-xs uppercase tracking-wide">Post Image</label>
+                                    <label className="block text-gray-500 text-xs uppercase tracking-wide font-medium">Post Image</label>
                                     <a
                                         href={selectedPost.imageUrl}
                                         download={`${selectedPost.theme.replace(/\s+/g, '-').toLowerCase()}.png`}
-                                        className="text-xs text-violet-400 hover:text-violet-300"
+                                        className="text-xs text-violet-600 hover:text-violet-700 font-medium"
                                     >
                                         ⬇️ Download
                                     </a>
                                 </div>
-                                <div className="rounded-xl overflow-hidden border border-gray-800">
+                                <div className="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
                                     <img
                                         src={selectedPost.imageUrl}
                                         alt={selectedPost.theme}
@@ -948,14 +1071,14 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                         {/* Content */}
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <label className="block text-gray-500 text-xs uppercase tracking-wide">Content</label>
+                                <label className="block text-gray-500 text-xs uppercase tracking-wide font-medium">Content</label>
                                 {!isEditing && (
                                     <button
                                         onClick={() => {
                                             setIsEditing(true)
                                             setEditContent(selectedPost.editedContent || selectedPost.content)
                                         }}
-                                        className="text-xs text-violet-400 hover:text-violet-300"
+                                        className="text-xs text-violet-600 hover:text-violet-700 font-medium"
                                     >
                                         ✏️ Edit
                                     </button>
@@ -968,20 +1091,20 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                                         value={editContent}
                                         onChange={(e) => setEditContent(e.target.value)}
                                         rows={14}
-                                        className="w-full px-4 py-3 bg-gray-900 border border-violet-500/50 rounded-xl text-gray-200 text-sm font-sans resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+                                        className="w-full px-4 py-3 bg-gray-50 border-2 border-violet-200 rounded-xl text-gray-800 text-sm font-sans resize-none focus:outline-none focus:ring-2 focus:ring-violet-400 focus:border-violet-400"
                                     />
                                     <div className="flex items-center justify-between">
-                                        <span className="text-gray-500 text-xs">{editContent.length} characters</span>
+                                        <span className="text-gray-400 text-xs">{editContent.length} characters</span>
                                         <div className="flex gap-2">
                                             <button
                                                 onClick={() => setIsEditing(false)}
-                                                className="px-3 py-1.5 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 text-sm"
+                                                className="px-3 py-1.5 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 text-sm transition-all"
                                             >
                                                 Cancel
                                             </button>
                                             <button
                                                 onClick={() => saveEdit(selectedPost.id)}
-                                                className="px-3 py-1.5 bg-violet-600 text-white rounded-lg hover:bg-violet-700 text-sm"
+                                                className="px-3 py-1.5 bg-violet-600 text-white rounded-lg hover:bg-violet-700 text-sm transition-all shadow-sm"
                                             >
                                                 Save
                                             </button>
@@ -989,8 +1112,8 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                                     </div>
                                 </div>
                             ) : (
-                                <div className="bg-gray-900 rounded-xl p-4 border border-gray-800 max-h-80 overflow-y-auto">
-                                    <pre className="text-gray-200 text-sm whitespace-pre-wrap font-sans leading-relaxed">
+                                <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 max-h-80 overflow-y-auto">
+                                    <pre className="text-gray-700 text-sm whitespace-pre-wrap font-sans leading-relaxed">
                                         {selectedPost.editedContent || selectedPost.content}
                                     </pre>
                                 </div>
@@ -999,10 +1122,10 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
 
                         {/* Hashtags */}
                         <div>
-                            <label className="block text-gray-500 text-xs uppercase tracking-wide mb-2">Hashtags</label>
+                            <label className="block text-gray-500 text-xs uppercase tracking-wide mb-2 font-medium">Hashtags</label>
                             <div className="flex flex-wrap gap-2">
                                 {selectedPost.suggestedHashtags.map((tag, i) => (
-                                    <span key={i} className="px-3 py-1 bg-blue-900/30 text-blue-400 text-sm rounded-full border border-blue-800/30">
+                                    <span key={i} className="px-3 py-1 bg-blue-50 text-blue-600 text-sm rounded-full border border-blue-100 font-medium">
                                         {tag}
                                     </span>
                                 ))}
@@ -1011,26 +1134,26 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
 
                         {/* Meta */}
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="bg-gray-900 rounded-lg p-3 border border-gray-800">
-                                <div className="text-gray-500 text-xs mb-1">Characters</div>
-                                <div className="text-white font-medium">{selectedPost.characterCount}</div>
+                            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-3 border border-gray-200 shadow-sm">
+                                <div className="text-gray-400 text-xs mb-1 font-medium">Characters</div>
+                                <div className="text-gray-900 font-semibold">{selectedPost.characterCount}</div>
                             </div>
-                            <div className="bg-gray-900 rounded-lg p-3 border border-gray-800">
-                                <div className="text-gray-500 text-xs mb-1">Platform</div>
-                                <div className="text-white font-medium">💼 LinkedIn</div>
+                            <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-3 border border-gray-200 shadow-sm">
+                                <div className="text-gray-400 text-xs mb-1 font-medium">Platform</div>
+                                <div className="text-gray-900 font-semibold">💼 LinkedIn</div>
                             </div>
                         </div>
 
                         {/* CTA */}
                         {campaignData && (
-                            <div className="bg-violet-900/20 rounded-lg p-4 border border-violet-800/30">
-                                <div className="text-violet-400 text-xs mb-1">Call to Action</div>
-                                <div className="text-white font-medium">{campaignData.cta}</div>
+                            <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-4 border border-violet-200 shadow-sm">
+                                <div className="text-violet-600 text-xs mb-1 font-medium">Call to Action</div>
+                                <div className="text-gray-900 font-semibold">{campaignData.cta}</div>
                                 <a
                                     href={campaignData.ctaUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-violet-400 text-sm hover:underline mt-1 inline-block"
+                                    className="text-violet-600 text-sm hover:underline mt-1 inline-block font-medium"
                                 >
                                     {campaignData.ctaUrl} →
                                 </a>
@@ -1039,48 +1162,102 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
                     </div>
 
                     {/* Actions */}
-                    <div className="p-4 border-t border-gray-800 space-y-2">
+                    <div className="p-4 border-t border-gray-200 space-y-3 bg-gray-50/50">
+                        {/* Role Badge & Status */}
+                        <div className="flex items-center justify-between mb-2">
+                            {approval.userInfo && (
+                                <RoleBadge role={approval.userInfo.role} />
+                            )}
+                            <StatusBadge status={selectedPost.status} />
+                        </div>
+
+                        {/* Approval Feedback */}
+                        {approvalFeedback && approvalFeedback.id === selectedPost.id && (
+                            <div className={`p-3 rounded-xl text-sm font-medium ${approvalFeedback.type === 'success'
+                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                : 'bg-red-50 text-red-700 border border-red-200'
+                                }`}>
+                                {approvalFeedback.message}
+                            </div>
+                        )}
+
+                        {/* Permission Notice for Viewers */}
+                        {approval.userInfo?.role === 'viewer' && (
+                            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-700 text-xs font-medium">
+                                ⚠️ As a viewer, you can only view content. Contact an admin to gain edit permissions.
+                            </div>
+                        )}
+
                         <div className="grid grid-cols-3 gap-2">
                             <button
-                                onClick={() => updatePostStatus(selectedPost.id, 'dismissed')}
-                                className="px-3 py-2 bg-gray-800 text-gray-400 rounded-lg hover:bg-gray-700 text-sm"
+                                onClick={() => handleApprovalAction(selectedPost.id, 'reject')}
+                                disabled={!approval.canPerform('reject') || approval.actionLoading === String(selectedPost.id)}
+                                className={`px-3 py-2 rounded-xl text-sm transition-all ${approval.canPerform('reject')
+                                    ? 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    : 'bg-gray-50 text-gray-300 cursor-not-allowed'
+                                    }`}
+                                title={!approval.canPerform('reject') ? 'Only admins and owners can reject' : 'Reject content'}
                             >
-                                ❌ Dismiss
+                                ❌ Reject
                             </button>
                             <button
-                                onClick={() => updatePostStatus(selectedPost.id, 'approved')}
-                                className="px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm"
+                                onClick={() => handleApprovalAction(selectedPost.id, 'approve')}
+                                disabled={!approval.canPerform('approve') || approval.actionLoading === String(selectedPost.id)}
+                                className={`px-3 py-2 rounded-xl text-sm transition-all ${approval.canPerform('approve')
+                                    ? 'bg-gradient-to-r from-emerald-500 to-green-500 text-white hover:from-emerald-600 hover:to-green-600 shadow-sm'
+                                    : 'bg-emerald-50 text-emerald-300 cursor-not-allowed'
+                                    }`}
+                                title={!approval.canPerform('approve') ? 'Only admins and owners can approve' : 'Approve content'}
                             >
-                                ✅ Approve
+                                {approval.actionLoading === String(selectedPost.id) ? '...' : '✅ Approve'}
                             </button>
                             <button
                                 onClick={() => copyContent(selectedPost)}
-                                className={`px-3 py-2 rounded-lg text-sm ${copyFeedback === selectedPost.id
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-violet-600 text-white hover:bg-violet-700'
+                                className={`px-3 py-2 rounded-xl text-sm transition-all ${copyFeedback === selectedPost.id
+                                    ? 'bg-emerald-500 text-white'
+                                    : 'bg-gradient-to-r from-violet-500 to-purple-500 text-white hover:from-violet-600 hover:to-purple-600 shadow-sm'
                                     }`}
                             >
                                 {copyFeedback === selectedPost.id ? '✓ Copied!' : '📋 Copy'}
                             </button>
                         </div>
+
+                        {/* Request Changes (for editors) */}
+                        {approval.canPerform('request_changes') && selectedPost.status === 'pending' && (
+                            <button
+                                onClick={() => {
+                                    const notes = prompt('What changes are needed?')
+                                    if (notes) handleApprovalAction(selectedPost.id, 'request_changes', notes)
+                                }}
+                                className="w-full px-3 py-2 bg-amber-50 text-amber-700 border border-amber-200 rounded-xl hover:bg-amber-100 text-sm font-medium transition-all"
+                            >
+                                ✏️ Request Changes
+                            </button>
+                        )}
+
                         {(selectedPost.status === 'approved' || selectedPost.status === 'scheduled') && (
                             <button
                                 onClick={() => postToLinkedIn(selectedPost)}
-                                disabled={postingId === selectedPost.id}
-                                className={`w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${postingId === selectedPost.id
-                                    ? 'bg-blue-600/50 text-blue-300 cursor-wait'
-                                    : postingSuccess === selectedPost.id
-                                        ? 'bg-green-600 text-white'
-                                        : 'bg-gradient-to-r from-blue-600 to-violet-600 text-white hover:from-blue-700 hover:to-violet-700'
+                                disabled={postingId === selectedPost.id || !approval.canPerform('publish')}
+                                className={`w-full px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${!approval.canPerform('publish')
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                    : postingId === selectedPost.id
+                                        ? 'bg-blue-100 text-blue-400 cursor-wait'
+                                        : postingSuccess === selectedPost.id
+                                            ? 'bg-emerald-500 text-white shadow-lg'
+                                            : 'bg-gradient-to-r from-blue-500 to-violet-500 text-white hover:from-blue-600 hover:to-violet-600 shadow-lg shadow-blue-500/20'
                                     }`}
+                                title={!approval.canPerform('publish') ? 'Only admins and owners can publish' : 'Post to LinkedIn'}
                             >
                                 {postingId === selectedPost.id ? (
                                     <span className="flex items-center justify-center gap-2">
-                                        <span className="w-4 h-4 border-2 border-blue-300/30 border-t-blue-300 rounded-full animate-spin" />
+                                        <span className="w-4 h-4 border-2 border-blue-200 border-t-blue-400 rounded-full animate-spin" />
                                         Posting to LinkedIn...
                                     </span>
                                 ) : postingSuccess === selectedPost.id ? (
                                     '✅ Posted to LinkedIn!'
+                                ) : !approval.canPerform('publish') ? (
+                                    '🔒 Publishing Restricted'
                                 ) : (
                                     '💼 Post to LinkedIn Now'
                                 )}
@@ -1089,7 +1266,7 @@ export function ContentReview({ workspaceId }: ContentReviewProps) {
 
                         {/* Error message */}
                         {postingError && (
-                            <div className="bg-red-900/30 border border-red-800/50 rounded-lg p-3 text-red-400 text-sm">
+                            <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-red-600 text-sm font-medium">
                                 ⚠️ {postingError}
                             </div>
                         )}
