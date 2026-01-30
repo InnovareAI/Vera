@@ -116,7 +116,19 @@ export async function getLinkedInPosts(
         }
 
         const data = await response.json()
-        return (data.items || []).map((p: any) => ({
+        return (data.items || []).map((p: {
+            id: string;
+            text?: string;
+            content?: string;
+            created_at?: string;
+            date?: string;
+            reactions_count?: number;
+            num_likes?: number;
+            comments_count?: number;
+            num_comments?: number;
+            shares_count?: number;
+            media?: any[];
+        }) => ({
             id: p.id,
             text: p.text || p.content || '',
             content: p.content,
@@ -219,7 +231,11 @@ export async function createLinkedInPost(
     attachments?: PostAttachment[]
 ): Promise<PostResult> {
     try {
-        const body: any = {
+        const body: {
+            account_id: string;
+            text: string;
+            attachments?: { type: string; url: string }[];
+        } = {
             account_id: accountId,
             text: text,
         }
@@ -292,7 +308,13 @@ export async function getConnectedAccounts(): Promise<{
         }
 
         const data = await response.json()
-        return (data.items || data || []).map((acc: any) => ({
+        return (data.items || data || []).map((acc: {
+            id: string;
+            provider: string;
+            name?: string;
+            email?: string;
+            status?: string;
+        }) => ({
             id: acc.id,
             provider: acc.provider,
             name: acc.name,

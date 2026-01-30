@@ -5,11 +5,10 @@
 # Next.js runtime is automatically configured by Netlify
 # https://docs.netlify.com/frameworks/next-js/overview/
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
 [build.environment]
   NODE_VERSION = "20"
+  NODE_OPTIONS = "--max-old-space-size=4096"
+  NEXT_TELEMETRY_DISABLED = "1"
 
 # Dev settings
 [dev]
