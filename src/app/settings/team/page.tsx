@@ -16,6 +16,8 @@ interface VeraMember {
     user_id?: string
     unipile_connected?: boolean
     unipile_status?: string
+    engagement_loop_enabled: boolean
+    posting_stagger_minutes: number
 }
 
 export default function TeamSettingsPage() {
@@ -129,6 +131,34 @@ export default function TeamSettingsPage() {
         setTimeout(() => setMessage(''), 3000)
     }
 
+    const handleToggleEngagement = async (member: VeraMember) => {
+        const { error } = await supabase
+            .from('vera_workspace_members')
+            .update({ engagement_loop_enabled: !member.engagement_loop_enabled })
+            .eq('id', member.id)
+
+        if (error) {
+            setMessage(`Error: ${error.message}`)
+        } else {
+            fetchMembers()
+        }
+        setTimeout(() => setMessage(''), 3000)
+    }
+
+    const handleStaggerChange = async (memberId: string, minutes: number) => {
+        const { error } = await supabase
+            .from('vera_workspace_members')
+            .update({ posting_stagger_minutes: minutes })
+            .eq('id', memberId)
+
+        if (error) {
+            setMessage(`Error: ${error.message}`)
+        } else {
+            fetchMembers()
+        }
+        setTimeout(() => setMessage(''), 3000)
+    }
+
     if (authLoading || workspaceLoading) {
         return (
             <div className="min-h-screen bg-gray-950 flex items-center justify-center">
@@ -216,7 +246,9 @@ export default function TeamSettingsPage() {
                             <thead>
                                 <tr className="bg-gray-900/50 text-gray-400 text-xs uppercase tracking-wider">
                                     <th className="px-6 py-4 font-semibold">Member</th>
-                                    <th className="px-6 py-4 font-semibold">Unipile Status</th>
+                                    <th className="px-6 py-4 font-semibold">Unipile</th>
+                                    <th className="px-6 py-4 font-semibold text-center">Auto-Boost</th>
+                                    <th className="px-6 py-4 font-semibold">Stagger</th>
                                     <th className="px-6 py-4 font-semibold">Role</th>
                                     <th className="px-6 py-4 font-semibold text-right">Actions</th>
                                 </tr>
@@ -255,11 +287,39 @@ export default function TeamSettingsPage() {
                                                 </span>
                                             </div>
                                         </td>
+                                        <td className="px-6 py-4 text-center">
+                                            <button
+                                                onClick={() => handleToggleEngagement(member)}
+                                                className={`p-2 rounded-full transition-all ${member.engagement_loop_enabled ? 'bg-violet-600/20 text-violet-400 hover:bg-violet-600/30' : 'bg-gray-800 text-gray-600 hover:bg-gray-700'}`}
+                                                title={member.engagement_loop_enabled ? 'Disable Auto-Engagement' : 'Enable Auto-Engagement'}
+                                            >
+                                                {member.engagement_loop_enabled ? (
+                                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a2 2 0 00-.8 2.4z" />
+                                                    </svg>
+                                                ) : (
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                                                    </svg>
+                                                )}
+                                            </button>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="number"
+                                                    value={member.posting_stagger_minutes}
+                                                    onChange={(e) => handleStaggerChange(member.id, parseInt(e.target.value))}
+                                                    className="w-16 bg-gray-800 border border-gray-700 rounded-lg text-white text-xs px-2 py-1 focus:ring-1 focus:ring-violet-500"
+                                                />
+                                                <span className="text-gray-500 text-[10px] uppercase">min</span>
+                                            </div>
+                                        </td>
                                         <td className="px-6 py-4">
                                             <select
                                                 value={member.role}
                                                 onChange={(e) => handleRoleChange(member.id, e.target.value)}
-                                                className="bg-gray-800 border-none rounded-lg text-white text-sm px-3 py-1 focus:ring-2 focus:ring-violet-500 cursor-pointer hover:bg-gray-700 transition-colors"
+                                                className="bg-gray-800 border border-gray-700 rounded-lg text-white text-xs px-3 py-1 focus:ring-1 focus:ring-violet-500 cursor-pointer hover:bg-gray-700 transition-colors"
                                             >
                                                 <option value="admin">Admin</option>
                                                 <option value="editor">Editor</option>
