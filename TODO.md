@@ -158,11 +158,35 @@
 
 ## 📤 Publishing & Scheduling
 
+### Core Features
+
 - [ ] **Multi-platform publishing** - Post to all platforms from one place
 - [ ] **Smart scheduling** - AI-optimized posting times
 - [ ] **Queue management** - Manage content queue and priorities
 - [ ] **Auto-posting** - Schedule and forget
-- [ ] **Platform API integrations** - LinkedIn, Twitter, Instagram, Facebook, TikTok
+
+### MCP Integrations (AI-native, real-time)
+
+- [ ] **social-cli-mcp** - Direct posting to Twitter, Reddit, LinkedIn, Instagram
+- [ ] **social-media-mcp** - Multi-platform MCP connection
+- [ ] **apify-mcp-server** - Data extraction + posting via Apify
+- [ ] **mcp-metricool** - Metricool integration for full social management
+
+### n8n Workflows (Scheduled, complex flows)
+
+- [ ] **n8n-nodes-late** - LATE API for scheduled posting
+- [ ] **n8n-social-media-auto-posting** - Images + videos multi-platform
+- [ ] **n8n-platform-scheduler** - Social media scheduler automation
+- [ ] **Custom n8n workflows** - VERA → n8n webhook triggers
+
+### Platform APIs (Direct integration)
+
+- [ ] **LinkedIn Marketing API** - Requires app approval, business accounts
+- [ ] **Twitter/X v2 API** - Rate limits on free tier
+- [ ] **Meta Graph API** - Facebook + Instagram business accounts
+- [ ] **TikTok Content Posting API** - Limited access program
+- [ ] **YouTube Data API** - Video uploads and management
+- [ ] **Reddit API** - Subreddit posting
 
 ## 🤝 Influencer Marketing
 
