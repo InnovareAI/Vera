@@ -65,16 +65,52 @@
 - [ ] **Export options** - PNG, JPG, WebP with quality settings
 - [ ] **Batch generation** - Create multiple banner variants at once
 
-## 💰 Paid Social Ads
+## 💰 Paid Ads & Paid Search
+
+### Core Features
 
 - [ ] **Ad campaign builder** - Create paid ad campaigns from approved content
-- [ ] **Platform integrations** - Meta Ads, LinkedIn Ads, Google Ads APIs
 - [ ] **Audience targeting** - Define target audiences for campaigns
 - [ ] **Budget management** - Set and track ad spend
 - [ ] **A/B testing** - Create ad variants for testing
 - [ ] **Performance tracking** - Track impressions, clicks, conversions
 - [ ] **ROI dashboard** - Measure return on ad spend
 - [ ] **Creative compliance** - Check ads meet platform requirements
+
+### Meta Ads Integration
+
+- [ ] **Meta Business API** - Connect to Meta Ads Manager
+- [ ] **Facebook Ads** - Create and manage FB ad campaigns
+- [ ] **Instagram Ads** - Stories, Reels, Feed ads
+- [ ] **Audience Manager** - Custom & lookalike audiences
+- [ ] **Pixel integration** - Conversion tracking
+- [ ] **Catalog ads** - Dynamic product ads
+
+### Google Ads Integration
+
+- [ ] **Google Ads API** - Connect to Google Ads account
+- [ ] **Search Ads** - Text ads for Google Search
+- [ ] **Display Network** - Banner ads across web
+- [ ] **YouTube Ads** - Video ads, bumpers, skippable
+- [ ] **Performance Max** - AI-driven cross-channel campaigns
+- [ ] **Google Analytics 4** - Attribution and analytics
+- [ ] **Conversion tracking** - Goals and events
+
+### Microsoft Advertising Integration
+
+- [ ] **Microsoft Ads API** - Connect to Microsoft Advertising
+- [ ] **Bing Search Ads** - Text ads on Bing
+- [ ] **Microsoft Audience Network** - Native ads
+- [ ] **LinkedIn Ads** - B2B targeting via Microsoft
+- [ ] **Import from Google** - Sync Google Ads campaigns
+
+### Other Ad Platforms
+
+- [ ] **TikTok Ads** - TikTok for Business API
+- [ ] **Pinterest Ads** - Pinterest Ads API
+- [ ] **Snapchat Ads** - Snap Ads Manager
+- [ ] **Twitter/X Ads** - X Ads API
+- [ ] **Amazon Ads** - Sponsored products (e-commerce)
 
 ## 🎬 Hi-Res Commercials
 
