@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseKey)
+export const dynamic = 'force-dynamic'
 
 // GET - Fetch workspaces for current user
 export async function GET(request: NextRequest) {
     try {
-        // Get user from auth header (in production, use proper auth middleware)
+        const supabase = createAdminClient()
+        // Get user from auth header
         const authHeader = request.headers.get('authorization')
         const userId = request.headers.get('x-user-id') // Simplified for now
 
@@ -51,6 +50,7 @@ export async function GET(request: NextRequest) {
 // POST - Create new workspace
 export async function POST(request: NextRequest) {
     try {
+        const supabase = createAdminClient()
         const userId = request.headers.get('x-user-id')
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

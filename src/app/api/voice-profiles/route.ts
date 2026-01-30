@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+export const dynamic = 'force-dynamic'
+
+const getSupabase = () => createAdminClient()
 
 // DEV MODE - store profiles in memory (will be lost on server restart)
 const DEV_MODE = process.env.NODE_ENV === 'development'
@@ -48,7 +47,7 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const { data, error } = await supabase
+        const { data, error } = await getSupabase()
             .from('voice_profiles')
             .select('*')
             .eq('workspace_id', workspaceId)
@@ -109,13 +108,13 @@ export async function POST(request: NextRequest) {
 
         // If setting as default, unset others first
         if (is_default) {
-            await supabase
+            await getSupabase()
                 .from('voice_profiles')
                 .update({ is_default: false })
                 .eq('workspace_id', workspace_id)
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await getSupabase()
             .from('voice_profiles')
             .insert({
                 workspace_id,
@@ -159,7 +158,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     try {
-        const { error } = await supabase
+        const { error } = await getSupabase()
             .from('voice_profiles')
             .delete()
             .eq('id', id)
@@ -203,7 +202,7 @@ export async function PATCH(request: NextRequest) {
 
         // If setting as default, unset others first
         if (is_default && workspace_id) {
-            await supabase
+            await getSupabase()
                 .from('voice_profiles')
                 .update({ is_default: false })
                 .eq('workspace_id', workspace_id)
@@ -213,7 +212,7 @@ export async function PATCH(request: NextRequest) {
         if (is_default !== undefined) updates.is_default = is_default
         if (name) updates.name = name
 
-        const { data, error } = await supabase
+        const { data, error } = await getSupabase()
             .from('voice_profiles')
             .update(updates)
             .eq('id', id)

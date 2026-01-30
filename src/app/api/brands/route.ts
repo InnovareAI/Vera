@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+export const dynamic = 'force-dynamic'
+
+const getSupabase = () => {
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    if (!url || !key) {
+        throw new Error('Supabase configuration missing')
+    }
+    return createClient(url, key)
+}
 
 // GET /api/brands - List all brands
 export async function GET() {
     try {
+        const supabase = getSupabase()
         const { data, error } = await supabase
             .from('brand_profiles')
             .select('*')
@@ -26,6 +33,7 @@ export async function GET() {
 // POST /api/brands - Create new brand
 export async function POST(request: NextRequest) {
     try {
+        const supabase = getSupabase()
         const body = await request.json()
 
         const { data, error } = await supabase

@@ -1,27 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-// Lazy initialization of Supabase client
-let supabaseClient: SupabaseClient | null = null
-
-function getSupabase() {
-    if (!supabaseClient) {
-        supabaseClient = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        )
-    }
-    return supabaseClient
-}
+export const dynamic = 'force-dynamic'
 
 // GET /api/content-queue - List queue items
 export async function GET(request: NextRequest) {
     try {
+        const supabase = createAdminClient()
         const { searchParams } = new URL(request.url)
         const status = searchParams.get('status')
         const workspaceId = searchParams.get('workspace_id')
 
-        let query = getSupabase()
+        let query = supabase
             .from('content_queue')
             .select(`
         *,
@@ -63,6 +53,7 @@ export async function GET(request: NextRequest) {
 // POST /api/content-queue - Add item to queue
 export async function POST(request: NextRequest) {
     try {
+        const supabase = createAdminClient()
         const body = await request.json()
 
         // Get the prompt details
@@ -70,7 +61,7 @@ export async function POST(request: NextRequest) {
         let contentType = body.content_type
 
         if (body.prompt_id) {
-            const { data: prompt } = await getSupabase()
+            const { data: prompt } = await supabase
                 .from('prompts')
                 .select('platform, content_type')
                 .eq('id', body.prompt_id)
@@ -82,7 +73,7 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        const { data, error } = await getSupabase()
+        const { data, error } = await supabase
             .from('content_queue')
             .insert({
                 topic: body.topic,

@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+export const dynamic = 'force-dynamic'
+
+const getSupabase = () => createAdminClient()
 
 // GET /api/prompts - List all prompts
 export async function GET(request: NextRequest) {
@@ -13,7 +12,7 @@ export async function GET(request: NextRequest) {
         const platform = searchParams.get('platform')
         const workspaceId = searchParams.get('workspace_id')
 
-        let query = supabase
+        let query = getSupabase()
             .from('prompts')
             .select('*')
             .eq('is_active', true)
@@ -43,7 +42,7 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
 
-        const { data, error } = await supabase
+        const { data, error } = await getSupabase()
             .from('prompts')
             .insert({
                 prompt_name: body.prompt_name,

@@ -1,18 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import { createAdminClient } from '@/lib/supabase/admin'
 
-// Lazy initialization of Supabase client
-let supabaseClient: SupabaseClient | null = null
+export const dynamic = 'force-dynamic'
 
-function getSupabase() {
-    if (!supabaseClient) {
-        supabaseClient = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        )
-    }
-    return supabaseClient
-}
+const getSupabase = () => createAdminClient()
 
 // Role hierarchy for permission checks
 const ROLE_HIERARCHY = {
@@ -84,7 +75,7 @@ async function getUserPermissions(workspaceId: string, userId: string) {
         .select('role')
         .eq('workspace_id', workspaceId)
         .eq('user_id', userId)
-        
+
         .single()
 
     if (memberError || !membership) {
