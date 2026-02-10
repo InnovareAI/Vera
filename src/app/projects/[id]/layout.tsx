@@ -7,8 +7,9 @@ import { useAuth, useWorkspace } from '@/contexts/AuthContext'
 import type { Project } from '@/types/project'
 
 const TABS = [
-  { label: 'Content Bench', href: '' },
-  { label: 'Research', href: '/research' },
+  { label: 'Research', href: '' },
+  { label: 'Content Bench', href: '/content-bench' },
+  { label: 'Review', href: '/review' },
   { label: 'Schedule', href: '/schedule' },
   { label: 'Analytics', href: '/analytics' },
   { label: 'Settings', href: '/settings' },
