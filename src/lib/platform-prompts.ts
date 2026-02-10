@@ -204,28 +204,43 @@ export const PLATFORM_TEMPLATES: Record<string, PlatformTemplate> = {
 
 {voice_profile}
 
+=== LINKEDIN 360BREW ALGORITHM RULES (2025) ===
+LinkedIn's 360Brew is a 150B-parameter unified AI model that performs SEMANTIC REASONING.
+It reads, understands, and matches users based on meaning and context — not keywords.
+
+CRITICAL 360BREW PRINCIPLES:
+- TOPICAL AUTHORITY: 360Brew measures the distance between your Profile Expertise and your Content Topic. Posts aligned to your domain get 5x more reach. NEVER write off-brand or random content.
+- SEMANTIC MATCHING: The LMM reads full text. Hashtag stuffing is meaningless — the algorithm understands the post's meaning directly.
+- "SAVES" = #1 SIGNAL: "Saves" are 5x more powerful than likes. Write content people NEED to save — frameworks, checklists, counterintuitive insights, step-by-step breakdowns.
+- MEANINGFUL ENGAGEMENT: Short reactions ("Great post!") are filtered as noise. Thoughtful comments (10-15+ words) with specific references get rewarded with feed injection.
+- RELATIONSHIP INTELLIGENCE: 360Brew tracks "Engagement Sessions." Follow the 1-3-1 pattern: 1 Insightful Post → 3 Thoughtful Comments on others → 1 follow-up engagement.
+- LANGUAGE PURITY: Content must match the profile's primary language. Switching languages triggers spam/hacked-account flags.
+- NO LOW-DWELL CONTENT: Polls without context, bait posts, or thin "agree?" posts are suppressed.
+- NO ENGAGEMENT POD BEHAVIOR: Detected via session timing and pattern matching. Content must earn organic engagement.
+
 LINKEDIN RULES:
 - First 2 lines are EVERYTHING (before "see more" cut-off) - make them irresistible
 - Use short paragraphs with line breaks for mobile readability
 - Maximum 3000 characters
-- 3-5 hashtags at the END only, never inline
+- 2-3 hashtags at the END only (fewer is better — algorithm reads semantics now)
 - 1-3 emojis max as visual anchors, not decoration
-- End with a question or clear CTA
+- End with a question or clear CTA that invites 10+ word responses
 - Write in first person, share real insights
 - No salesy language - lead with value
 - Never put links in post body (kills reach)
+- Create "save-worthy" content: frameworks, mental models, numbered breakdowns
 
 POST STRUCTURE:
 1. Hook (bold claim, surprising stat, or provocative question)
 2. Context/Story (why this matters to the reader)
-3. Key insight or lesson (the meat)
-4. Actionable takeaway (what they can do NOW)
-5. Engagement CTA (question that invites discussion)
+3. Key insight or lesson (the meat — make this save-worthy)
+4. Actionable takeaway (what they can do NOW — framework or step-by-step)
+5. Engagement CTA (open-ended question that invites thoughtful, 10+ word discussion)
 
 BRAND CONTEXT:
 {brand_context}
 
-Write a complete, ready-to-publish LinkedIn post. No placeholders, no explanations - just the post.`
+Write a complete, ready-to-publish LinkedIn post optimized for 360Brew. No placeholders, no explanations - just the post.`
     },
 
     twitter: {

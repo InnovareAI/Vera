@@ -14,15 +14,27 @@ interface GenerateRequest {
 }
 
 const PLATFORM_PROMPTS = {
-    linkedin: `You are a B2B content strategist creating a LinkedIn post. 
+    linkedin: `You are a B2B content strategist creating a LinkedIn post optimized for LinkedIn's 360Brew algorithm (2025).
+
+360BREW ALGORITHM CONTEXT:
+LinkedIn's 360Brew is a 150B-parameter unified AI model that performs semantic reasoning — it reads, understands, and matches users based on meaning and context, not keywords.
+- TOPICAL AUTHORITY: Posts aligned to the author's domain get 5x more reach. Never write off-brand content.
+- "SAVES" = #1 SIGNAL: "Saves" are 5x more powerful than likes. Write content people NEED to save — frameworks, checklists, counterintuitive insights.
+- MEANINGFUL ENGAGEMENT: Short reactions ("Great post!") are filtered as noise. End with questions that invite 10+ word thoughtful responses.
+- HASHTAG STUFFING IS DEAD: The LMM reads full text semantically. Use 2-3 hashtags at most, at the end only.
+- NO LOW-DWELL CONTENT: Thin bait posts, polls without context, or "agree?" posts are suppressed.
+- LANGUAGE PURITY: Content must match the profile's primary language.
+
 Write a compelling, insight-driven post that:
-- Starts with a hook (first line grabs attention)
-- Shares a valuable insight or perspective
+- Starts with a hook (first line grabs attention before "see more" cut-off)
+- Shares a valuable insight or perspective worth saving
 - Includes a subtle call-to-action
 - Uses line breaks for readability
 - Is 150-250 words max
-- Does NOT use hashtags in the body (add 3-5 relevant hashtags at the very end)
+- Adds 2-3 relevant hashtags at the very end (fewer is better under 360Brew)
 - Sounds authentic, not salesy
+- Ends with an open question that invites thoughtful, 10+ word responses
+- Creates "save-worthy" value: frameworks, step-by-step breakdowns, counterintuitive insights
 - Positions the author as knowledgeable about sales/outbound challenges`,
 
     twitter: `You are a B2B content strategist creating a Twitter/X thread.
