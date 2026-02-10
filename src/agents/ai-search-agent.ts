@@ -1,5 +1,5 @@
 /**
- * AI Search Agent Service (VERA)
+ * AI Search Agent Service (Vera.AI)
  *
  * Analyzes websites for SEO and GEO (Generative Engine Optimization),
  * learns from content queue performance, and helps users create
@@ -11,7 +11,7 @@
  * - AI-readable content recommendations
  * - Content strategy generation
  *
- * Ported from SAM's ai-search-agent.ts for VERA
+ * Ported from SAM's ai-search-agent.ts for Vera.AI
  * Uses OpenRouter for all AI calls (not direct Anthropic SDK)
  */
 
@@ -140,7 +140,7 @@ export interface GEOAnalysisResult {
 }
 
 export interface ContentLearnings {
-  // From content queue (VERA equivalent of SAM's outreach)
+  // From content queue (Vera.AI equivalent of SAM's outreach)
   outreach: {
     total_messages_sent: number
     response_rate: number
@@ -231,7 +231,7 @@ async function callAI(
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
       'HTTP-Referer': 'https://vera.innovare.ai',
-      'X-Title': 'VERA GEO Agent',
+      'X-Title': 'Vera.AI GEO Agent',
     },
     body: JSON.stringify({
       model,
@@ -266,7 +266,7 @@ async function callAISimple(
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
       'HTTP-Referer': 'https://vera.innovare.ai',
-      'X-Title': 'VERA GEO Agent',
+      'X-Title': 'Vera.AI GEO Agent',
     },
     body: JSON.stringify({
       model,
@@ -313,7 +313,7 @@ export async function fetchWebsite(url: string): Promise<FetchedWebsite> {
   try {
     const response = await fetch(normalizedUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; VERABot/1.0; +https://vera.innovare.ai/bot)',
+        'User-Agent': 'Mozilla/5.0 (compatible; VeraBot/1.0; +https://vera.innovare.ai/bot)',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
         'Accept-Language': 'en-US,en;q=0.5',
       },
@@ -529,7 +529,7 @@ export async function analyzeRobotsTxt(
 
   try {
     const response = await fetch(`${domain}/robots.txt`, {
-      headers: { 'User-Agent': 'VERABot/1.0' },
+      headers: { 'User-Agent': 'VeraBot/1.0' },
       signal: AbortSignal.timeout(30000),
     })
 
@@ -576,7 +576,7 @@ export async function analyzeSitemap(
   for (const sitemapUrl of sitemapUrls) {
     try {
       const response = await fetch(sitemapUrl, {
-        headers: { 'User-Agent': 'VERABot/1.0' },
+        headers: { 'User-Agent': 'VeraBot/1.0' },
         signal: AbortSignal.timeout(30000),
       })
 
@@ -876,7 +876,7 @@ Evaluate the GEO readiness and return the JSON analysis.`
 // ============================================
 
 /**
- * Gather content learnings from VERA's content queue
+ * Gather content learnings from Vera.AI's content queue
  * (Adapted from SAM's outreach-based learnings)
  */
 export async function gatherContentLearnings(
@@ -884,7 +884,7 @@ export async function gatherContentLearnings(
 ): Promise<ContentLearnings> {
   const supabase = createAdminClient()
 
-  // Get content queue performance data (VERA's equivalent of outreach)
+  // Get content queue performance data (Vera.AI's equivalent of outreach)
   const { data: contentItems } = await supabase
     .from('content_queue')
     .select('*')
@@ -1277,7 +1277,7 @@ export async function analyzeWebsite(
   const { depth = 'standard', includeLearn = true } = options
   const supabase = createAdminClient()
 
-  console.log(`[VERA] Starting website analysis for ${websiteUrl}`, {
+  console.log(`[Vera.AI] Starting website analysis for ${websiteUrl}`, {
     depth,
     includeLearn,
   })
@@ -1307,16 +1307,16 @@ export async function analyzeWebsite(
     // Fetch website
     const fetchStart = Date.now()
     const fetched = await fetchWebsite(websiteUrl)
-    console.log(`[VERA] Website fetched in ${fetched.fetch_time_ms}ms`)
+    console.log(`[Vera.AI] Website fetched in ${fetched.fetch_time_ms}ms`)
 
     // Run SEO Analysis
     const seoResult = await analyzeSEO(fetched.html, fetched.url)
-    console.log(`[VERA] SEO Score: ${seoResult.score}/100`)
+    console.log(`[Vera.AI] SEO Score: ${seoResult.score}/100`)
 
     // Run GEO Analysis
     const geoResult = await analyzeGEO(fetched.html, fetched.url, seoResult)
     console.log(
-      `[VERA] GEO Score: ${geoResult.score}/100 (${geoResult.readiness_level})`
+      `[Vera.AI] GEO Score: ${geoResult.score}/100 (${geoResult.readiness_level})`
     )
 
     // Gather content learnings (if enabled)
@@ -1343,7 +1343,7 @@ export async function analyzeWebsite(
 
     if (includeLearn) {
       learnings = await gatherContentLearnings(workspaceId)
-      console.log('[VERA] Content learnings gathered')
+      console.log('[Vera.AI] Content learnings gathered')
     }
 
     // Generate recommendations
@@ -1352,7 +1352,7 @@ export async function analyzeWebsite(
       geoResult,
       learnings
     )
-    console.log(`[VERA] Generated ${recommendations.length} recommendations`)
+    console.log(`[Vera.AI] Generated ${recommendations.length} recommendations`)
 
     // Calculate overall score
     const overallScore = Math.round((seoResult.score + geoResult.score) / 2)
@@ -1394,7 +1394,7 @@ export async function analyzeWebsite(
     }
 
     console.log(
-      `[VERA] Analysis complete. Overall score: ${overallScore}/100`
+      `[Vera.AI] Analysis complete. Overall score: ${overallScore}/100`
     )
 
     return {

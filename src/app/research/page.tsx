@@ -120,7 +120,7 @@ export default function ResearchPage() {
                                 V
                             </div>
                             <div>
-                                <h1 className="text-xl font-semibold">VERA Research</h1>
+                                <h1 className="text-xl font-semibold">Vera.AI Research</h1>
                                 <p className="text-sm text-white/50">B2B Content Intelligence</p>
                             </div>
                         </div>

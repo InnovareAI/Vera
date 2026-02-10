@@ -72,7 +72,7 @@ async function fetchReddit(subreddits: string[], query?: string): Promise<Resear
                 : `https://www.reddit.com/r/${sub}/hot.json?limit=15`;
 
             const res = await fetch(url, {
-                headers: { 'User-Agent': 'VERA-Research-Agent/1.0' }
+                headers: { 'User-Agent': 'VeraAI-Research-Agent/1.0' }
             });
 
             if (!res.ok) continue;

@@ -11,6 +11,17 @@ interface GenerateRequest {
     };
     platform: 'linkedin' | 'twitter' | 'reddit' | 'medium';
     tone?: 'professional' | 'casual' | 'thought-leader';
+    projectContext?: {
+        name?: string;
+        industry?: string;
+        tone?: string;
+        icp?: {
+            target_roles?: string[];
+            pain_points?: string[];
+            goals?: string[];
+        };
+        products?: { name: string; description: string }[];
+    };
 }
 
 const PLATFORM_PROMPTS = {
@@ -70,7 +81,7 @@ Create an article outline that:
 export async function POST(request: NextRequest) {
     try {
         const body: GenerateRequest = await request.json();
-        const { topic, platform, tone = 'professional' } = body;
+        const { topic, platform, tone = 'professional', projectContext } = body;
 
         if (!topic || !platform) {
             return NextResponse.json({ error: 'Missing topic or platform' }, { status: 400 });
@@ -82,14 +93,35 @@ export async function POST(request: NextRequest) {
 
         const systemPrompt = PLATFORM_PROMPTS[platform];
 
+        // Build project context section if available
+        let projectSection = '';
+        if (projectContext) {
+            const parts: string[] = [];
+            if (projectContext.name) parts.push(`BRAND: ${projectContext.name}`);
+            if (projectContext.industry) parts.push(`INDUSTRY: ${projectContext.industry}`);
+            if (projectContext.products?.length) {
+                parts.push(`PRODUCTS: ${projectContext.products.map(p => `${p.name} — ${p.description}`).join('; ')}`);
+            }
+            if (projectContext.icp) {
+                const icpParts: string[] = [];
+                if (projectContext.icp.target_roles?.length) icpParts.push(`Target roles: ${projectContext.icp.target_roles.join(', ')}`);
+                if (projectContext.icp.pain_points?.length) icpParts.push(`Pain points: ${projectContext.icp.pain_points.join(', ')}`);
+                if (projectContext.icp.goals?.length) icpParts.push(`Goals: ${projectContext.icp.goals.join(', ')}`);
+                if (icpParts.length) parts.push(`ICP: ${icpParts.join('. ')}`);
+            }
+            if (projectContext.tone) parts.push(`BRAND TONE: ${projectContext.tone}`);
+            if (parts.length) {
+                projectSection = `\n\nPROJECT CONTEXT (write content aligned to this brand):\n${parts.join('\n')}`;
+            }
+        }
+
         const userPrompt = `Based on this topic/post, create content:
 
 SOURCE: ${topic.source}
 TITLE: ${topic.title}
 CONTENT: ${topic.content || 'No additional content'}
-URL: ${topic.url}
+URL: ${topic.url}${projectSection}
 
-The content should relate to B2B sales, outbound, or startup growth challenges.
 Tone: ${tone}
 
 Generate the ${platform} content now:`;
@@ -100,7 +132,7 @@ Generate the ${platform} content now:`;
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
                 'HTTP-Referer': 'https://vera.innovare.ai',
-                'X-Title': 'VERA Content Generator'
+                'X-Title': 'Vera.AI Content Generator'
             },
             body: JSON.stringify({
                 model: 'anthropic/claude-3.5-haiku', // Claude Haiku 4.5 - faster & cost-effective

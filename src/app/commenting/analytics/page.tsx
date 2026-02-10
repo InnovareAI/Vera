@@ -107,7 +107,7 @@ export default function CommentingAnalyticsPage() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-400 mt-4 font-medium">Powering up VERA...</p>
+          <p className="text-gray-400 mt-4 font-medium">Powering up Vera.AI...</p>
         </div>
       </div>
     )
@@ -126,7 +126,7 @@ export default function CommentingAnalyticsPage() {
               <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
                 <span className="text-xl font-black text-white italic">V</span>
               </div>
-              <span className="text-2xl font-black tracking-tighter text-white">VERA</span>
+              <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
             </Link>
             <span className="text-gray-600">|</span>
             <h1 className="text-white font-medium">Commenting Agent</h1>
@@ -415,7 +415,7 @@ export default function CommentingAnalyticsPage() {
       </main>
 
       <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-gray-800/50 text-center">
-        <p className="text-gray-600 text-sm">Powered by VERA Intelligence Engine &copy; 2026 InnovareAI</p>
+        <p className="text-gray-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
       </footer>
     </div>
   )

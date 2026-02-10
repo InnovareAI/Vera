@@ -73,7 +73,7 @@ export async function enrichPostWithScore(post: RedditPost): Promise<RedditPost>
     const jsonUrl = `https://www.reddit.com/r/${post.subreddit}/comments/${post.id}.json`
     const response = await fetch(jsonUrl, {
       headers: {
-        'User-Agent': 'VERA Research Agent/1.0',
+        'User-Agent': 'VeraAI-Research-Agent/1.0',
       },
     })
 

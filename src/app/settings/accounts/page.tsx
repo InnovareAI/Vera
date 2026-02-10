@@ -187,7 +187,7 @@ export default function AccountsSettingsPage() {
                 <div>
                     <h1 className="text-3xl font-black text-white tracking-tight">Connected Accounts</h1>
                     <p className="text-gray-500 mt-2 text-sm leading-relaxed max-w-2xl">
-                        Link your social platforms and email services to enable multi-channel publishing from VERA.
+                        Link your social platforms and email services to enable multi-channel publishing from Vera.AI.
                     </p>
                 </div>
 
@@ -336,7 +336,7 @@ export default function AccountsSettingsPage() {
                     <div>
                         <h4 className="text-white font-medium mb-1">Multi-Channel Publishing</h4>
                         <p className="text-gray-400 text-sm leading-relaxed">
-                            Once connected, your accounts become available for publishing across all VERA workflows -- content engine, direct POV, cold email campaigns, and newsletters. LinkedIn is managed through Unipile for enhanced reliability.
+                            Once connected, your accounts become available for publishing across all Vera.AI workflows -- content engine, direct POV, cold email campaigns, and newsletters. LinkedIn is managed through Unipile for enhanced reliability.
                         </p>
                     </div>
                 </div>

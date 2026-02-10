@@ -90,7 +90,7 @@ export default function ProjectsPage() {
               <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
                 <span className="text-xl font-black text-white italic">V</span>
               </div>
-              <span className="text-2xl font-black tracking-tighter text-white">VERA</span>
+              <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
@@ -284,7 +284,7 @@ export default function ProjectsPage() {
       </main>
 
       <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-gray-800/50 text-center">
-        <p className="text-gray-600 text-sm">Powered by VERA Intelligence Engine &copy; 2026 InnovareAI</p>
+        <p className="text-gray-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
       </footer>
     </div>
   )

@@ -96,7 +96,7 @@ const DEV_PROJECTS: Project[] = [
         brand_colors: { primary: '#7c3aed', secondary: '#a855f7' },
         industry: 'AI/Tech',
         products: [
-            { name: 'VERA', description: 'Agentic content engine for LinkedIn, X, Medium', url: 'https://innovare.ai/vera' },
+            { name: 'Vera.AI', description: 'Agentic content engine for LinkedIn, X, Medium', url: 'https://innovare.ai/vera' },
             { name: 'SAM', description: 'Social amplification & team engagement platform', url: 'https://innovare.ai/sam' }
         ],
         icp: {

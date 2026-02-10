@@ -19,7 +19,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
     const config = issue.vera_newsletter_config
     const bodyHtml = issue.body_html || `<div>${issue.body_markdown || ''}</div>`
-    const footer = config?.footer_html || '<p style="color: #6b7280; font-size: 12px;">Sent via VERA by InnovareAI</p>'
+    const footer = config?.footer_html || '<p style="color: #6b7280; font-size: 12px;">Sent via Vera.AI by InnovareAI</p>'
     const unsubLink = config?.unsubscribe_url || '#'
 
     const html = `

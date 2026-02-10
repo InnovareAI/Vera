@@ -142,7 +142,7 @@ async function callOpenRouter(messages: OpenRouterMessage[], includeTools = true
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
       'HTTP-Referer': 'https://vera.innovare.ai',
-      'X-Title': 'VERA Research Agent'
+      'X-Title': 'Vera.AI Research Agent'
     },
     body: JSON.stringify({
       model: 'anthropic/claude-sonnet-4-20250514',
@@ -172,7 +172,7 @@ export interface ChatMessage {
   research?: ResearchOutput
 }
 
-const SYSTEM_PROMPT = `You are VERA, an AI research assistant specializing in marketing intelligence and content research.
+const SYSTEM_PROMPT = `You are Vera.AI, an AI research assistant specializing in marketing intelligence and content research.
 
 Your capabilities:
 - Research Reddit for trending topics, discussions, and insights

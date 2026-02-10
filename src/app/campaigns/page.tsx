@@ -226,7 +226,7 @@ export default function CampaignsPage() {
                             <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
                                 <span className="text-xl font-black text-white italic">V</span>
                             </div>
-                            <span className="text-2xl font-black tracking-tighter text-white">VERA</span>
+                            <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
                         </Link>
 
                         <nav className="hidden md:flex items-center gap-1">

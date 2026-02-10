@@ -20,7 +20,7 @@ async function generateText(prompt: string, systemPrompt: string): Promise<strin
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
             'HTTP-Referer': 'https://vera.innovare.ai',
-            'X-Title': 'VERA AIO Generator'
+            'X-Title': 'Vera.AI AIO Generator'
         },
         body: JSON.stringify({
             model: 'anthropic/claude-3.5-sonnet', // Use Sonnet for better quality AIO

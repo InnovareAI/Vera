@@ -69,7 +69,7 @@ async function fetchWebsite(url: string): Promise<{ text: string; meta: Record<s
     const res = await fetch(url, {
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; VERA Bot/1.0)',
+        'User-Agent': 'Mozilla/5.0 (compatible; VeraBot/1.0)',
         Accept: 'text/html',
       },
     })
@@ -124,7 +124,7 @@ Return this exact JSON structure (fill in what you can infer, use null for unkno
       'Content-Type': 'application/json',
       Authorization: `Bearer ${OPENROUTER_API_KEY}`,
       'HTTP-Referer': 'https://vera.innovare.ai',
-      'X-Title': 'VERA Brand Extractor',
+      'X-Title': 'Vera.AI Brand Extractor',
     },
     body: JSON.stringify({
       model: 'anthropic/claude-3.5-haiku',

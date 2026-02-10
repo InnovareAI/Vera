@@ -31,7 +31,7 @@ export default function NewPersonaPage() {
                     <h2 className="text-3xl font-bold text-white mb-4">Build Your Strategy</h2>
                     <p className="text-gray-400 max-w-2xl mx-auto">
                         High-performing content starts with a deep understanding of your brand, your audience, and your product.
-                        Define these personas once, and VERA will use them to generate perfectly tailored content.
+                        Define these personas once, and Vera.AI will use them to generate perfectly tailored content.
                     </p>
                 </div>
 

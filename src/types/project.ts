@@ -1,4 +1,4 @@
-// Project types for VERA
+// Project types for Vera.AI
 
 export type PlatformId = 'linkedin' | 'twitter' | 'medium' | 'newsletter' | 'instagram' | 'tiktok' | 'blog'
 

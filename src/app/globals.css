@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 /* ===========================
-   VERA Design System
+   Vera.AI Design System
    Dark-first. Distinctive.
    shadcn/ui component foundation (Tailwind v4)
    =========================== */
 
-/* --- VERA Dark Theme (Default) --- */
+/* --- Vera.AI Dark Theme (Default) --- */
 :root {
   --font-sans: var(--font-inter);
   --radius: 0.75rem;
@@ -161,7 +161,7 @@ body {
   background: hsl(217 33% 30%);
 }
 
-/* --- VERA Custom Utilities --- */
+/* --- Vera.AI Custom Utilities --- */
 .glass {
   background: hsl(var(--card) / 0.8);
   backdrop-filter: blur(12px);
@@ -293,7 +293,7 @@ body {
 .slide-in-from-top-full { --tw-enter-translate-y: -100%; }
 .slide-out-to-top-full { --tw-exit-translate-y: -100%; }
 
-/* --- Source badges (VERA-specific) --- */
+/* --- Source badges (Vera.AI-specific) --- */
 .source-badge {
   display: inline-flex;
   align-items: center;

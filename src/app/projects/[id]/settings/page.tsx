@@ -264,32 +264,72 @@ export default function ProjectSettingsPage() {
       const { data } = await res.json()
 
       // Populate fields — override existing values
-      if (data.description) setDescription(data.description)
-      if (data.industry) setIndustry(data.industry)
+      const newDescription = data.description || description
+      const newIndustry = data.industry || industry
+      const newProducts = data.products?.length > 0
+        ? data.products.map((p: { name: string; description: string }) => ({ name: p.name, description: p.description || '', url: '' }))
+        : products
+      const newTargetRoles = data.icp?.target_roles?.length > 0 ? data.icp.target_roles : targetRoles
+      const newTargetIndustries = data.icp?.target_industries?.length > 0 ? data.icp.target_industries : targetIndustries
+      const newPainPoints = data.icp?.pain_points?.length > 0 ? data.icp.pain_points : painPoints
+      const newGoals = data.icp?.goals?.length > 0 ? data.icp.goals : goals
+      const newCompanySize = data.icp?.company_size || companySize
+      const newStyle = data.tone_of_voice?.style || style
+      const newFormality = data.tone_of_voice?.formality || formality
+      const newPersonality = data.tone_of_voice?.personality?.length > 0 ? data.tone_of_voice.personality : personality
 
-      if (data.products?.length > 0) {
-        setProducts(data.products.map((p: { name: string; description: string }) => ({
-          name: p.name,
-          description: p.description || '',
-          url: '',
-        })))
-        setOpenSections((prev) => ({ ...prev, products: true }))
+      // Update local state
+      setDescription(newDescription)
+      setIndustry(newIndustry)
+      setProducts(newProducts)
+      setTargetRoles(newTargetRoles)
+      setTargetIndustries(newTargetIndustries)
+      setPainPoints(newPainPoints)
+      setGoals(newGoals)
+      setCompanySize(newCompanySize)
+      setStyle(newStyle)
+      setFormality(newFormality)
+      setPersonality(newPersonality)
+
+      setOpenSections({ brand: true, products: true, icp: true, tone: true, platforms: true })
+
+      // Auto-save to database
+      const saveBody = {
+        name: name.trim(),
+        description: newDescription?.trim() || null,
+        website_url: websiteUrl.trim() || null,
+        industry: newIndustry?.trim() || null,
+        brand_colors: { primary: primaryColor, secondary: secondaryColor },
+        products: newProducts.filter((p: ProductForm) => p.name.trim()).map((p: ProductForm) => ({
+          name: p.name.trim(),
+          description: p.description.trim(),
+          url: p.url.trim() || undefined,
+        })),
+        icp: {
+          target_roles: newTargetRoles.length > 0 ? newTargetRoles : undefined,
+          target_industries: newTargetIndustries.length > 0 ? newTargetIndustries : undefined,
+          company_size: newCompanySize || undefined,
+          pain_points: newPainPoints.length > 0 ? newPainPoints : undefined,
+          goals: newGoals.length > 0 ? newGoals : undefined,
+        },
+        tone_of_voice: {
+          style: newStyle,
+          formality: newFormality,
+          personality: newPersonality.length > 0 ? newPersonality : undefined,
+          dos: dosText.trim() ? dosText.trim().split('\n').filter(Boolean) : undefined,
+          donts: dontsText.trim() ? dontsText.trim().split('\n').filter(Boolean) : undefined,
+        },
+        enabled_platforms: enabledPlatforms,
       }
 
-      if (data.icp) {
-        if (data.icp.target_roles?.length > 0) setTargetRoles(data.icp.target_roles)
-        if (data.icp.target_industries?.length > 0) setTargetIndustries(data.icp.target_industries)
-        if (data.icp.pain_points?.length > 0) setPainPoints(data.icp.pain_points)
-        if (data.icp.goals?.length > 0) setGoals(data.icp.goals)
-        if (data.icp.company_size) setCompanySize(data.icp.company_size)
-        setOpenSections((prev) => ({ ...prev, icp: true }))
-      }
+      const saveRes = await fetch(`/api/projects/${projectId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(saveBody),
+      })
 
-      if (data.tone_of_voice) {
-        if (data.tone_of_voice.style) setStyle(data.tone_of_voice.style)
-        if (data.tone_of_voice.formality) setFormality(data.tone_of_voice.formality)
-        if (data.tone_of_voice.personality?.length > 0) setPersonality(data.tone_of_voice.personality)
-        setOpenSections((prev) => ({ ...prev, tone: true }))
+      if (!saveRes.ok) {
+        console.error('Auto-save failed after brand extraction')
       }
 
       setSuccess(true)

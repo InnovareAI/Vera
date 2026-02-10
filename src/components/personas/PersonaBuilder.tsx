@@ -144,7 +144,7 @@ export function PersonaBuilder({ type: initialType = 'brand' }: PersonaBuilderPr
                                 type="text"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                placeholder={type === 'brand' ? 'e.g. Innovare Main Brand' : type === 'audience' ? 'e.g. CMO Kelly' : 'e.g. VERA Scout'}
+                                placeholder={type === 'brand' ? 'e.g. Innovare Main Brand' : type === 'audience' ? 'e.g. CMO Kelly' : 'e.g. Vera.AI Scout'}
                                 className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
                             />
                         </div>

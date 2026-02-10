@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'HTTP-Referer': 'https://vera.innovare.ai',
-        'X-Title': 'VERA Cold Email Generator',
+        'X-Title': 'Vera.AI Cold Email Generator',
       },
       body: JSON.stringify({
         model: 'anthropic/claude-sonnet-4',

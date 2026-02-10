@@ -55,7 +55,7 @@ export default function LoginPage() {
                         <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center">
                             <span className="text-2xl font-bold text-white">V</span>
                         </div>
-                        <span className="text-2xl font-bold text-white">VERA</span>
+                        <span className="text-2xl font-bold text-white">Vera.AI</span>
                     </Link>
                     <p className="text-gray-400 mt-2">Sign in to your account</p>
                 </div>

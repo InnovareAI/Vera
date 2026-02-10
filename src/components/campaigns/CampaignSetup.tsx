@@ -363,7 +363,7 @@ export function CampaignSetup({ onGenerate, isGenerating }: CampaignSetupProps) 
                     <span className="text-2xl">⚡</span>
                     <div>
                         <h3 className="text-white font-bold">Magic Multi-Step Setup</h3>
-                        <p className="text-gray-400 text-sm">Tell VERA what you want to achieve, and we'll handle the rest.</p>
+                        <p className="text-gray-400 text-sm">Tell Vera.AI what you want to achieve, and we'll handle the rest.</p>
                     </div>
                 </div>
                 <div className="flex gap-3">

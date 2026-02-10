@@ -73,7 +73,7 @@ Return ONLY valid JSON matching this exact structure (no markdown, no explanatio
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
                 'HTTP-Referer': 'https://vera.innovare.ai',
-                'X-Title': 'VERA Voice Analyzer'
+                'X-Title': 'Vera.AI Voice Analyzer'
             },
             body: JSON.stringify({
                 model: 'anthropic/claude-3.5-sonnet',

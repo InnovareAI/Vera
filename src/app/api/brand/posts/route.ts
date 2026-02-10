@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
         const platform = searchParams.get('platform')
         const limit = parseInt(searchParams.get('limit') || '20')
 
-        // Fetch posts from the posts table (created by VERA scouts/publisher)
+        // Fetch posts from the posts table (created by Vera.AI scouts/publisher)
         let query = supabase
             .from('posts')
             .select(`

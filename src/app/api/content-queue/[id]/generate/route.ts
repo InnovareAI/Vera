@@ -106,7 +106,7 @@ export async function POST(
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
                 'HTTP-Referer': 'https://vera.innovareai.com',
-                'X-Title': 'VERA Content Engine',
+                'X-Title': 'Vera.AI Content Engine',
             },
             body: JSON.stringify({
                 model: modelId,

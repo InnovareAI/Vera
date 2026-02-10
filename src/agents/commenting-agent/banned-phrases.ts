@@ -1,5 +1,5 @@
 /**
- * Banned Comment Phrases Configuration (VERA)
+ * Banned Comment Phrases Configuration (Vera.AI)
  * Ported from SAM's banned-comment-phrases.ts
  *
  * Centralized list of phrases that should be rejected in AI-generated LinkedIn comments.

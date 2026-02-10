@@ -95,7 +95,7 @@ export function BrandTraining({ onSave, initialData }: BrandTrainingProps) {
         { id: 'instagram', label: 'Instagram', icon: '📸' }
     ]
 
-    // Import previous posts from VERA database
+    // Import previous posts from Vera.AI database
     const importPreviousPosts = async () => {
         setImportStatus(prev => ({ ...prev, posts: { loading: true, count: 0 } }))
         try {
@@ -225,7 +225,7 @@ export function BrandTraining({ onSave, initialData }: BrandTrainingProps) {
                     <h3 className="text-white font-medium text-sm">📥 Import Training Data</h3>
                 </div>
                 <div className="flex flex-wrap gap-3">
-                    {/* Import from VERA Posts */}
+                    {/* Import from Vera.AI Posts */}
                     <button
                         onClick={importPreviousPosts}
                         disabled={importStatus.posts.loading}

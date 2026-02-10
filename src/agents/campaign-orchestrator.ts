@@ -239,7 +239,7 @@ async function generateWithOpenRouter(prompt: string, systemPrompt: string): Pro
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
             'HTTP-Referer': 'https://vera.innovare.ai',
-            'X-Title': 'VERA Campaign Generator'
+            'X-Title': 'Vera.AI Campaign Generator'
         },
         body: JSON.stringify({
             model: 'anthropic/claude-sonnet-4-20250514',

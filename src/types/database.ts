@@ -1,4 +1,4 @@
-// Database types for VERA
+// Database types for Vera.AI
 
 export interface Organization {
     id: string

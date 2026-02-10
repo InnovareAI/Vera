@@ -29,7 +29,7 @@ export function CampaignSidebar({ activeView, onViewChange, hasGeneration }: Cam
                         <span className="text-white font-bold text-lg">V</span>
                     </div>
                     <div>
-                        <h1 className="text-white font-bold text-xl tracking-tight">VERA</h1>
+                        <h1 className="text-white font-bold text-xl tracking-tight">Vera.AI</h1>
                         <p className="text-gray-500 text-xs">Campaign Generator</p>
                     </div>
                 </Link>

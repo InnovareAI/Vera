@@ -9,7 +9,7 @@ async function callOpenRouter(prompt: string): Promise<string> {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
       'HTTP-Referer': 'https://vera.innovare.ai',
-      'X-Title': 'VERA Relevance Evaluator'
+      'X-Title': 'Vera.AI Relevance Evaluator'
     },
     body: JSON.stringify({
       model: 'anthropic/claude-sonnet-4-20250514',

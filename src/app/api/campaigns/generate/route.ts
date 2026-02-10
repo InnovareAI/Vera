@@ -92,7 +92,7 @@ async function generateText(prompt: string, systemPrompt: string, model: string 
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
             'HTTP-Referer': 'https://vera.innovare.ai',
-            'X-Title': 'VERA Campaign Generator'
+            'X-Title': 'Vera.AI Campaign Generator'
         },
         body: JSON.stringify({
             model: model,
@@ -134,7 +134,7 @@ async function generateTextMultiModel(
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
                     'HTTP-Referer': 'https://vera.innovare.ai',
-                    'X-Title': 'VERA Campaign Generator'
+                    'X-Title': 'Vera.AI Campaign Generator'
                 },
                 body: JSON.stringify({
                     model: model.id,

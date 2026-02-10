@@ -1,17 +1,17 @@
 /**
- * LinkedIn Commenting Agent Service (VERA)
+ * LinkedIn Commenting Agent Service (Vera.AI)
  *
  * Generates AI-powered comments for LinkedIn posts.
  * Uses Anthropic SDK directly (Claude SDK) for agent reasoning.
  *
  * Ported from SAM's linkedin-commenting-agent.ts
- * Adapted for VERA: Anthropic SDK direct, vera_ table prefixes, createAdminClient()
+ * Adapted for Vera.AI: Anthropic SDK direct, vera_ table prefixes, createAdminClient()
  *
  * Updated Nov 29, 2025: Migrated to Claude Direct API for GDPR compliance
  * Updated Dec 7, 2025: Switched to Haiku 4.5 for cost optimization
  * Updated Dec 11, 2025: Added comment variance for anti-detection
  * Updated Jan 13, 2026: Added fact extraction to prevent hallucination + comment type variety
- * Updated Feb 2026: Ported to VERA with Anthropic SDK direct
+ * Updated Feb 2026: Ported to Vera.AI with Anthropic SDK direct
  */
 
 import Anthropic from '@anthropic-ai/sdk'
@@ -542,7 +542,7 @@ function findPriorityProfile(
   // Direct match on profile_id
   const match = profiles.find(p => p.profile_id === authorProfileId);
   if (match) {
-    console.log(`[VERA] VIP Match found: ${match.name} (${match.relationship})`);
+    console.log(`[Vera.AI] VIP Match found: ${match.name} (${match.relationship})`);
     return match;
   }
 
@@ -570,7 +570,7 @@ function getRelativeTime(date: Date): string {
 
 /**
  * Fetch relationship memory for a person (prospect)
- * Note: VERA may not have conversation_threads/promises/personal_notes tables yet,
+ * Note: Vera.AI may not have conversation_threads/promises/personal_notes tables yet,
  * so this gracefully handles missing tables with try/catch returning empty memory.
  */
 export async function fetchRelationshipMemory(
@@ -581,7 +581,7 @@ export async function fetchRelationshipMemory(
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  // Gracefully handle missing tables - VERA may not have all relationship tables yet
+  // Gracefully handle missing tables - Vera.AI may not have all relationship tables yet
   let threads: any[] = [];
   let promises: any[] = [];
   let notes: any[] = [];
@@ -597,7 +597,7 @@ export async function fetchRelationshipMemory(
       .order('created_at', { ascending: false });
     threads = data || [];
   } catch (err) {
-    console.warn('[VERA] conversation_threads table not available yet:', err);
+    console.warn('[Vera.AI] conversation_threads table not available yet:', err);
   }
 
   try {
@@ -609,7 +609,7 @@ export async function fetchRelationshipMemory(
       .eq('status', 'pending');
     promises = data || [];
   } catch (err) {
-    console.warn('[VERA] promises table not available yet:', err);
+    console.warn('[Vera.AI] promises table not available yet:', err);
   }
 
   try {
@@ -621,7 +621,7 @@ export async function fetchRelationshipMemory(
       .order('created_at', { ascending: false });
     notes = data || [];
   } catch (err) {
-    console.warn('[VERA] personal_notes table not available yet:', err);
+    console.warn('[Vera.AI] personal_notes table not available yet:', err);
   }
 
   try {
@@ -633,7 +633,7 @@ export async function fetchRelationshipMemory(
       .order('created_at', { ascending: false });
     responses = data || [];
   } catch (err) {
-    console.warn('[VERA] digest_responses table not available yet:', err);
+    console.warn('[Vera.AI] digest_responses table not available yet:', err);
   }
 
   // Determine relationship temperature
@@ -667,7 +667,7 @@ export async function generateLinkedInComment(
   // CRITICAL SAFETY CHECK: Never generate comment for posts without content
   const postContent = context.post.post_text?.trim();
   if (!postContent || postContent.length < 20) {
-    console.error('[VERA] REFUSED: Cannot generate comment - post has no content or too short');
+    console.error('[Vera.AI] REFUSED: Cannot generate comment - post has no content or too short');
     throw new Error('POST_CONTENT_MISSING: Cannot generate comment for post without content. This prevents garbage comments.');
   }
 
@@ -675,7 +675,7 @@ export async function generateLinkedInComment(
   // Even if a post bypassed discovery filters, we double check here.
   // This prevents non-English comments from being generated.
   if (!isEnglishText(postContent)) {
-    console.error('[VERA] REFUSED: Non-English content detected in generation phase');
+    console.error('[Vera.AI] REFUSED: Non-English content detected in generation phase');
     throw new Error('NON_ENGLISH_CONTENT: Agent is configured for English only engagement. This prevents generating Spanish/Portuguese comments.');
   }
 
@@ -684,7 +684,7 @@ export async function generateLinkedInComment(
     try {
       context.memory = await fetchRelationshipMemory(context.workspace.workspace_id, context.prospect.prospect_id);
     } catch (err) {
-      console.warn('[VERA] Failed to fetch relationship memory:', err);
+      console.warn('[Vera.AI] Failed to fetch relationship memory:', err);
     }
   }
 
@@ -698,7 +698,7 @@ export async function generateLinkedInComment(
   const extractedFacts = extractFactsFromPost(postContent);
   const suggestedApproaches = suggestCommentTypes(extractedFacts, postLength);
 
-  console.log('[VERA] Generating LinkedIn comment:', {
+  console.log('[Vera.AI] Generating LinkedIn comment:', {
     post_id: context.post.id,
     author: context.post.author.name,
     is_prospect: context.prospect?.is_prospect || false,
@@ -748,7 +748,7 @@ export async function generateLinkedInComment(
       throw new Error('No JSON found in AI response');
     }
   } catch (error) {
-    console.error('[VERA] Failed to parse AI response:', aiResponse);
+    console.error('[Vera.AI] Failed to parse AI response:', aiResponse);
     throw new Error('Invalid AI response format');
   }
 
@@ -774,7 +774,7 @@ export async function generateLinkedInComment(
   ];
   const commentLower = commentText.toLowerCase();
   if (garbagePhrases.some(phrase => commentLower.includes(phrase))) {
-    console.error('[VERA] REJECTED: AI generated garbage/fallback comment');
+    console.error('[Vera.AI] REJECTED: AI generated garbage/fallback comment');
     throw new Error('GARBAGE_COMMENT: AI generated placeholder content. Post may have been missing content.');
   }
 
@@ -805,7 +805,7 @@ export async function generateLinkedInComment(
     suggested_approaches: suggestedApproaches
   };
 
-  console.log('[VERA] Comment generated:', {
+  console.log('[Vera.AI] Comment generated:', {
     post_id: context.post.id,
     confidence: confidenceScore,
     auto_post: generatedComment.should_auto_post,
@@ -1774,7 +1774,7 @@ export async function generateCommentReply(
 ): Promise<GeneratedComment> {
   const startTime = Date.now();
 
-  console.log('[VERA] Generating reply to comment:', {
+  console.log('[Vera.AI] Generating reply to comment:', {
     post_author: context.originalPost.author_name,
     comment_author: context.targetComment.author_name,
     comment_reactions: context.targetComment.reactions_count
@@ -1784,11 +1784,11 @@ export async function generateCommentReply(
   const postContent = context.originalPost.text?.trim();
   const commentContent = context.targetComment.text?.trim();
   if (!postContent || postContent.length < 20) {
-    console.error('[VERA] REFUSED: Cannot generate reply - original post has no content');
+    console.error('[Vera.AI] REFUSED: Cannot generate reply - original post has no content');
     throw new Error('POST_CONTENT_MISSING: Cannot generate reply for post without content.');
   }
   if (!commentContent || commentContent.length < 5) {
-    console.error('[VERA] REFUSED: Cannot generate reply - target comment has no content');
+    console.error('[Vera.AI] REFUSED: Cannot generate reply - target comment has no content');
     throw new Error('COMMENT_CONTENT_MISSING: Cannot generate reply for comment without content.');
   }
 
@@ -1820,7 +1820,7 @@ export async function generateCommentReply(
       throw new Error('No JSON found in AI response');
     }
   } catch (error) {
-    console.error('[VERA] Failed to parse reply AI response:', aiResponse);
+    console.error('[Vera.AI] Failed to parse reply AI response:', aiResponse);
     throw new Error('Invalid AI response format for reply');
   }
 
@@ -1848,7 +1848,7 @@ export async function generateCommentReply(
     }
   };
 
-  console.log('[VERA] Reply generated:', {
+  console.log('[Vera.AI] Reply generated:', {
     to_author: context.targetComment.author_name,
     length: generatedReply.comment_text.length
   });
@@ -1929,7 +1929,7 @@ Return JSON with comment_text.`;
 }
 
 // ============================================
-// DATABASE HELPERS (VERA Supabase)
+// DATABASE HELPERS (Vera.AI Supabase)
 // ============================================
 
 export async function getBrandGuidelines(workspaceId: string): Promise<BrandGuidelines | null> {

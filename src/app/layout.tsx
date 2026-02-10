@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "VERA | AI Content Intelligence Platform",
+  title: "Vera.AI | AI Content Intelligence Platform",
   description: "AI-powered content research, trend monitoring, and creative generation platform by InnovareAI",
   keywords: ["AI", "content", "research", "trends", "marketing", "automation"],
 };

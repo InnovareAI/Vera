@@ -233,7 +233,7 @@ export default function NewIssuePage() {
       <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-400 mt-4 font-medium">Powering up VERA...</p>
+          <p className="text-gray-400 mt-4 font-medium">Powering up Vera.AI...</p>
         </div>
       </div>
     )
@@ -251,7 +251,7 @@ export default function NewIssuePage() {
               <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
                 <span className="text-xl font-black text-white italic">V</span>
               </div>
-              <span className="text-2xl font-black tracking-tighter text-white">VERA</span>
+              <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
             </Link>
             <span className="text-gray-600">|</span>
             <Link href="/newsletter" className="text-gray-400 hover:text-white text-sm font-medium transition-colors">

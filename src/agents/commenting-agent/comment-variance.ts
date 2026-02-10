@@ -1,5 +1,5 @@
 /**
- * Comment Variance System for Anti-Detection (VERA)
+ * Comment Variance System for Anti-Detection (Vera.AI)
  * Ported from SAM's anti-detection/comment-variance.ts
  *
  * LinkedIn detects bot patterns by looking for:

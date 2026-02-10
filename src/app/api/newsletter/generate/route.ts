@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
         'HTTP-Referer': 'https://vera.innovare.ai',
-        'X-Title': 'VERA Newsletter Generator',
+        'X-Title': 'Vera.AI Newsletter Generator',
       },
       body: JSON.stringify({
         model: 'anthropic/claude-sonnet-4',

@@ -398,7 +398,7 @@ export function VoiceResearch() {
                                     type="text"
                                     value={productName}
                                     onChange={(e) => setProductName(e.target.value)}
-                                    placeholder="e.g., SAM AI, VERA"
+                                    placeholder="e.g., SAM AI, Vera.AI"
                                     className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-green-500 focus:outline-none"
                                 />
                             </div>

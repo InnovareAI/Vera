@@ -29,7 +29,7 @@ Return a JSON object with strictly these fields:
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
                 'HTTP-Referer': 'https://vera.innovare.ai',
-                'X-Title': 'VERA Campaign AI'
+                'X-Title': 'Vera.AI Campaign AI'
             },
             body: JSON.stringify({
                 model: 'anthropic/claude-3.5-haiku',

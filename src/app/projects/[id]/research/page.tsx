@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import { useWorkspace } from '@/contexts/AuthContext'
 import type { Project } from '@/types/project'
 
 interface ResearchResult {
@@ -30,6 +31,7 @@ interface GeneratedContent {
 export default function ProjectResearchPage() {
   const params = useParams()
   const projectId = params.id as string
+  const { currentWorkspace } = useWorkspace()
 
   const [project, setProject] = useState<Project | null>(null)
   const [query, setQuery] = useState('')
@@ -37,6 +39,8 @@ export default function ProjectResearchPage() {
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState<string | null>(null)
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null)
+  const [savingDraft, setSavingDraft] = useState(false)
+  const [draftSaved, setDraftSaved] = useState(false)
   const [selectedSources, setSelectedSources] = useState({
     reddit: true,
     hackernews: true,
@@ -325,8 +329,44 @@ export default function ProjectResearchPage() {
               </div>
 
               <div className="flex gap-2 mt-4">
-                <button className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 font-bold text-sm text-white transition-all">
-                  Save to Drafts
+                <button
+                  onClick={async () => {
+                    if (!generatedContent || !currentWorkspace) return
+                    setSavingDraft(true)
+                    try {
+                      const res = await fetch('/api/content-items', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          workspace_id: currentWorkspace.id,
+                          project_id: projectId,
+                          content: generatedContent.content,
+                          platform: generatedContent.platform,
+                          source_url: generatedContent.topic.url,
+                          source_title: generatedContent.topic.title,
+                          status: 'draft',
+                        }),
+                      })
+                      if (res.ok) {
+                        setDraftSaved(true)
+                        setTimeout(() => setDraftSaved(false), 3000)
+                      }
+                    } catch (e) {
+                      console.error('Save draft error:', e)
+                    } finally {
+                      setSavingDraft(false)
+                    }
+                  }}
+                  disabled={savingDraft || draftSaved}
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 font-bold text-sm text-white transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+                >
+                  {savingDraft ? (
+                    <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Saving...</>
+                  ) : draftSaved ? (
+                    'Saved!'
+                  ) : (
+                    'Save to Drafts'
+                  )}
                 </button>
                 <button className="px-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm text-gray-300 font-bold transition-all">
                   Regenerate

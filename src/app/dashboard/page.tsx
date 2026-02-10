@@ -25,12 +25,22 @@ export default function DashboardPage() {
     }, [currentWorkspace])
 
     const fetchDashboardStats = async () => {
-        // Mock stats for premium look
-        setStats({
-            pendingApprovals: 12,
-            activeCampaigns: 4,
-            teamEngagement: 85
-        })
+        try {
+            // Fetch real counts from database
+            const [contentRes, projectsRes] = await Promise.all([
+                supabase.from('vera_generated_content').select('id, status', { count: 'exact' }).eq('workspace_id', currentWorkspace!.id).eq('status', 'pending'),
+                supabase.from('vera_projects').select('id', { count: 'exact' }).eq('workspace_id', currentWorkspace!.id).neq('status', 'archived'),
+            ])
+
+            setStats({
+                pendingApprovals: contentRes.count || 0,
+                activeCampaigns: projectsRes.count || 0,
+                teamEngagement: 0,
+            })
+        } catch {
+            // Fallback to zeros on error
+            setStats({ pendingApprovals: 0, activeCampaigns: 0, teamEngagement: 0 })
+        }
     }
 
     if (authLoading || workspaceLoading) {
@@ -38,7 +48,7 @@ export default function DashboardPage() {
             <div className="min-h-screen bg-gray-950 flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-gray-400 mt-4 font-medium">Powering up VERA...</p>
+                    <p className="text-gray-400 mt-4 font-medium">Powering up Vera.AI...</p>
                 </div>
             </div>
         )
@@ -56,7 +66,7 @@ export default function DashboardPage() {
                             <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
                                 <span className="text-xl font-black text-white italic">V</span>
                             </div>
-                            <span className="text-2xl font-black tracking-tighter text-white">VERA</span>
+                            <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
                         </Link>
 
                         <nav className="hidden md:flex items-center gap-1">
@@ -141,9 +151,9 @@ export default function DashboardPage() {
                 {/* Stats Bento */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[
-                        { label: 'Pending Approvals', value: '12', trend: '+3 today', color: 'violet' },
-                        { label: 'Active Campaigns', value: '4', trend: 'Innovare Loop', color: 'fuchsia' },
-                        { label: 'Team Engagement', value: '85%', trend: 'Opt-in: 4/5', color: 'blue' }
+                        { label: 'Pending Approvals', value: String(stats.pendingApprovals), trend: 'content items', color: 'violet' },
+                        { label: 'Active Projects', value: String(stats.activeCampaigns), trend: 'projects', color: 'fuchsia' },
+                        { label: 'Team Members', value: String(stats.teamEngagement || '-'), trend: '', color: 'blue' }
                     ].map((stat) => (
                         <div key={stat.label} className="bg-gray-900/40 border border-gray-800 p-8 rounded-3xl hover:bg-gray-900/60 transition-all group relative overflow-hidden">
                             <div className={`absolute top-0 right-0 w-32 h-32 bg-${stat.color}-500/5 blur-3xl -mr-16 -mt-16 group-hover:bg-${stat.color}-500/10 transition-all`} />
@@ -302,7 +312,7 @@ export default function DashboardPage() {
 
             {/* Footer */}
             <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-gray-800/50 text-center">
-                <p className="text-gray-600 text-sm">Powered by VERA Intelligence Engine © 2026 InnovareAI</p>
+                <p className="text-gray-600 text-sm">Powered by Vera.AI Intelligence Engine © 2026 InnovareAI</p>
             </footer>
         </div>
     )
