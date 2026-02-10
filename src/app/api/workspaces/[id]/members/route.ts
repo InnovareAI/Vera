@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseKey)
+export const dynamic = 'force-dynamic'
+
+function getSupabase() {
+    return createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+}
 
 interface RouteParams {
     params: Promise<{ id: string }>
@@ -12,6 +17,7 @@ interface RouteParams {
 // GET - Fetch workspace members
 export async function GET(request: NextRequest, { params }: RouteParams) {
     try {
+        const supabase = getSupabase()
         const { id: workspaceId } = await params
         const userId = request.headers.get('x-user-id')
 
@@ -64,6 +70,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // POST - Invite member to workspace
 export async function POST(request: NextRequest, { params }: RouteParams) {
     try {
+        const supabase = getSupabase()
         const { id: workspaceId } = await params
         const userId = request.headers.get('x-user-id')
 
@@ -119,6 +126,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 // DELETE - Remove member from workspace
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
     try {
+        const supabase = getSupabase()
         const { id: workspaceId } = await params
         const userId = request.headers.get('x-user-id')
         const { searchParams } = new URL(request.url)

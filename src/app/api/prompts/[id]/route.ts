@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+export const dynamic = 'force-dynamic'
+
+function getSupabase() {
+    return createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+}
 
 // GET /api/prompts/[id] - Get single prompt
 export async function GET(
@@ -12,6 +16,7 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const supabase = getSupabase()
         const { id } = await params
 
         const { data, error } = await supabase
@@ -38,6 +43,7 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const supabase = getSupabase()
         const { id } = await params
         const body = await request.json()
 
@@ -77,6 +83,7 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const supabase = getSupabase()
         const { id } = await params
 
         const { error } = await supabase

@@ -2,10 +2,14 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createLinkedInPost, getConnectedAccounts, PostAttachment } from '@/lib/unipile'
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+export const dynamic = 'force-dynamic'
+
+function getSupabase() {
+    return createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+}
 
 // Default account ID from environment
 const DEFAULT_ACCOUNT_ID = process.env.UNIPILE_ACCOUNT_ID
@@ -36,6 +40,7 @@ export async function GET(request: NextRequest) {
 // POST /api/linkedin/post - Create a LinkedIn post
 export async function POST(request: NextRequest) {
     try {
+        const supabase = getSupabase()
         const body = await request.json()
         const {
             accountId,
