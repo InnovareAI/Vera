@@ -5,8 +5,8 @@ import { User, Session } from '@supabase/supabase-js'
 import { getSupabase } from '@/lib/supabase/client'
 import type { Profile, WorkspaceWithRole, OrganizationWithRole } from '@/types/database'
 
-// DEV MODE - Set to true to bypass auth and use mock data
-const DEV_MODE = process.env.NODE_ENV === 'development'
+// DEV MODE - Bypass auth and use mock data (no OAuth configured yet)
+const DEV_MODE = true
 
 // Mock data for development
 const DEV_USER: User = {

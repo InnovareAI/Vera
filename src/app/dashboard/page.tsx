@@ -63,6 +63,7 @@ export default function DashboardPage() {
                             {[
                                 { label: 'Dashboard', href: '/dashboard' },
                                 { label: 'Campaigns', href: '/campaigns' },
+                                { label: 'Commenting', href: '/commenting' },
                                 { label: 'Cold Email', href: '/cold-email' },
                                 { label: 'Newsletter', href: '/newsletter' },
                                 { label: 'Research', href: '/research' },
@@ -223,6 +224,15 @@ export default function DashboardPage() {
                                 <h3 className="text-xl font-black text-white mb-2">SEO / GEO</h3>
                                 <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">Optimize your web presence for search engines and AI agents.</p>
                                 <span className="text-xs font-bold text-orange-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Analyze Site →</span>
+                            </div>
+                        </Link>
+
+                        <Link href="/commenting" className="group bg-gray-900 border border-gray-800 p-1 rounded-[2rem] hover:border-rose-500/50 transition-all shadow-2xl">
+                            <div className="bg-gray-800/50 rounded-[1.8rem] p-8 h-full flex flex-col">
+                                <div className="text-3xl mb-6 transform group-hover:scale-110 transition-transform">💬</div>
+                                <h3 className="text-xl font-black text-white mb-2">Commenting Agent</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">AI-powered LinkedIn engagement with anti-detection built in.</p>
+                                <span className="text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Engage →</span>
                             </div>
                         </Link>
 
