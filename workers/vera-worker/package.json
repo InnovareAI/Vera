@@ -1,0 +1,22 @@
+{
+  "name": "vera-worker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsx watch index.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
+    "express": "^4.21.0",
+    "postmark": "^4.0.5"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.19.30",
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  }
+}
