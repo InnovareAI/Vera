@@ -60,10 +60,16 @@ export default function DashboardPage() {
                         </Link>
 
                         <nav className="hidden md:flex items-center gap-1">
-                            {['Analytics', 'Campaigns', 'Scouts', 'Library'].map((item) => (
-                                <button key={item} className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
-                                    {item}
-                                </button>
+                            {[
+                                { label: 'Dashboard', href: '/dashboard' },
+                                { label: 'Campaigns', href: '/campaigns' },
+                                { label: 'Cold Email', href: '/cold-email' },
+                                { label: 'Newsletter', href: '/newsletter' },
+                                { label: 'Research', href: '/research' },
+                            ].map((item) => (
+                                <Link key={item.label} href={item.href} className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                                    {item.label}
+                                </Link>
                             ))}
                         </nav>
                     </div>
@@ -190,6 +196,42 @@ export default function DashboardPage() {
                                 <h3 className="text-xl font-black text-white mb-2">Team Loop</h3>
                                 <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">Manage team roles and activate the auto-engagement loop.</p>
                                 <span className="text-xs font-bold text-amber-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Manage Team →</span>
+                            </div>
+                        </Link>
+
+                        <Link href="/cold-email" className="group bg-gray-900 border border-gray-800 p-1 rounded-[2rem] hover:border-cyan-500/50 transition-all shadow-2xl">
+                            <div className="bg-gray-800/50 rounded-[1.8rem] p-8 h-full flex flex-col">
+                                <div className="text-3xl mb-6 transform group-hover:scale-110 transition-transform">📧</div>
+                                <h3 className="text-xl font-black text-white mb-2">Cold Email</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">Launch targeted email campaigns with AI-generated content.</p>
+                                <span className="text-xs font-bold text-cyan-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Launch Campaigns →</span>
+                            </div>
+                        </Link>
+
+                        <Link href="/newsletter" className="group bg-gray-900 border border-gray-800 p-1 rounded-[2rem] hover:border-emerald-500/50 transition-all shadow-2xl">
+                            <div className="bg-gray-800/50 rounded-[1.8rem] p-8 h-full flex flex-col">
+                                <div className="text-3xl mb-6 transform group-hover:scale-110 transition-transform">📰</div>
+                                <h3 className="text-xl font-black text-white mb-2">Newsletter</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">Build and send newsletters powered by your content queue.</p>
+                                <span className="text-xs font-bold text-emerald-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Create Issue →</span>
+                            </div>
+                        </Link>
+
+                        <Link href="/content-engine" className="group bg-gray-900 border border-gray-800 p-1 rounded-[2rem] hover:border-orange-500/50 transition-all shadow-2xl">
+                            <div className="bg-gray-800/50 rounded-[1.8rem] p-8 h-full flex flex-col">
+                                <div className="text-3xl mb-6 transform group-hover:scale-110 transition-transform">🔎</div>
+                                <h3 className="text-xl font-black text-white mb-2">SEO / GEO</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">Optimize your web presence for search engines and AI agents.</p>
+                                <span className="text-xs font-bold text-orange-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Analyze Site →</span>
+                            </div>
+                        </Link>
+
+                        <Link href="/settings/accounts" className="group bg-gray-900 border border-gray-800 p-1 rounded-[2rem] hover:border-pink-500/50 transition-all shadow-2xl">
+                            <div className="bg-gray-800/50 rounded-[1.8rem] p-8 h-full flex flex-col">
+                                <div className="text-3xl mb-6 transform group-hover:scale-110 transition-transform">🔗</div>
+                                <h3 className="text-xl font-black text-white mb-2">Accounts</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">Connect LinkedIn, X, Medium, and configure email.</p>
+                                <span className="text-xs font-bold text-pink-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Manage →</span>
                             </div>
                         </Link>
                     </div>
