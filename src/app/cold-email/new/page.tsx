@@ -313,12 +313,12 @@ export default function NewCampaignPage() {
               <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                 Dashboard
               </Link>
-              <Link href="/cold-email" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
-                Cold Email
+              <Link href="/projects" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                Projects
               </Link>
-              <span className="px-4 py-2 text-sm font-medium text-white bg-white/10 rounded-lg">
-                New Campaign
-              </span>
+              <Link href="/settings" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                Settings
+              </Link>
             </nav>
           </div>
 

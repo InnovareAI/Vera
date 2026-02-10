@@ -63,11 +63,7 @@ export default function DashboardPage() {
                             {[
                                 { label: 'Dashboard', href: '/dashboard' },
                                 { label: 'Projects', href: '/projects' },
-                                { label: 'Campaigns', href: '/campaigns' },
-                                { label: 'Commenting', href: '/commenting' },
-                                { label: 'Cold Email', href: '/cold-email' },
-                                { label: 'Newsletter', href: '/newsletter' },
-                                { label: 'Research', href: '/research' },
+                                { label: 'Settings', href: '/settings' },
                             ].map((item) => (
                                 <Link key={item.label} href={item.href} className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                                     {item.label}
