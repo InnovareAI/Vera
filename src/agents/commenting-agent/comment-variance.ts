@@ -1,0 +1,947 @@
+/**
+ * Comment Variance System for Anti-Detection (VERA)
+ * Ported from SAM's anti-detection/comment-variance.ts
+ *
+ * LinkedIn detects bot patterns by looking for:
+ * - Consistent comment lengths (always 50-100 chars = bot)
+ * - Same comment type (always statements = bot)
+ * - Fixed posting times (same hour daily = bot)
+ * - Fixed frequency (every day without breaks = bot)
+ * - Same volume (same number daily = bot)
+ *
+ * This module adds human-like variance to all these dimensions.
+ */
+
+// ============================================
+// COMMENT LENGTH VARIANCE
+// ============================================
+
+export type CommentLengthCategory = 'very_short' | 'short' | 'medium' | 'long' | 'very_long';
+
+export interface CommentLengthRange {
+  min: number;
+  max: number;
+  probability: number; // 0-1, how often to use this length
+}
+
+// Human comment length distribution (based on real data)
+// Most comments are medium length, with some variation
+export const COMMENT_LENGTH_DISTRIBUTION: Record<CommentLengthCategory, CommentLengthRange> = {
+  very_short: { min: 15, max: 50, probability: 0.10 },   // 10% - quick reactions
+  short: { min: 50, max: 100, probability: 0.25 },       // 25% - brief thoughts
+  medium: { min: 100, max: 200, probability: 0.35 },     // 35% - standard comments
+  long: { min: 200, max: 350, probability: 0.20 },       // 20% - detailed insights
+  very_long: { min: 350, max: 500, probability: 0.10 },  // 10% - mini-essays
+};
+
+/**
+ * Get a random comment length target based on natural distribution
+ */
+export function getRandomCommentLength(): { category: CommentLengthCategory; targetLength: number } {
+  const rand = Math.random();
+  let cumulative = 0;
+
+  for (const [category, range] of Object.entries(COMMENT_LENGTH_DISTRIBUTION)) {
+    cumulative += range.probability;
+    if (rand <= cumulative) {
+      const targetLength = range.min + Math.floor(Math.random() * (range.max - range.min));
+      return { category: category as CommentLengthCategory, targetLength };
+    }
+  }
+
+  // Fallback to medium
+  const medium = COMMENT_LENGTH_DISTRIBUTION.medium;
+  return {
+    category: 'medium',
+    targetLength: medium.min + Math.floor(Math.random() * (medium.max - medium.min))
+  };
+}
+
+/**
+ * Get context-aware comment length based on post length
+ *
+ * This matches comment length to post length for more natural engagement:
+ * - Short posts (< 300 chars) -> Short comments (quick reactions)
+ * - Medium posts (300-800 chars) -> Medium comments (thoughtful response)
+ * - Long posts (800+ chars) -> Long comments (detailed engagement)
+ *
+ * @param postLength - Character count of the original post
+ * @returns Category and target length for the comment
+ */
+export function getContextAwareCommentLength(postLength: number): {
+  category: CommentLengthCategory;
+  targetLength: number;
+  reason: string;
+} {
+  // Helper to get random value within a range
+  const randomInRange = (range: CommentLengthRange): number => {
+    return range.min + Math.floor(Math.random() * (range.max - range.min));
+  };
+
+  // Very short post (tweet-like) -> very short to short comment
+  if (postLength < 150) {
+    // 60% very_short, 40% short
+    if (Math.random() < 0.6) {
+      const range = COMMENT_LENGTH_DISTRIBUTION.very_short;
+      return {
+        category: 'very_short',
+        targetLength: randomInRange(range),
+        reason: `Post is very short (${postLength} chars) - matching with brief response`
+      };
+    }
+    const range = COMMENT_LENGTH_DISTRIBUTION.short;
+    return {
+      category: 'short',
+      targetLength: randomInRange(range),
+      reason: `Post is very short (${postLength} chars) - matching with short response`
+    };
+  }
+
+  // Short post -> short to medium comment
+  if (postLength < 400) {
+    // 50% short, 50% medium
+    if (Math.random() < 0.5) {
+      const range = COMMENT_LENGTH_DISTRIBUTION.short;
+      return {
+        category: 'short',
+        targetLength: randomInRange(range),
+        reason: `Post is short (${postLength} chars) - matching with short response`
+      };
+    }
+    const range = COMMENT_LENGTH_DISTRIBUTION.medium;
+    return {
+      category: 'medium',
+      targetLength: randomInRange(range),
+      reason: `Post is short (${postLength} chars) - matching with medium response`
+    };
+  }
+
+  // Medium post -> medium to long comment
+  if (postLength < 800) {
+    // 60% medium, 40% long
+    if (Math.random() < 0.6) {
+      const range = COMMENT_LENGTH_DISTRIBUTION.medium;
+      return {
+        category: 'medium',
+        targetLength: randomInRange(range),
+        reason: `Post is medium length (${postLength} chars) - matching with medium response`
+      };
+    }
+    const range = COMMENT_LENGTH_DISTRIBUTION.long;
+    return {
+      category: 'long',
+      targetLength: randomInRange(range),
+      reason: `Post is medium length (${postLength} chars) - matching with longer response`
+    };
+  }
+
+  // Long post (800-1500 chars) -> long comment
+  if (postLength < 1500) {
+    // 70% long, 30% very_long
+    if (Math.random() < 0.7) {
+      const range = COMMENT_LENGTH_DISTRIBUTION.long;
+      return {
+        category: 'long',
+        targetLength: randomInRange(range),
+        reason: `Post is long (${postLength} chars) - matching with detailed response`
+      };
+    }
+    const range = COMMENT_LENGTH_DISTRIBUTION.very_long;
+    return {
+      category: 'very_long',
+      targetLength: randomInRange(range),
+      reason: `Post is long (${postLength} chars) - matching with comprehensive response`
+    };
+  }
+
+  // Very long post (1500+ chars) -> long to very_long comment
+  // 50% long, 50% very_long (don't always do very_long even for long posts)
+  if (Math.random() < 0.5) {
+    const range = COMMENT_LENGTH_DISTRIBUTION.long;
+    return {
+      category: 'long',
+      targetLength: randomInRange(range),
+      reason: `Post is very long (${postLength} chars) - matching with detailed response`
+    };
+  }
+  const range = COMMENT_LENGTH_DISTRIBUTION.very_long;
+  return {
+    category: 'very_long',
+    targetLength: randomInRange(range),
+    reason: `Post is very long (${postLength} chars) - matching with comprehensive response`
+  };
+}
+
+// ============================================
+// COMMENT TYPE VARIANCE (Questions vs Statements)
+// ============================================
+
+export type CommentType = 'question' | 'statement' | 'observation' | 'story' | 'agreement';
+
+// Natural mix of comment types
+export const COMMENT_TYPE_DISTRIBUTION: Record<CommentType, number> = {
+  question: 0.25,      // 25% end with questions
+  statement: 0.30,     // 30% are declarative statements
+  observation: 0.20,   // 20% share observations
+  story: 0.15,         // 15% tell brief stories
+  agreement: 0.10,     // 10% express agreement + add
+};
+
+/**
+ * Get a random comment type based on natural distribution
+ */
+export function getRandomCommentType(): CommentType {
+  const rand = Math.random();
+  let cumulative = 0;
+
+  for (const [type, probability] of Object.entries(COMMENT_TYPE_DISTRIBUTION)) {
+    cumulative += probability;
+    if (rand <= cumulative) {
+      return type as CommentType;
+    }
+  }
+
+  return 'statement';
+}
+
+/**
+ * Get prompt modifier for comment type
+ * Includes example openers for each type to guide AI generation
+ */
+export function getCommentTypePrompt(type: CommentType): string {
+  const prompts: Record<CommentType, string> = {
+    question: `End your comment with ONE thoughtful question that invites discussion.
+    Example openers: "The part about X got me thinking..." / "What I'm curious about is..." / "This raises an interesting point about..."`,
+
+    statement: `Make a confident statement sharing your perspective. Do NOT ask a question.
+    Example openers: "The key insight here is..." / "What's often overlooked is..." / "The real challenge with this is..."`,
+
+    observation: `Share an observation or insight. Keep it declarative, no questions.
+    Example openers: "What I've noticed is..." / "The pattern I keep seeing is..." / "The interesting thing about this is..."`,
+
+    story: `Share a brief personal story or example (1-2 sentences max). No questions.
+    Example openers: "We learned this the hard way when..." / "Reminds me of when we..." / "Had a similar situation where..."`,
+
+    agreement: `Express genuine agreement with the author and add one small insight. No questions.
+    Example openers: "Exactly right - and I'd add that..." / "This matches what we found when..." / "The part about X especially - we saw the same thing..."`,
+  };
+  return prompts[type];
+}
+
+// ============================================
+// DAILY VOLUME VARIANCE
+// ============================================
+
+export interface DailyVolumeConfig {
+  baseMin: number;           // Minimum comments per day
+  baseMax: number;           // Maximum comments per day
+  skipDayProbability: number; // Probability of skipping a day entirely
+}
+
+// Human-like daily volume (most people don't comment same amount every day)
+// Conservative: 1-5 comments/day with 20% skip probability
+export const DAILY_VOLUME_CONFIG: DailyVolumeConfig = {
+  baseMin: 1,              // Start with just 1 comment minimum
+  baseMax: 5,              // Maximum 5 comments per day
+  skipDayProbability: 0.20, // 20% chance to skip a day
+};
+
+// ============================================
+// ACCOUNT WARMUP PROGRESSION
+// Gradually increase daily limits to protect account
+// ============================================
+
+export interface WarmupPhase {
+  weekNumber: number;      // Week 1, 2, 3, 4+
+  minComments: number;     // Minimum daily comments
+  maxComments: number;     // Maximum daily comments
+  skipProbability: number; // Chance to skip a day (higher early = safer)
+}
+
+// Warmup progression schedule - gradual increase over 4 weeks
+export const WARMUP_SCHEDULE: WarmupPhase[] = [
+  { weekNumber: 1, minComments: 3, maxComments: 5, skipProbability: 0.20 },   // Week 1: Conservative (3-5/day)
+  { weekNumber: 2, minComments: 5, maxComments: 10, skipProbability: 0.15 },  // Week 2: Building (5-10/day)
+  { weekNumber: 3, minComments: 8, maxComments: 15, skipProbability: 0.12 },  // Week 3: Growing (8-15/day)
+  { weekNumber: 4, minComments: 10, maxComments: 20, skipProbability: 0.10 }, // Week 4+: Full capacity (10-20/day)
+];
+
+/**
+ * Calculate warmup phase based on account start date
+ * Returns the appropriate daily limits based on how long the account has been active
+ *
+ * @param warmupStartDate - When commenting was enabled for this workspace (ISO string or Date)
+ * @returns Current warmup phase with appropriate limits
+ */
+export function getWarmupPhase(warmupStartDate?: string | Date | null): WarmupPhase {
+  if (!warmupStartDate) {
+    // No warmup date set - use week 1 (most conservative)
+    return WARMUP_SCHEDULE[0];
+  }
+
+  const startDate = new Date(warmupStartDate);
+  const now = new Date();
+  const daysSinceStart = Math.floor((now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+  const weekNumber = Math.floor(daysSinceStart / 7) + 1;
+
+  // Find the appropriate phase (week 4+ uses the last phase)
+  const phase = WARMUP_SCHEDULE.find(p => p.weekNumber === weekNumber)
+    || WARMUP_SCHEDULE[WARMUP_SCHEDULE.length - 1];
+
+  return phase;
+}
+
+/**
+ * Get daily limit based on warmup phase
+ * Randomizes within the phase's min-max range
+ *
+ * @param warmupStartDate - When commenting was enabled
+ * @returns { limit, phase, skipToday } - Daily limit and whether to skip
+ */
+export function getWarmupDailyLimit(warmupStartDate?: string | Date | null): {
+  limit: number;
+  phase: WarmupPhase;
+  skipToday: boolean;
+  weekNumber: number;
+} {
+  const phase = getWarmupPhase(warmupStartDate);
+
+  // Check if we should skip today (rest day)
+  const skipToday = Math.random() < phase.skipProbability;
+  if (skipToday) {
+    return {
+      limit: 0,
+      phase,
+      skipToday: true,
+      weekNumber: phase.weekNumber
+    };
+  }
+
+  // Random limit within phase's range
+  const limit = phase.minComments + Math.floor(Math.random() * (phase.maxComments - phase.minComments + 1));
+
+  return {
+    limit,
+    phase,
+    skipToday: false,
+    weekNumber: phase.weekNumber
+  };
+}
+
+/**
+ * Get random daily comment limit
+ * Returns 0 if this should be a skip day
+ */
+export function getRandomDailyLimit(): number {
+  // Check if we should skip today entirely
+  if (Math.random() < DAILY_VOLUME_CONFIG.skipDayProbability) {
+    return 0; // Skip day
+  }
+
+  // Random limit within range
+  const { baseMin, baseMax } = DAILY_VOLUME_CONFIG;
+  return baseMin + Math.floor(Math.random() * (baseMax - baseMin + 1));
+}
+
+/**
+ * Should we skip today entirely?
+ * This is decided once per day and stored
+ */
+export function shouldSkipToday(dayOfWeek: number): { skip: boolean; reason?: string } {
+  // Always more likely to skip weekends (people comment less)
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+  const skipProbability = isWeekend ? 0.40 : 0.12;
+
+  if (Math.random() < skipProbability) {
+    return {
+      skip: true,
+      reason: isWeekend ? 'Weekend skip (40% probability)' : 'Random skip day (12% probability)'
+    };
+  }
+
+  return { skip: false };
+}
+
+// ============================================
+// POSTING TIME VARIANCE
+// ============================================
+
+export interface PostingTimeWindow {
+  startHour: number;  // 24-hour format
+  endHour: number;
+  probability: number;
+}
+
+// Natural posting time distribution (when humans actually comment)
+export const POSTING_TIME_WINDOWS: PostingTimeWindow[] = [
+  { startHour: 6, endHour: 8, probability: 0.10 },    // 10% - early morning
+  { startHour: 8, endHour: 10, probability: 0.20 },   // 20% - morning commute
+  { startHour: 10, endHour: 12, probability: 0.15 },  // 15% - late morning
+  { startHour: 12, endHour: 14, probability: 0.20 },  // 20% - lunch break
+  { startHour: 14, endHour: 17, probability: 0.15 },  // 15% - afternoon
+  { startHour: 17, endHour: 19, probability: 0.15 },  // 15% - evening commute
+  { startHour: 19, endHour: 22, probability: 0.05 },  // 5% - evening
+];
+
+/**
+ * Get a random posting hour based on natural distribution
+ */
+export function getRandomPostingHour(): number {
+  const rand = Math.random();
+  let cumulative = 0;
+
+  for (const window of POSTING_TIME_WINDOWS) {
+    cumulative += window.probability;
+    if (rand <= cumulative) {
+      // Random hour within this window
+      return window.startHour + Math.floor(Math.random() * (window.endHour - window.startHour));
+    }
+  }
+
+  // Fallback to noon
+  return 12;
+}
+
+/**
+ * Get random minute (spread throughout the hour)
+ */
+export function getRandomPostingMinute(): number {
+  return Math.floor(Math.random() * 60);
+}
+
+/**
+ * Calculate next posting time with variance
+ * Returns a Date object for when the next comment should be scheduled
+ */
+export function getNextPostingTime(
+  timezone: string,
+  lastPostTime?: Date,
+  commentsPostedToday: number = 0
+): Date {
+  const now = new Date();
+
+  // If we've already posted a lot today, increase the gap
+  const minGapMinutes = commentsPostedToday > 5 ? 60 : 30;
+  const maxGapMinutes = commentsPostedToday > 5 ? 180 : 90;
+
+  const gapMinutes = minGapMinutes + Math.floor(Math.random() * (maxGapMinutes - minGapMinutes));
+
+  // If there was a last post, add gap from that
+  if (lastPostTime) {
+    const nextTime = new Date(lastPostTime.getTime() + gapMinutes * 60 * 1000);
+    // But not more than 4 hours out
+    const maxFuture = new Date(now.getTime() + 4 * 60 * 60 * 1000);
+    return nextTime > maxFuture ? maxFuture : nextTime;
+  }
+
+  // Otherwise, schedule based on current time + gap
+  return new Date(now.getTime() + gapMinutes * 60 * 1000);
+}
+
+// ============================================
+// GAP BETWEEN COMMENTS VARIANCE
+// ============================================
+
+/**
+ * Get random gap between comments in minutes
+ * Humans don't comment at fixed intervals
+ */
+export function getRandomCommentGap(): number {
+  // Distribution: mostly 30-60 min gaps, occasional quick bursts, occasional long gaps
+  const rand = Math.random();
+
+  if (rand < 0.10) {
+    // 10% - Quick follow-up (5-15 min)
+    return 5 + Math.floor(Math.random() * 10);
+  } else if (rand < 0.70) {
+    // 60% - Normal gap (30-90 min)
+    return 30 + Math.floor(Math.random() * 60);
+  } else if (rand < 0.90) {
+    // 20% - Longer gap (90-180 min)
+    return 90 + Math.floor(Math.random() * 90);
+  } else {
+    // 10% - Very long gap (3-6 hours)
+    return 180 + Math.floor(Math.random() * 180);
+  }
+}
+
+// ============================================
+// FULL VARIANCE CONTEXT FOR AI
+// ============================================
+
+export interface CommentVarianceContext {
+  targetLength: number;
+  lengthCategory: CommentLengthCategory;
+  commentType: CommentType;
+  typePrompt: string;
+  scheduledGapMinutes: number;
+  lengthReason?: string;       // Explains why this length was chosen
+  isContextAware?: boolean;    // Whether length was based on post content
+}
+
+/**
+ * Get full variance context for generating a comment
+ *
+ * When postLength is provided, comment length matches post length proportionally
+ *
+ * @param postLength - Optional: Character count of the post being commented on
+ * @returns Variance context for AI comment generation
+ */
+export function getCommentVarianceContext(postLength?: number): CommentVarianceContext {
+  let category: CommentLengthCategory;
+  let targetLength: number;
+  let lengthReason: string | undefined;
+  let isContextAware = false;
+
+  // Use context-aware length if post length is provided
+  if (postLength !== undefined && postLength > 0) {
+    const contextLength = getContextAwareCommentLength(postLength);
+    category = contextLength.category;
+    targetLength = contextLength.targetLength;
+    lengthReason = contextLength.reason;
+    isContextAware = true;
+  } else {
+    // Fall back to random distribution
+    const randomLength = getRandomCommentLength();
+    category = randomLength.category;
+    targetLength = randomLength.targetLength;
+  }
+
+  const commentType = getRandomCommentType();
+
+  return {
+    targetLength,
+    lengthCategory: category,
+    commentType,
+    typePrompt: getCommentTypePrompt(commentType),
+    scheduledGapMinutes: getRandomCommentGap(),
+    lengthReason,
+    isContextAware,
+  };
+}
+
+// ============================================
+// VARIED OPENER POOL
+// Random opener suggestions to force variety
+// ============================================
+
+export const VARIED_OPENER_POOL: readonly string[] = [
+  // Observation-based
+  "What struck me here is...",
+  "The interesting bit is...",
+  "What I've noticed is...",
+  "The pattern here is...",
+  // Experience-based
+  "We ran into this when...",
+  "Reminds me of when...",
+  "Had a similar experience...",
+  "The hard lesson for us was...",
+  // Thought-provoking
+  "The counterintuitive part is...",
+  "What's often missed is...",
+  "The nuance I'd add is...",
+  "Something worth considering...",
+  // Direct engagement
+  "The point about X really...",
+  "Building on the X part...",
+  "The bit about X especially...",
+  "Re: the comment on X...",
+  // Casual/conversational
+  "Ha, been there...",
+  "Exactly this...",
+  "This is the thing...",
+  "Yeah, and...",
+] as const;
+
+/**
+ * Get random opener suggestions for the AI
+ */
+export function getRandomOpenerSuggestions(count: number = 3): string[] {
+  const shuffled = [...VARIED_OPENER_POOL].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
+/**
+ * Build variance instructions for AI prompt
+ * Includes emoji variance and opener suggestions
+ */
+export function buildVariancePromptInstructions(context: CommentVarianceContext): string {
+  // Emoji variance: 30% chance to include emoji instruction
+  const includeEmoji = Math.random() < 0.30;
+  const emojiInstruction = includeEmoji
+    ? '\n- Include 1-2 relevant emojis naturally (not at the start)'
+    : '\n- Do NOT use any emojis in this comment';
+
+  // Get random openers to suggest (different each time!)
+  const suggestedOpeners = getRandomOpenerSuggestions(3);
+
+  return `
+## VARIANCE INSTRUCTIONS (CRITICAL FOR ANTI-DETECTION)
+
+**Length Target**: Aim for approximately ${context.targetLength} characters (category: ${context.lengthCategory})
+- Short comments are okay and often more impactful
+- Long comments should add significant value
+- Don't force length - natural is best
+
+**Comment Type**: ${context.commentType.toUpperCase()}
+${context.typePrompt}
+
+**Style Variation**:
+- Vary your opening style (don't always start with "Great point!" or similar)
+- Mix up sentence structure
+- Use different phrasings for similar ideas${emojiInstruction}
+
+**SUGGESTED OPENERS FOR THIS COMMENT** (pick one or create similar):
+- "${suggestedOpeners[0]}"
+- "${suggestedOpeners[1]}"
+- "${suggestedOpeners[2]}"
+`;
+}
+
+// ============================================
+// TYPING DELAY SIMULATION
+// Simulates human reading post + typing comment
+// ============================================
+
+/**
+ * Get random typing delay in milliseconds
+ * Simulates time spent reading post and typing comment
+ * Humans take 15-45 seconds to read a post and type a thoughtful response
+ */
+export function getTypingDelayMs(): number {
+  // 15-45 seconds delay (15000-45000ms)
+  return 15000 + Math.floor(Math.random() * 30000);
+}
+
+// ============================================
+// BUSINESS HOURS WEIGHTING
+// 80% of comments during business hours (8am-6pm)
+// ============================================
+
+/**
+ * Check if current time is within business hours
+ * Returns true if hour is between 8am and 6pm
+ */
+export function isBusinessHours(hour: number): boolean {
+  return hour >= 8 && hour < 18;
+}
+
+/**
+ * Get scheduling adjustment based on time of day
+ * Delays non-business hour posts to next business window
+ */
+export function getBusinessHoursDelay(): number {
+  const now = new Date();
+  const hour = now.getHours();
+
+  // 80% chance to enforce business hours
+  if (Math.random() < 0.80) {
+    if (hour < 8) {
+      // Before 8am - delay to 8am + random minutes
+      const minutesToEight = (8 - hour) * 60 - now.getMinutes();
+      return minutesToEight + Math.floor(Math.random() * 60);
+    } else if (hour >= 18) {
+      // After 6pm - delay to next day 8am + random
+      const minutesToMidnight = (24 - hour) * 60 - now.getMinutes();
+      const minutesTo8am = 8 * 60;
+      return minutesToMidnight + minutesTo8am + Math.floor(Math.random() * 60);
+    }
+  }
+
+  return 0; // No delay needed
+}
+
+// ============================================
+// SESSION-BASED ACTIVITY
+// Comments come in bursts, not evenly spread
+// ============================================
+
+export interface SessionConfig {
+  isInSession: boolean;
+  commentsInSession: number;
+  sessionGapMinutes: number;
+}
+
+/**
+ * Determine if we should start a new session or continue existing
+ * Sessions are 2-4 comments with short gaps, then long break
+ */
+export function getSessionBehavior(commentsToday: number): SessionConfig {
+  // Session size: 2-4 comments
+  const sessionSize = 2 + Math.floor(Math.random() * 3);
+
+  // Are we mid-session?
+  const positionInSession = commentsToday % sessionSize;
+  const isInSession = positionInSession > 0 && positionInSession < sessionSize;
+
+  if (isInSession) {
+    // Short gap within session (5-20 min)
+    return {
+      isInSession: true,
+      commentsInSession: positionInSession,
+      sessionGapMinutes: 5 + Math.floor(Math.random() * 15)
+    };
+  } else {
+    // Long gap between sessions (2-4 hours)
+    return {
+      isInSession: false,
+      commentsInSession: 0,
+      sessionGapMinutes: 120 + Math.floor(Math.random() * 120)
+    };
+  }
+}
+
+// ============================================
+// HOLIDAY SKIPPING
+// Skip major US/EU holidays
+// ============================================
+
+export const HOLIDAYS_2024_2025: readonly string[] = [
+  // 2024
+  '2024-12-24', '2024-12-25', '2024-12-26', // Christmas
+  '2024-12-31', // New Year's Eve
+  // 2025
+  '2025-01-01', // New Year's Day
+  '2025-01-20', // MLK Day
+  '2025-02-17', // Presidents Day
+  '2025-04-18', '2025-04-21', // Easter weekend
+  '2025-05-26', // Memorial Day
+  '2025-07-04', // Independence Day
+  '2025-09-01', // Labor Day
+  '2025-10-13', // Columbus Day
+  '2025-11-11', // Veterans Day
+  '2025-11-27', '2025-11-28', // Thanksgiving
+  '2025-12-24', '2025-12-25', '2025-12-26', // Christmas
+  '2025-12-31', // New Year's Eve
+  '2026-01-01', // New Year's Day
+] as const;
+
+/**
+ * Check if today is a holiday
+ */
+export function isHoliday(date: Date = new Date()): { isHoliday: boolean; holidayName?: string } {
+  const dateStr = date.toISOString().split('T')[0];
+
+  if (HOLIDAYS_2024_2025.includes(dateStr)) {
+    // Get holiday name
+    const month = date.getMonth();
+    const day = date.getDate();
+
+    if (month === 11 && (day >= 24 && day <= 26)) return { isHoliday: true, holidayName: 'Christmas' };
+    if (month === 11 && day === 31) return { isHoliday: true, holidayName: "New Year's Eve" };
+    if (month === 0 && day === 1) return { isHoliday: true, holidayName: "New Year's Day" };
+    if (month === 10 && (day === 27 || day === 28)) return { isHoliday: true, holidayName: 'Thanksgiving' };
+    if (month === 6 && day === 4) return { isHoliday: true, holidayName: 'Independence Day' };
+
+    return { isHoliday: true, holidayName: 'Holiday' };
+  }
+
+  return { isHoliday: false };
+}
+
+// ============================================
+// ACCOUNT WARM-UP MODE
+// New accounts start slow and gradually increase
+// ============================================
+
+export interface WarmupConfig {
+  accountAgeDays: number;
+  maxCommentsPerDay: number;
+  isWarmupMode: boolean;
+}
+
+/**
+ * Get warm-up configuration based on account age
+ * Week 1: 1 comment/day
+ * Week 2: 2 comments/day
+ * Week 3: 3 comments/day
+ * Week 4+: Normal limits
+ */
+export function getWarmupConfig(accountCreatedAt: Date): WarmupConfig {
+  const now = new Date();
+  const ageMs = now.getTime() - accountCreatedAt.getTime();
+  const ageDays = Math.floor(ageMs / (1000 * 60 * 60 * 24));
+
+  if (ageDays < 7) {
+    return { accountAgeDays: ageDays, maxCommentsPerDay: 1, isWarmupMode: true };
+  } else if (ageDays < 14) {
+    return { accountAgeDays: ageDays, maxCommentsPerDay: 2, isWarmupMode: true };
+  } else if (ageDays < 21) {
+    return { accountAgeDays: ageDays, maxCommentsPerDay: 3, isWarmupMode: true };
+  } else if (ageDays < 28) {
+    return { accountAgeDays: ageDays, maxCommentsPerDay: 4, isWarmupMode: true };
+  }
+
+  return { accountAgeDays: ageDays, maxCommentsPerDay: 5, isWarmupMode: false };
+}
+
+// ============================================
+// LIKE-BEFORE-COMMENT
+// Sometimes like the post before commenting
+// ============================================
+
+/**
+ * Should we like the post before commenting?
+ * 50% chance to like first
+ */
+export function shouldLikeBeforeComment(): boolean {
+  return Math.random() < 0.50;
+}
+
+/**
+ * Get delay between liking and commenting (if liking first)
+ * 10-30 seconds - simulates continued reading after liking before typing
+ */
+export function getLikeToCommentDelayMs(): number {
+  return 10000 + Math.floor(Math.random() * 20000);
+}
+
+// ============================================
+// PROFILE VIEW SIMULATION
+// Sometimes view author profile before commenting
+// ============================================
+
+/**
+ * Should we view the author's profile before commenting?
+ * 40% chance to view profile first
+ */
+export function shouldViewProfileFirst(): boolean {
+  return Math.random() < 0.40;
+}
+
+/**
+ * Get delay after viewing profile before commenting
+ * 20-60 seconds - simulates thoroughly reading someone's profile
+ */
+export function getProfileViewDelayMs(): number {
+  return 20000 + Math.floor(Math.random() * 40000);
+}
+
+// ============================================
+// HARD LIMITS - NEVER EXCEED THESE
+// These are conservative limits to protect accounts
+// ============================================
+
+export const HARD_LIMITS = {
+  // Daily limits per LinkedIn account
+  MAX_COMMENTS_PER_DAY: 5,           // Never exceed 5 comments/day
+  MAX_LIKES_PER_DAY: 20,             // Never exceed 20 likes/day
+  MAX_PROFILE_VIEWS_PER_DAY: 30,     // Never exceed 30 profile views/day
+
+  // Weekly limits per LinkedIn account
+  MAX_COMMENTS_PER_WEEK: 25,         // Never exceed 25 comments/week
+  MAX_CONNECTION_REQUESTS_PER_WEEK: 100, // LinkedIn's known limit
+
+  // Hourly limits (burst protection)
+  MAX_COMMENTS_PER_HOUR: 2,          // Never more than 2 comments in 1 hour
+  MAX_ACTIONS_PER_HOUR: 10,          // Total actions (likes + comments + views)
+
+  // Minimum gaps between same-type actions
+  MIN_COMMENT_GAP_MINUTES: 30,       // At least 30 min between comments
+  MIN_LIKE_GAP_SECONDS: 30,          // At least 30 sec between likes
+
+  // Error thresholds
+  MAX_ERRORS_BEFORE_PAUSE: 3,        // Pause after 3 consecutive errors
+  PAUSE_DURATION_HOURS: 24,          // Pause for 24 hours after errors
+} as const;
+
+/**
+ * Check if we've hit any hard limits
+ * Returns true if we should STOP all activity
+ */
+export function shouldStopActivity(stats: {
+  commentsToday: number;
+  commentsThisWeek: number;
+  commentsThisHour: number;
+  likesToday: number;
+  consecutiveErrors: number;
+}): { stop: boolean; reason?: string } {
+  if (stats.commentsToday >= HARD_LIMITS.MAX_COMMENTS_PER_DAY) {
+    return { stop: true, reason: `Daily comment limit reached (${stats.commentsToday}/${HARD_LIMITS.MAX_COMMENTS_PER_DAY})` };
+  }
+
+  if (stats.commentsThisWeek >= HARD_LIMITS.MAX_COMMENTS_PER_WEEK) {
+    return { stop: true, reason: `Weekly comment limit reached (${stats.commentsThisWeek}/${HARD_LIMITS.MAX_COMMENTS_PER_WEEK})` };
+  }
+
+  if (stats.commentsThisHour >= HARD_LIMITS.MAX_COMMENTS_PER_HOUR) {
+    return { stop: true, reason: `Hourly comment limit reached (${stats.commentsThisHour}/${HARD_LIMITS.MAX_COMMENTS_PER_HOUR})` };
+  }
+
+  if (stats.likesToday >= HARD_LIMITS.MAX_LIKES_PER_DAY) {
+    return { stop: true, reason: `Daily like limit reached (${stats.likesToday}/${HARD_LIMITS.MAX_LIKES_PER_DAY})` };
+  }
+
+  if (stats.consecutiveErrors >= HARD_LIMITS.MAX_ERRORS_BEFORE_PAUSE) {
+    return { stop: true, reason: `Too many errors (${stats.consecutiveErrors}), pausing for ${HARD_LIMITS.PAUSE_DURATION_HOURS}h` };
+  }
+
+  return { stop: false };
+}
+
+// ============================================
+// LINKEDIN WARNING DETECTION
+// Auto-pause if LinkedIn shows warning signs
+// ============================================
+
+export const LINKEDIN_WARNING_PATTERNS: readonly string[] = [
+  'unusual activity',
+  'temporarily restricted',
+  'security check',
+  'verify your identity',
+  'rate limit',
+  'too many requests',
+  'slow down',
+  'action blocked',
+  'try again later',
+  'suspicious activity',
+] as const;
+
+/**
+ * Check if a LinkedIn API response indicates a warning
+ */
+export function isLinkedInWarning(responseText: string): { isWarning: boolean; pattern?: string } {
+  const lowerText = responseText.toLowerCase();
+
+  for (const pattern of LINKEDIN_WARNING_PATTERNS) {
+    if (lowerText.includes(pattern)) {
+      return { isWarning: true, pattern };
+    }
+  }
+
+  return { isWarning: false };
+}
+
+// ============================================
+// COMBINED ANTI-DETECTION CONTEXT
+// ============================================
+
+export interface AntiDetectionContext {
+  typingDelayMs: number;
+  businessHoursDelayMinutes: number;
+  session: SessionConfig;
+  shouldLikeFirst: boolean;
+  likeToCommentDelayMs: number;
+  shouldViewProfile: boolean;
+  profileViewDelayMs: number;
+  includeEmoji: boolean;
+}
+
+/**
+ * Get full anti-detection context for a comment
+ */
+export function getAntiDetectionContext(commentsToday: number = 0): AntiDetectionContext {
+  const shouldLikeFirst = shouldLikeBeforeComment();
+  const shouldViewProfile = shouldViewProfileFirst();
+
+  return {
+    typingDelayMs: getTypingDelayMs(),
+    businessHoursDelayMinutes: getBusinessHoursDelay(),
+    session: getSessionBehavior(commentsToday),
+    shouldLikeFirst,
+    likeToCommentDelayMs: shouldLikeFirst ? getLikeToCommentDelayMs() : 0,
+    shouldViewProfile,
+    profileViewDelayMs: shouldViewProfile ? getProfileViewDelayMs() : 0,
+    includeEmoji: Math.random() < 0.30,
+  };
+}
