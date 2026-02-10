@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useWorkspace } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/AuthContext'
 import { CampaignSetup } from '@/components/campaigns/CampaignSetup'
 import { CampaignOutput } from '@/components/campaigns/CampaignOutput'
-import { CampaignSidebar } from '@/components/campaigns/CampaignSidebar'
 import { ContentReview } from '@/components/content-engine/ContentReview'
 
 export interface CampaignConfig {
@@ -112,7 +112,7 @@ export interface CampaignGeneration {
 }
 
 export default function CampaignsPage() {
-    const { currentWorkspace, currentOrganization } = useWorkspace()
+    const { currentWorkspace, currentOrganization, currentProject } = useWorkspace()
     const [activeView, setActiveView] = useState<'setup' | 'output' | 'review'>('review')
     const [generation, setGeneration] = useState<CampaignGeneration | null>(null)
     const [isGenerating, setIsGenerating] = useState(false)
@@ -214,92 +214,104 @@ export default function CampaignsPage() {
         }
     }
 
-    return (
-        <div className="min-h-screen flex bg-gradient-to-br from-slate-50 via-white to-gray-50">
-            <CampaignSidebar
-                activeView={activeView}
-                onViewChange={(view) => setActiveView(view as 'setup' | 'output' | 'review')}
-                hasGeneration={!!generation}
-            />
+    const { profile } = useAuth()
 
-            <main className="flex-1 overflow-hidden flex flex-col">
-                {/* Header */}
-                <header className="sticky top-0 z-10 bg-white/80 backdrop-blur-xl border-b border-gray-200 px-8 py-5">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <div className="flex items-center gap-3 mb-1">
-                                <Link href="/dashboard" className="text-gray-500 hover:text-gray-700 text-sm transition-colors">
-                                    ← Dashboard
+    return (
+        <div className="min-h-screen bg-gray-950 text-white selection:bg-violet-500/30">
+            {/* Top Navigation - matches dashboard */}
+            <header className="relative z-50 border-b border-gray-800/50 bg-gray-950/50 backdrop-blur-xl">
+                <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                    <div className="flex items-center gap-8">
+                        <Link href="/dashboard" className="flex items-center gap-3 group">
+                            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
+                                <span className="text-xl font-black text-white italic">V</span>
+                            </div>
+                            <span className="text-2xl font-black tracking-tighter text-white">VERA</span>
+                        </Link>
+
+                        <nav className="hidden md:flex items-center gap-1">
+                            {[
+                                { label: 'Dashboard', href: '/dashboard' },
+                                { label: 'Projects', href: '/projects' },
+                                { label: 'Campaigns', href: '/campaigns' },
+                                { label: 'Commenting', href: '/commenting' },
+                                { label: 'Cold Email', href: '/cold-email' },
+                                { label: 'Newsletter', href: '/newsletter' },
+                                { label: 'Research', href: '/research' },
+                            ].map((item) => (
+                                <Link key={item.label} href={item.href} className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${item.label === 'Campaigns' ? 'text-white bg-white/10' : 'text-gray-400 hover:text-white hover:bg-white/5'}`}>
+                                    {item.label}
                                 </Link>
-                                {currentWorkspace && (
-                                    <span className="text-gray-300">|</span>
-                                )}
-                                {currentWorkspace && (
-                                    <span className="text-violet-600 text-sm font-medium">
-                                        {currentWorkspace.name}
-                                    </span>
-                                )}
-                            </div>
-                            <h1 className="text-2xl font-bold text-gray-900">
-                                {getViewTitle()}
-                            </h1>
-                            <p className="text-gray-500 text-sm mt-1">
-                                {getViewDescription()}
-                            </p>
-                        </div>
-                        <div className="flex gap-2">
-                            {/* View Tabs */}
-                            <div className="flex bg-gray-100 rounded-xl p-1">
-                                <button
-                                    onClick={() => setActiveView('review')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'review'
-                                        ? 'bg-white text-violet-700 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
-                                        }`}
-                                >
-                                    📋 Review Posts
-                                </button>
-                                <button
-                                    onClick={() => setActiveView('setup')}
-                                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'setup'
-                                        ? 'bg-white text-violet-700 shadow-sm'
-                                        : 'text-gray-500 hover:text-gray-700'
-                                        }`}
-                                >
-                                    🎯 New Campaign
-                                </button>
-                                {generation && (
-                                    <button
-                                        onClick={() => setActiveView('output')}
-                                        className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'output'
-                                            ? 'bg-white text-violet-700 shadow-sm'
-                                            : 'text-gray-500 hover:text-gray-700'
-                                            }`}
-                                    >
-                                        ✨ Output
-                                    </button>
-                                )}
-                            </div>
+                            ))}
+                        </nav>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        {currentProject && (
+                            <Link href={`/projects/${currentProject.id}`} className="px-3 py-1.5 bg-violet-500/10 text-violet-400 text-xs font-bold rounded-full border border-violet-500/20 hover:bg-violet-500/20 transition-colors">
+                                {currentProject.name}
+                            </Link>
+                        )}
+                        <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-full flex items-center justify-center border-2 border-white/10">
+                            <span className="font-bold">{(profile?.full_name || 'V')[0].toUpperCase()}</span>
                         </div>
                     </div>
-                </header>
+                </div>
+            </header>
 
-                <div className="flex-1 overflow-hidden">
+            <main className="max-w-7xl mx-auto px-6 py-8">
+                {/* Page Header with View Tabs */}
+                <div className="flex items-center justify-between mb-8">
+                    <div>
+                        <h1 className="text-3xl font-black tracking-tight text-white">{getViewTitle()}</h1>
+                        <p className="text-gray-500 text-sm mt-1">{getViewDescription()}</p>
+                    </div>
+                    <div className="flex bg-gray-900 rounded-xl p-1 border border-gray-800">
+                        <button
+                            onClick={() => setActiveView('review')}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'review'
+                                ? 'bg-violet-600 text-white shadow-sm'
+                                : 'text-gray-400 hover:text-white'
+                                }`}
+                        >
+                            📋 Review
+                        </button>
+                        <button
+                            onClick={() => setActiveView('setup')}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'setup'
+                                ? 'bg-violet-600 text-white shadow-sm'
+                                : 'text-gray-400 hover:text-white'
+                                }`}
+                        >
+                            🎯 New Campaign
+                        </button>
+                        {generation && (
+                            <button
+                                onClick={() => setActiveView('output')}
+                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'output'
+                                    ? 'bg-violet-600 text-white shadow-sm'
+                                    : 'text-gray-400 hover:text-white'
+                                    }`}
+                            >
+                                ✨ Output
+                            </button>
+                        )}
+                    </div>
+                </div>
+
+                {/* Content Area */}
+                <div>
                     {activeView === 'setup' && (
-                        <div className="p-8 overflow-auto h-full">
-                            <CampaignSetup
-                                onGenerate={handleStartGeneration}
-                                isGenerating={isGenerating}
-                            />
-                        </div>
+                        <CampaignSetup
+                            onGenerate={handleStartGeneration}
+                            isGenerating={isGenerating}
+                        />
                     )}
                     {activeView === 'output' && (
-                        <div className="p-8 overflow-auto h-full">
-                            <CampaignOutput
-                                generation={generation}
-                                isGenerating={isGenerating}
-                            />
-                        </div>
+                        <CampaignOutput
+                            generation={generation}
+                            isGenerating={isGenerating}
+                        />
                     )}
                     {activeView === 'review' && (
                         <ContentReview workspaceId={currentWorkspace?.id} />

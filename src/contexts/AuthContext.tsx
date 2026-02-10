@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback, ReactNode 
 import { User, Session } from '@supabase/supabase-js'
 import { getSupabase } from '@/lib/supabase/client'
 import type { Profile, WorkspaceWithRole, OrganizationWithRole } from '@/types/database'
+import type { Project } from '@/types/project'
 
 // DEV MODE - Bypass auth and use mock data (no OAuth configured yet)
 const DEV_MODE = true
@@ -83,6 +84,45 @@ const DEV_ORGANIZATIONS: OrganizationWithRole[] = [
     }
 ]
 
+const DEV_PROJECTS: Project[] = [
+    {
+        id: 'proj-innovare-001',
+        workspace_id: 'ws-innovare',
+        name: 'InnovareAI',
+        slug: 'innovare-ai',
+        description: 'AI-powered marketing intelligence platform',
+        website_url: 'https://innovare.ai',
+        logo_url: null,
+        brand_colors: { primary: '#7c3aed', secondary: '#a855f7' },
+        industry: 'AI/Tech',
+        products: [
+            { name: 'VERA', description: 'Agentic content engine for LinkedIn, X, Medium', url: 'https://innovare.ai/vera' },
+            { name: 'SAM', description: 'Social amplification & team engagement platform', url: 'https://innovare.ai/sam' }
+        ],
+        icp: {
+            target_roles: ['CMO', 'VP Marketing', 'Head of Content', 'Growth Lead'],
+            target_industries: ['SaaS', 'B2B Tech', 'AI/ML', 'Marketing Agencies'],
+            company_size: '51-200',
+            pain_points: ['Content creation at scale', 'LinkedIn engagement', 'Brand consistency across channels'],
+            goals: ['Increase LinkedIn reach', 'Automate content pipeline', 'Build thought leadership']
+        },
+        tone_of_voice: {
+            style: 'professional',
+            formality: 'semi-formal',
+            personality: ['innovative', 'forward-thinking', 'data-driven', 'approachable'],
+            dos: ['Use concrete examples', 'Reference real metrics', 'Be direct and actionable'],
+            donts: ['No corporate jargon', 'No empty buzzwords', 'Never be salesy']
+        },
+        enabled_platforms: ['linkedin', 'twitter', 'medium', 'newsletter'],
+        platform_settings: {},
+        status: 'active',
+        is_default: true,
+        settings: {},
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+    }
+]
+
 interface AuthContextType {
     user: User | null
     profile: Profile | null
@@ -99,9 +139,13 @@ interface WorkspaceContextType {
     workspaces: WorkspaceWithRole[]
     currentOrganization: OrganizationWithRole | null
     organizations: OrganizationWithRole[]
+    currentProject: Project | null
+    projects: Project[]
     isLoading: boolean
     switchWorkspace: (workspaceId: string) => void
+    switchProject: (projectId: string) => void
     refreshWorkspaces: () => Promise<void>
+    refreshProjects: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | null>(null)
@@ -219,6 +263,8 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
     const [organizations, setOrganizations] = useState<OrganizationWithRole[]>(DEV_MODE ? DEV_ORGANIZATIONS : [])
     const [currentWorkspace, setCurrentWorkspace] = useState<WorkspaceWithRole | null>(DEV_MODE ? DEV_WORKSPACES[0] : null)
     const [currentOrganization, setCurrentOrganization] = useState<OrganizationWithRole | null>(DEV_MODE ? DEV_ORGANIZATIONS[0] : null)
+    const [projects, setProjects] = useState<Project[]>(DEV_MODE ? DEV_PROJECTS.filter(p => p.workspace_id === DEV_WORKSPACES[0].id) : [])
+    const [currentProject, setCurrentProject] = useState<Project | null>(DEV_MODE ? DEV_PROJECTS.find(p => p.workspace_id === DEV_WORKSPACES[0].id && p.is_default) || null : null)
     const [isLoading, setIsLoading] = useState(!DEV_MODE)
 
     const supabase = getSupabase()
@@ -323,15 +369,60 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
         }
     }
 
+    const fetchProjects = useCallback(async (workspaceId?: string) => {
+        const wsId = workspaceId || currentWorkspace?.id
+        if (!wsId) return
+
+        if (DEV_MODE) {
+            const wsProjects = DEV_PROJECTS.filter(p => p.workspace_id === wsId)
+            setProjects(wsProjects)
+            const savedProjectId = localStorage.getItem('vera_current_project')
+            const savedProject = wsProjects.find(p => p.id === savedProjectId)
+            setCurrentProject(savedProject || wsProjects.find(p => p.is_default) || wsProjects[0] || null)
+            return
+        }
+
+        try {
+            const res = await fetch(`/api/projects?workspace_id=${wsId}`)
+            if (res.ok) {
+                const data = await res.json()
+                setProjects(data)
+                const savedProjectId = localStorage.getItem('vera_current_project')
+                const savedProject = data.find((p: Project) => p.id === savedProjectId)
+                setCurrentProject(savedProject || data.find((p: Project) => p.is_default) || data[0] || null)
+            }
+        } catch (error) {
+            console.error('Failed to fetch projects:', error)
+        }
+    }, [currentWorkspace?.id])
+
+    useEffect(() => {
+        if (currentWorkspace) {
+            fetchProjects(currentWorkspace.id)
+        }
+    }, [currentWorkspace?.id])
+
+    const switchProject = (projectId: string) => {
+        const project = projects.find(p => p.id === projectId)
+        if (project) {
+            setCurrentProject(project)
+            localStorage.setItem('vera_current_project', projectId)
+        }
+    }
+
     return (
         <WorkspaceContext.Provider value={{
             currentWorkspace,
             workspaces,
             currentOrganization,
             organizations,
+            currentProject,
+            projects,
             isLoading,
             switchWorkspace,
-            refreshWorkspaces: fetchWorkspaces
+            switchProject,
+            refreshWorkspaces: fetchWorkspaces,
+            refreshProjects: fetchProjects
         }}>
             {children}
         </WorkspaceContext.Provider>

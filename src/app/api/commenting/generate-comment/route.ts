@@ -37,6 +37,14 @@ export async function POST(request: NextRequest) {
       .eq('is_active', true)
       .single()
 
+    // Fetch project context
+    const { data: projectData } = await supabase
+      .from('vera_projects')
+      .select('*')
+      .eq('workspace_id', workspace_id)
+      .eq('is_default', true)
+      .single()
+
     // Build proper CommentGenerationContext for the agent
     const context: CommentGenerationContext = {
       post: {
@@ -59,11 +67,11 @@ export async function POST(request: NextRequest) {
       },
       workspace: {
         workspace_id,
-        company_name: brandGuidelines?.what_you_do?.split(' ')[0] || 'Our Company',
-        expertise_areas: brandGuidelines?.industry_talking_points?.split(',').map((s: string) => s.trim()) || [],
-        products: [],
-        value_props: [],
-        tone_of_voice: brandGuidelines?.tone_of_voice || 'professional',
+        company_name: projectData?.name || brandGuidelines?.what_you_do?.split(' ')[0] || 'Our Company',
+        expertise_areas: projectData?.icp?.target_industries || brandGuidelines?.industry_talking_points?.split(',').map((s: string) => s.trim()) || [],
+        products: projectData?.products?.map((p: any) => p.name) || [],
+        value_props: projectData?.icp?.goals || [],
+        tone_of_voice: projectData?.tone_of_voice?.style || brandGuidelines?.tone_of_voice || 'professional',
         brand_guidelines: brandGuidelines || undefined,
       },
     }

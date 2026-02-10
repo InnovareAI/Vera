@@ -30,7 +30,7 @@ interface CampaignSetupProps {
 }
 
 export function CampaignSetup({ onGenerate, isGenerating }: CampaignSetupProps) {
-    const { currentWorkspace } = useWorkspace()
+    const { currentWorkspace, currentProject } = useWorkspace()
     const supabase = getSupabase()
     const [step, setStep] = useState(1)
     const [availablePersonas, setAvailablePersonas] = useState<Persona[]>([])
@@ -53,6 +53,25 @@ export function CampaignSetup({ onGenerate, isGenerating }: CampaignSetupProps) 
     const [personaInput, setPersonaInput] = useState('')
     const [influencerInput, setInfluencerInput] = useState('')
     const [messageInput, setMessageInput] = useState('')
+
+    // Auto-populate from current project
+    useEffect(() => {
+        if (currentProject) {
+            setConfig(prev => ({
+                ...prev,
+                brandName: prev.brandName || currentProject.name,
+                brandDescription: prev.brandDescription || currentProject.description || '',
+                brandVoice: prev.brandVoice || currentProject.tone_of_voice?.style || '',
+                brandColors: [currentProject.brand_colors?.primary || '#6366f1', currentProject.brand_colors?.secondary || '#8b5cf6'],
+                targetAudience: prev.targetAudience || [
+                    ...(currentProject.icp?.target_roles || []),
+                    ...(currentProject.icp?.target_industries || [])
+                ].join(', '),
+                tonality: (currentProject.tone_of_voice?.style as any) || prev.tonality,
+                platforms: currentProject.enabled_platforms?.filter(p => ['linkedin', 'twitter', 'medium', 'instagram'].includes(p)) as any[] || prev.platforms,
+            }))
+        }
+    }, [currentProject?.id])
 
     useEffect(() => {
         if (currentWorkspace?.id) {

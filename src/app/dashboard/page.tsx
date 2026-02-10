@@ -62,6 +62,7 @@ export default function DashboardPage() {
                         <nav className="hidden md:flex items-center gap-1">
                             {[
                                 { label: 'Dashboard', href: '/dashboard' },
+                                { label: 'Projects', href: '/projects' },
                                 { label: 'Campaigns', href: '/campaigns' },
                                 { label: 'Commenting', href: '/commenting' },
                                 { label: 'Cold Email', href: '/cold-email' },
@@ -233,6 +234,33 @@ export default function DashboardPage() {
                                 <h3 className="text-xl font-black text-white mb-2">Commenting Agent</h3>
                                 <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">AI-powered LinkedIn engagement with anti-detection built in.</p>
                                 <span className="text-xs font-bold text-rose-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Engage →</span>
+                            </div>
+                        </Link>
+
+                        <Link href="/commenting" className="group bg-gray-900 border border-gray-800 p-1 rounded-[2rem] hover:border-blue-500/50 transition-all shadow-2xl">
+                            <div className="bg-gray-800/50 rounded-[1.8rem] p-8 h-full flex flex-col">
+                                <div className="text-3xl mb-6 transform group-hover:scale-110 transition-transform">🔗</div>
+                                <h3 className="text-xl font-black text-white mb-2">LinkedIn</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">AI-powered LinkedIn engagement and content distribution.</p>
+                                <span className="text-xs font-bold text-blue-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Connect →</span>
+                            </div>
+                        </Link>
+
+                        <Link href="/twitter" className="group bg-gray-900 border border-gray-800 p-1 rounded-[2rem] hover:border-sky-500/50 transition-all shadow-2xl">
+                            <div className="bg-gray-800/50 rounded-[1.8rem] p-8 h-full flex flex-col">
+                                <div className="text-3xl mb-6 transform group-hover:scale-110 transition-transform">𝕏</div>
+                                <h3 className="text-xl font-black text-white mb-2">X (Twitter)</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">Post threads, engage, and grow your X presence.</p>
+                                <span className="text-xs font-bold text-sky-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Post →</span>
+                            </div>
+                        </Link>
+
+                        <Link href="/medium" className="group bg-gray-900 border border-gray-800 p-1 rounded-[2rem] hover:border-green-500/50 transition-all shadow-2xl">
+                            <div className="bg-gray-800/50 rounded-[1.8rem] p-8 h-full flex flex-col">
+                                <div className="text-3xl mb-6 transform group-hover:scale-110 transition-transform">✍️</div>
+                                <h3 className="text-xl font-black text-white mb-2">Medium</h3>
+                                <p className="text-gray-500 text-sm leading-relaxed mb-8 flex-1">Publish long-form articles and repurpose blog content.</p>
+                                <span className="text-xs font-bold text-green-400 group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">Publish →</span>
                             </div>
                         </Link>
 
