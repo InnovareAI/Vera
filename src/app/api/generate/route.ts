@@ -9,8 +9,10 @@ interface GenerateRequest {
         source: string;
         url: string;
     };
-    platform: 'linkedin' | 'twitter' | 'reddit' | 'medium';
-    tone?: 'professional' | 'casual' | 'thought-leader';
+    platform: 'linkedin' | 'twitter' | 'reddit' | 'medium' | 'newsletter';
+    tone?: 'professional' | 'casual' | 'thought-leader' | 'provocative' | 'educational';
+    contentType?: string;
+    formatLength?: string;
     projectContext?: {
         name?: string;
         industry?: string;
@@ -24,7 +26,22 @@ interface GenerateRequest {
     };
 }
 
-const PLATFORM_PROMPTS = {
+const CONTENT_TYPE_INSTRUCTIONS: Record<string, string> = {
+    'hot-take': 'Write as a BOLD, CONTRARIAN HOT TAKE. Lead with a provocative statement that challenges conventional wisdom. Be opinionated and direct. Make people want to agree or argue.',
+    'how-to': 'Write as a STEP-BY-STEP HOW-TO guide. Use numbered steps or a clear framework. Focus on actionable, tactical advice the reader can implement immediately.',
+    'story': 'Write as a PERSONAL STORY / NARRATIVE. Start with a specific moment or experience. Build tension, share the lesson learned. Make it relatable and human.',
+    'listicle': 'Write as a NUMBERED LIST of insights, tips, or trends. Each point should be self-contained and valuable. Use a consistent format for each item.',
+    'case-study': 'Write as a RESULTS-DRIVEN CASE STUDY. Show a clear before/after transformation. Include specific metrics or outcomes. Frame it as proof, not promotion.',
+    'news-react': 'Write as COMMENTARY ON INDUSTRY NEWS. Reference the news event, then share your unique perspective or analysis. Explain what it means for the audience.',
+};
+
+const FORMAT_LENGTH_INSTRUCTIONS: Record<string, string> = {
+    'short': 'Keep it CONCISE — approximately 80-120 words. Every word must earn its place.',
+    'standard': 'Write at STANDARD LENGTH — approximately 180-250 words. Balanced depth and readability.',
+    'long': 'Write LONG-FORM — approximately 350-500 words. Go deep with examples, frameworks, and nuance.',
+};
+
+const PLATFORM_PROMPTS: Record<string, string> = {
     linkedin: `You are a B2B content strategist creating a LinkedIn post optimized for LinkedIn's 360Brew algorithm (2025).
 
 360BREW ALGORITHM CONTEXT:
@@ -41,12 +58,11 @@ Write a compelling, insight-driven post that:
 - Shares a valuable insight or perspective worth saving
 - Includes a subtle call-to-action
 - Uses line breaks for readability
-- Is 150-250 words max
 - Adds 2-3 relevant hashtags at the very end (fewer is better under 360Brew)
 - Sounds authentic, not salesy
 - Ends with an open question that invites thoughtful, 10+ word responses
 - Creates "save-worthy" value: frameworks, step-by-step breakdowns, counterintuitive insights
-- Positions the author as knowledgeable about sales/outbound challenges`,
+- Positions the author as knowledgeable about their domain`,
 
     twitter: `You are a B2B content strategist creating a Twitter/X thread.
 Write a punchy, engaging thread that:
@@ -54,7 +70,6 @@ Write a punchy, engaging thread that:
 - Tweets 2-5: Key insights, one per tweet
 - Final tweet: Takeaway + soft CTA
 - Each tweet under 280 characters
-- Use "🧵" to indicate thread
 - No hashtags except final tweet (max 2)
 - Conversational, direct tone`,
 
@@ -68,20 +83,31 @@ Write a helpful, genuine response that:
 - May include a subtle mention of "tools that helped me" if relevant
 - Ends with an offer to share more details if helpful`,
 
-    medium: `You are outlining a Medium article for B2B audience.
-Create an article outline that:
+    medium: `You are writing a Medium article for a B2B audience.
+Create an article that:
 - Has a compelling headline
-- Includes 5-7 section headers
-- Has 2-3 bullet points per section with key points
-- Suggests a hook for the introduction
-- Includes a strong conclusion angle
-- Total article would be 1000-1500 words when written`
+- Opens with a hook that pulls readers in
+- Uses clear section headers for structure
+- Includes practical examples and insights
+- Has a strong conclusion with a takeaway
+- Reads like expert-level content, not fluff`,
+
+    newsletter: `You are writing a newsletter section for a B2B audience.
+Create an engaging newsletter piece that:
+- Opens with a compelling subject line on the first line (prefixed with "Subject: ")
+- Hooks the reader in the first sentence
+- Delivers 2-3 key insights or takeaways
+- Uses short paragraphs (2-3 sentences max)
+- Includes subheadings for scannability
+- Ends with a clear call-to-action
+- Feels like a trusted advisor sharing insider knowledge
+- Professional but personable tone`,
 };
 
 export async function POST(request: NextRequest) {
     try {
         const body: GenerateRequest = await request.json();
-        const { topic, platform, tone = 'professional', projectContext } = body;
+        const { topic, platform, tone = 'professional', contentType, formatLength, projectContext } = body;
 
         if (!topic || !platform) {
             return NextResponse.json({ error: 'Missing topic or platform' }, { status: 400 });
@@ -91,7 +117,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'OpenRouter API key not configured' }, { status: 500 });
         }
 
-        const systemPrompt = PLATFORM_PROMPTS[platform];
+        const systemPrompt = PLATFORM_PROMPTS[platform] || PLATFORM_PROMPTS.linkedin;
 
         // Build project context section if available
         let projectSection = '';
@@ -115,16 +141,24 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        const userPrompt = `Based on this topic/post, create content:
+        // Build content type instruction
+        const contentTypeInstruction = contentType && CONTENT_TYPE_INSTRUCTIONS[contentType]
+            ? `\nCONTENT FORMAT: ${CONTENT_TYPE_INSTRUCTIONS[contentType]}`
+            : '';
 
-SOURCE: ${topic.source}
-TITLE: ${topic.title}
-CONTENT: ${topic.content || 'No additional content'}
-URL: ${topic.url}${projectSection}
+        // Build format length instruction
+        const formatLengthInstruction = formatLength && FORMAT_LENGTH_INSTRUCTIONS[formatLength]
+            ? `\nLENGTH: ${FORMAT_LENGTH_INSTRUCTIONS[formatLength]}`
+            : '';
+
+        const userPrompt = `Based on this topic, create content:
+
+TOPIC: ${topic.title}
+BRIEF: ${topic.content || 'No additional context'}${topic.url ? `\nREFERENCE: ${topic.url}` : ''}${contentTypeInstruction}${formatLengthInstruction}${projectSection}
 
 Tone: ${tone}
 
-Generate the ${platform} content now:`;
+Generate the ${platform} content now. Output ONLY the post content — no meta-commentary, no "here's your post", just the content itself:`;
 
         const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
@@ -135,8 +169,8 @@ Generate the ${platform} content now:`;
                 'X-Title': 'Vera.AI Content Generator'
             },
             body: JSON.stringify({
-                model: 'anthropic/claude-3.5-haiku', // Claude Haiku 4.5 - faster & cost-effective
-                max_tokens: 1024,
+                model: 'anthropic/claude-3.5-haiku',
+                max_tokens: 2048,
                 messages: [
                     { role: 'system', content: systemPrompt },
                     { role: 'user', content: userPrompt }
