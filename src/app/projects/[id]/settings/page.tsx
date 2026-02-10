@@ -34,6 +34,7 @@ export default function ProjectSettingsPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [extracting, setExtracting] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
@@ -243,6 +244,64 @@ export default function ProjectSettingsPage() {
     }
   }
 
+  const fetchBrandInfo = async () => {
+    if (!websiteUrl.trim()) return
+    setExtracting(true)
+    setError(null)
+
+    try {
+      const res = await fetch('/api/projects/extract-brand', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: websiteUrl.trim() }),
+      })
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error || 'Failed to extract brand info')
+      }
+
+      const { data } = await res.json()
+
+      // Populate fields — override existing values
+      if (data.description) setDescription(data.description)
+      if (data.industry) setIndustry(data.industry)
+
+      if (data.products?.length > 0) {
+        setProducts(data.products.map((p: { name: string; description: string }) => ({
+          name: p.name,
+          description: p.description || '',
+          url: '',
+        })))
+        setOpenSections((prev) => ({ ...prev, products: true }))
+      }
+
+      if (data.icp) {
+        if (data.icp.target_roles?.length > 0) setTargetRoles(data.icp.target_roles)
+        if (data.icp.target_industries?.length > 0) setTargetIndustries(data.icp.target_industries)
+        if (data.icp.pain_points?.length > 0) setPainPoints(data.icp.pain_points)
+        if (data.icp.goals?.length > 0) setGoals(data.icp.goals)
+        if (data.icp.company_size) setCompanySize(data.icp.company_size)
+        setOpenSections((prev) => ({ ...prev, icp: true }))
+      }
+
+      if (data.tone_of_voice) {
+        if (data.tone_of_voice.style) setStyle(data.tone_of_voice.style)
+        if (data.tone_of_voice.formality) setFormality(data.tone_of_voice.formality)
+        if (data.tone_of_voice.personality?.length > 0) setPersonality(data.tone_of_voice.personality)
+        setOpenSections((prev) => ({ ...prev, tone: true }))
+      }
+
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
+    } catch (err: any) {
+      console.error('Brand extraction failed:', err)
+      setError(err.message || 'Failed to extract brand info from website.')
+    } finally {
+      setExtracting(false)
+    }
+  }
+
   const renderTagInput = (
     label: string,
     placeholder: string,
@@ -347,7 +406,32 @@ export default function ProjectSettingsPage() {
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-400 mb-2">Website URL</label>
-              <input type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://example.com" className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors" />
+              <div className="flex gap-3">
+                <input type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://example.com" className="flex-1 bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors" />
+                <button
+                  type="button"
+                  onClick={fetchBrandInfo}
+                  disabled={extracting || !websiteUrl.trim()}
+                  className="px-5 py-3 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold rounded-xl hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap text-sm"
+                >
+                  {extracting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Analyzing...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      Fetch Brand Info
+                    </>
+                  )}
+                </button>
+              </div>
+              {extracting && (
+                <p className="text-xs text-violet-400 mt-2 animate-pulse">Scanning website and extracting brand information with AI...</p>
+              )}
             </div>
             <div>
               <label className="block text-sm font-bold text-gray-400 mb-2">Industry</label>
