@@ -1,48 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { analyzeWebsite } from '@/agents/ai-search-agent'
 
 export const dynamic = 'force-dynamic'
 
 // POST /api/ai-search-agent/analyze - Start website analysis
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createAdminClient()
-    const { website_url, workspace_id } = await request.json()
+    const { website_url, workspace_id, depth, include_learnings } = await request.json()
 
     if (!website_url || !workspace_id) {
       return NextResponse.json({ error: 'website_url and workspace_id required' }, { status: 400 })
     }
 
-    const domain = new URL(website_url).hostname
+    // Run analysis inline (takes 30-60 seconds)
+    const result = await analyzeWebsite(workspace_id, website_url, {
+      depth: depth || 'standard',
+      includeLearn: include_learnings !== false,
+    })
 
-    // Create analysis record
-    const { data: analysis, error: analysisError } = await supabase
-      .from('vera_website_analysis_results')
-      .insert({
-        workspace_id,
-        website_url,
-        domain,
-        status: 'pending',
-      })
-      .select()
-      .single()
-
-    if (analysisError) throw analysisError
-
-    // Queue job for async processing
-    const { error: jobError } = await supabase
-      .from('vera_jobs_queue')
-      .insert({
-        job_type: 'seo-analysis',
-        workspace_id,
-        payload: { analysis_id: analysis.id, website_url, domain },
-      })
-
-    if (jobError) throw jobError
-
-    return NextResponse.json({ success: true, analysis_id: analysis.id, status: 'queued' })
+    return NextResponse.json({ success: true, data: result })
   } catch (error: unknown) {
-    console.error('Error starting analysis:', error)
+    console.error('Error running analysis:', error)
     return NextResponse.json({ error: (error as Error).message }, { status: 500 })
   }
 }
