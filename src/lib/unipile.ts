@@ -365,6 +365,250 @@ export async function getAccountDetails(accountId: string): Promise<{
     }
 }
 
+// ============================================================================
+// COMMENTING AGENT - LinkedIn Search, Comment Posting, Retry Logic
+// ============================================================================
+
+export interface UnipileSearchPost {
+    social_id: string
+    share_url: string
+    text: string
+    date: string
+    parsed_datetime?: string
+    reaction_counter: number
+    comment_counter: number
+    repost_counter: number
+    author: {
+        id: string
+        name: string
+        headline?: string
+        public_identifier: string
+        is_company: boolean
+    }
+    attachments?: { type: string; url: string }[]
+}
+
+/**
+ * Search LinkedIn posts by hashtag/keyword via Unipile
+ * Used by the commenting agent to discover posts
+ */
+export async function searchLinkedInPosts(
+    accountId: string,
+    keyword: string,
+    datePosted = 'past_week'
+): Promise<UnipileSearchPost[]> {
+    try {
+        const searchKeyword = keyword.startsWith('#') ? keyword : `#${keyword}`
+        const response = await unipileRequestWithRetry(
+            `/api/v1/linkedin/search?account_id=${accountId}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    api: 'classic',
+                    category: 'posts',
+                    keywords: searchKeyword,
+                    date_posted: datePosted,
+                    sort_by: 'date'
+                })
+            }
+        )
+
+        if (!response.ok) {
+            const err = await response.text()
+            console.error(`Unipile search failed: ${response.status}`, err)
+            return []
+        }
+
+        const data = await response.json()
+        return data.items || []
+    } catch (error) {
+        console.error('LinkedIn search error:', error)
+        return []
+    }
+}
+
+/**
+ * Post a comment on a LinkedIn post via Unipile
+ * Core function for the commenting agent
+ */
+export async function postLinkedInComment(
+    accountId: string,
+    postSocialId: string,
+    commentText: string,
+    replyToCommentId?: string
+): Promise<{ success: boolean; commentId?: string; error?: string }> {
+    try {
+        const body: Record<string, string> = {
+            account_id: accountId,
+            text: commentText,
+        }
+        if (replyToCommentId) {
+            body.comment_id = replyToCommentId
+        }
+
+        const response = await unipileRequestWithRetry(
+            `/api/v1/posts/${postSocialId}/comments`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            }
+        )
+
+        if (!response.ok) {
+            const errorText = await response.text()
+            console.error(`Unipile comment post failed: ${response.status}`, errorText)
+            return { success: false, error: `${response.status}: ${errorText}` }
+        }
+
+        const data = await response.json()
+        return {
+            success: true,
+            commentId: data.comment_id || data.id
+        }
+    } catch (error: any) {
+        console.error('LinkedIn comment post error:', error)
+        return { success: false, error: error.message || 'Unknown error' }
+    }
+}
+
+/**
+ * Get comments on a LinkedIn post via Unipile
+ */
+export async function getLinkedInPostComments(
+    accountId: string,
+    postSocialId: string,
+    limit = 10
+): Promise<{
+    id: string
+    text: string
+    author_name: string
+    author_id: string
+    reactions_count: number
+    created_at: string
+}[]> {
+    try {
+        const response = await fetch(
+            `${UNIPILE_DSN}/api/v1/posts/${postSocialId}/comments?account_id=${accountId}&limit=${limit}`,
+            { method: 'GET', headers: getHeaders() }
+        )
+
+        if (!response.ok) {
+            console.error(`Unipile get comments failed: ${response.status}`)
+            return []
+        }
+
+        const data = await response.json()
+        return (data.items || []).map((c: any) => ({
+            id: c.id || c.comment_id,
+            text: c.text || c.content || '',
+            author_name: c.author?.name || c.author_name || 'Unknown',
+            author_id: c.author?.id || c.author_id || '',
+            reactions_count: c.reactions_count || c.num_likes || 0,
+            created_at: c.created_at || c.date || ''
+        }))
+    } catch (error) {
+        console.error('Get LinkedIn comments error:', error)
+        return []
+    }
+}
+
+/**
+ * Resolve LinkedIn vanity URL to provider ID
+ */
+export async function resolveVanityUrl(
+    vanityUrl: string,
+    accountId: string
+): Promise<string | null> {
+    let vanity = vanityUrl
+    if (vanityUrl.includes('linkedin.com')) {
+        const match = vanityUrl.match(/linkedin\.com\/in\/([^\/\?]+)/)
+        if (match) vanity = match[1]
+    }
+
+    const profile = await getLinkedInProfile(vanity, accountId)
+    return profile?.provider_id || profile?.id || null
+}
+
+/**
+ * Fetch with exponential backoff retry for Unipile rate limits
+ * Retries on 429 (rate limited) with exponential backoff
+ * Throws on 401/403 (auth errors)
+ */
+async function unipileRequestWithRetry(
+    endpoint: string,
+    options: RequestInit = {},
+    maxRetries = 3,
+    initialDelay = 1000
+): Promise<Response> {
+    let lastError: Error | null = null
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+            const response = await fetch(`${UNIPILE_DSN}${endpoint}`, {
+                ...options,
+                headers: {
+                    ...getHeaders(),
+                    ...(options.headers as Record<string, string> || {}),
+                },
+            })
+
+            // Auth errors - don't retry
+            if (response.status === 401 || response.status === 403) {
+                throw new Error(`Unipile auth error: ${response.status}`)
+            }
+
+            // Rate limited - retry with backoff
+            if (response.status === 429 && attempt < maxRetries) {
+                const delay = initialDelay * Math.pow(2, attempt)
+                console.warn(`Unipile rate limited, retrying in ${delay}ms (attempt ${attempt + 1}/${maxRetries})`)
+                await new Promise(resolve => setTimeout(resolve, delay))
+                continue
+            }
+
+            return response
+        } catch (error: any) {
+            lastError = error
+            if (attempt < maxRetries && !error.message?.includes('auth error')) {
+                const delay = initialDelay * Math.pow(2, attempt)
+                console.warn(`Unipile request failed, retrying in ${delay}ms:`, error.message)
+                await new Promise(resolve => setTimeout(resolve, delay))
+            }
+        }
+    }
+
+    throw lastError || new Error('Unipile request failed after retries')
+}
+
+/**
+ * Parse Unipile relative dates ("8h", "2d", "1w") to Date objects
+ */
+export function parseUnipileDate(dateStr: string): Date | null {
+    if (!dateStr) return null
+
+    // Try ISO date first
+    const isoDate = new Date(dateStr)
+    if (!isNaN(isoDate.getTime()) && dateStr.length > 5) return isoDate
+
+    // Parse relative dates
+    const match = dateStr.match(/^(\d+)\s*(h|d|w|m|mo)$/)
+    if (!match) return null
+
+    const amount = parseInt(match[1])
+    const unit = match[2]
+    const now = new Date()
+
+    switch (unit) {
+        case 'h': return new Date(now.getTime() - amount * 60 * 60 * 1000)
+        case 'd': return new Date(now.getTime() - amount * 24 * 60 * 60 * 1000)
+        case 'w': return new Date(now.getTime() - amount * 7 * 24 * 60 * 60 * 1000)
+        case 'm':
+        case 'mo': return new Date(now.getTime() - amount * 30 * 24 * 60 * 60 * 1000)
+        default: return null
+    }
+}
+
 // Analyze writing style from samples (used for tone of voice creation)
 export function analyzeWritingStyle(samples: string[]): {
     avgWordCount: number
