@@ -63,7 +63,7 @@ interface NewsletterIssue {
 function statusBadge(status: NewsletterIssue['status']) {
   switch (status) {
     case 'draft':
-      return <Badge variant="outline" className="border-gray-600 text-gray-400">Draft</Badge>
+      return <Badge variant="outline" className="border-neutral-600 text-neutral-400">Draft</Badge>
     case 'scheduled':
       return <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30">Scheduled</Badge>
     case 'sending':
@@ -130,10 +130,10 @@ export default function NewsletterDashboardPage() {
   // Loading state
   if (authLoading || workspaceLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-400 mt-4 font-medium">Powering up Vera.AI...</p>
+          <p className="text-neutral-400 mt-4 font-medium">Powering up Vera.AI...</p>
         </div>
       </div>
     )
@@ -142,27 +142,27 @@ export default function NewsletterDashboardPage() {
   const hasConfig = configs.length > 0
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white selection:bg-violet-500/30">
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-violet-500/30">
       {/* Gradient overlay */}
-      <div className="fixed top-0 left-0 right-0 h-24 bg-gradient-to-b from-gray-950 to-transparent pointer-events-none z-40" />
+      <div className="fixed top-0 left-0 right-0 h-24 bg-gradient-to-b from-neutral-950 to-transparent pointer-events-none z-40" />
 
       {/* Header */}
-      <header className="relative z-50 border-b border-gray-800/50 bg-gray-950/50 backdrop-blur-xl">
+      <header className="relative z-50 border-b border-neutral-800/50 bg-neutral-950/50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-                <span className="text-xl font-black text-white italic">V</span>
+              <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
+                <span className="text-xl font-semibold text-neutral-100 italic">V</span>
               </div>
-              <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
+              <span className="text-2xl font-semibold tracking-tighter text-neutral-100">Vera.AI</span>
             </Link>
-            <span className="text-gray-600">|</span>
-            <h1 className="text-white font-medium">Newsletter</h1>
+            <span className="text-neutral-600">|</span>
+            <h1 className="text-neutral-100 font-medium">Newsletter</h1>
           </div>
 
           <div className="flex items-center gap-3">
             <Link href="/newsletter/subscribers">
-              <Button variant="outline" className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-500">
+              <Button variant="outline" className="border-neutral-700 text-neutral-300 hover:text-neutral-100 hover:border-neutral-500">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128H5.228A2 2 0 013 17.208V5.228A2 2 0 015.228 3h13.544A2 2 0 0121 5.228v5.018M12 10.5a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 Subscribers
               </Button>
@@ -181,26 +181,26 @@ export default function NewsletterDashboardPage() {
         {/* Breadcrumb + Hero */}
         <div>
           <div className="flex items-center gap-2 mb-4">
-            <Link href="/dashboard" className="text-gray-500 hover:text-gray-300 text-xs font-bold uppercase tracking-widest transition-colors">
+            <Link href="/dashboard" className="text-neutral-500 hover:text-neutral-300 text-xs font-bold uppercase tracking-widest transition-colors">
               Dashboard
             </Link>
-            <span className="text-gray-700 text-xs">/</span>
+            <span className="text-neutral-700 text-xs">/</span>
             <span className="text-violet-400 text-xs font-bold uppercase tracking-widest">Newsletter</span>
           </div>
-          <h2 className="text-4xl font-black tracking-tight text-white mb-2">Newsletter Hub</h2>
-          <p className="text-lg text-gray-400 max-w-2xl leading-relaxed">
+          <h2 className="text-4xl font-semibold tracking-tight text-neutral-100 mb-2">Newsletter Hub</h2>
+          <p className="text-lg text-neutral-400 max-w-2xl leading-relaxed">
             Create, manage, and send newsletters to your audience. Track engagement and grow your subscriber list.
           </p>
         </div>
 
         {/* Onboarding CTA if no config */}
         {!loading && !hasConfig && (
-          <div className="bg-gradient-to-br from-violet-500/10 via-fuchsia-500/10 to-transparent border border-violet-500/20 rounded-3xl p-10 text-center">
+          <div className="bg-gradient-to-br from-violet-500/10 via-fuchsia-500/10 to-transparent border border-violet-500/20 rounded-xl p-10 text-center">
             <div className="text-5xl mb-6">
               <svg className="w-16 h-16 mx-auto text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
             </div>
-            <h3 className="text-2xl font-black text-white mb-3">Set up your first newsletter</h3>
-            <p className="text-gray-400 max-w-md mx-auto mb-8">
+            <h3 className="text-2xl font-semibold text-neutral-100 mb-3">Set up your first newsletter</h3>
+            <p className="text-neutral-400 max-w-md mx-auto mb-8">
               Configure your newsletter with a name, sender details, and cadence. Then start building your subscriber list and creating issues.
             </p>
             <SetupNewsletterInline
@@ -221,12 +221,12 @@ export default function NewsletterDashboardPage() {
             ].map((stat) => (
               <div
                 key={stat.label}
-                className="bg-gray-900/40 border border-gray-800 p-8 rounded-3xl hover:bg-gray-900/60 transition-all group relative overflow-hidden"
+                className="bg-neutral-900/40 border border-neutral-800 p-8 rounded-xl hover:bg-neutral-900/60 transition-all group relative overflow-hidden"
               >
                 <div className={`absolute top-0 right-0 w-32 h-32 bg-${stat.color}-500/5 blur-3xl -mr-16 -mt-16 group-hover:bg-${stat.color}-500/10 transition-all`} />
-                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mb-1">{stat.label}</p>
+                <p className="text-neutral-500 font-bold uppercase tracking-widest text-xs mb-1">{stat.label}</p>
                 <div className="flex items-end gap-3">
-                  <span className="text-5xl font-black text-white">{loading ? <Skeleton className="h-12 w-20" /> : stat.value}</span>
+                  <span className="text-5xl font-semibold text-neutral-100">{loading ? <Skeleton className="h-12 w-20" /> : stat.value}</span>
                   <span className={`text-${stat.color}-400 text-sm font-bold mb-2`}>{stat.note}</span>
                 </div>
               </div>
@@ -236,9 +236,9 @@ export default function NewsletterDashboardPage() {
 
         {/* Newsletter Configs */}
         {hasConfig && (
-          <div className="bg-gray-900/20 border border-gray-800/50 rounded-[2.5rem] p-10">
+          <div className="bg-neutral-900/20 border border-neutral-800/50 rounded-[2.5rem] p-10">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-black text-white">Your Newsletters</h3>
+              <h3 className="text-2xl font-semibold text-neutral-100">Your Newsletters</h3>
               <SetupNewsletterInline
                 workspaceId={currentWorkspace?.id || ''}
                 onCreated={fetchData}
@@ -249,17 +249,17 @@ export default function NewsletterDashboardPage() {
               {configs.map((cfg) => (
                 <div
                   key={cfg.id}
-                  className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 hover:bg-gray-900/60 transition-all"
+                  className="bg-neutral-900/40 border border-neutral-800 rounded-xl p-6 hover:bg-neutral-900/60 transition-all"
                 >
                   <div className="flex items-start justify-between mb-3">
-                    <h4 className="font-black text-white text-lg">{cfg.name}</h4>
-                    <Badge className={cfg.is_active ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-gray-700/30 text-gray-500 border border-gray-700'}>
+                    <h4 className="font-semibold text-neutral-100 text-lg">{cfg.name}</h4>
+                    <Badge className={cfg.is_active ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-neutral-700/30 text-neutral-500 border border-neutral-700'}>
                       {cfg.is_active ? 'Active' : 'Paused'}
                     </Badge>
                   </div>
-                  <div className="space-y-1 text-sm text-gray-500">
+                  <div className="space-y-1 text-sm text-neutral-500">
                     {cfg.from_name && <p>From: {cfg.from_name}{cfg.from_email ? ` <${cfg.from_email}>` : ''}</p>}
-                    <p>Cadence: <span className="text-gray-300 capitalize">{cfg.cadence}</span></p>
+                    <p>Cadence: <span className="text-neutral-300 capitalize">{cfg.cadence}</span></p>
                   </div>
                 </div>
               ))}
@@ -269,9 +269,9 @@ export default function NewsletterDashboardPage() {
 
         {/* Recent Issues */}
         {hasConfig && (
-          <div className="bg-gray-900/20 border border-gray-800/50 rounded-[2.5rem] p-10">
+          <div className="bg-neutral-900/20 border border-neutral-800/50 rounded-[2.5rem] p-10">
             <div className="flex items-center justify-between mb-8">
-              <h3 className="text-2xl font-black text-white">Recent Issues</h3>
+              <h3 className="text-2xl font-semibold text-neutral-100">Recent Issues</h3>
               <Link href="/newsletter/new">
                 <Button variant="gradient" size="sm">
                   <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
@@ -283,39 +283,39 @@ export default function NewsletterDashboardPage() {
             {loading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+                  <Skeleton key={i} className="h-16 w-full rounded-xl" />
                 ))}
               </div>
             ) : issues.length === 0 ? (
               <div className="text-center py-16">
-                <svg className="w-12 h-12 mx-auto text-gray-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
-                <p className="text-gray-500 font-medium">No issues yet</p>
-                <p className="text-gray-600 text-sm mt-1">Create your first newsletter issue to get started.</p>
+                <svg className="w-12 h-12 mx-auto text-neutral-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
+                <p className="text-neutral-500 font-medium">No issues yet</p>
+                <p className="text-neutral-600 text-sm mt-1">Create your first newsletter issue to get started.</p>
               </div>
             ) : (
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="border-gray-800 hover:bg-transparent">
-                      <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs">Subject</TableHead>
-                      <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs">Status</TableHead>
-                      <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs">Sent</TableHead>
-                      <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs text-right">Opens</TableHead>
-                      <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs text-right">Clicks</TableHead>
+                    <TableRow className="border-neutral-800 hover:bg-transparent">
+                      <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs">Subject</TableHead>
+                      <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs">Status</TableHead>
+                      <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs">Sent</TableHead>
+                      <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs text-right">Opens</TableHead>
+                      <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs text-right">Clicks</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {issues.map((issue) => (
-                      <TableRow key={issue.id} className="border-gray-800/50 hover:bg-gray-900/40 cursor-pointer transition-colors">
-                        <TableCell className="font-bold text-white">
+                      <TableRow key={issue.id} className="border-neutral-800/50 hover:bg-neutral-900/40 cursor-pointer transition-colors">
+                        <TableCell className="font-bold text-neutral-100">
                           <Link href={`/newsletter/${issue.id}`} className="hover:text-violet-400 transition-colors">
                             {issue.subject}
                           </Link>
                         </TableCell>
                         <TableCell>{statusBadge(issue.status)}</TableCell>
-                        <TableCell className="text-gray-400 text-sm">{formatDate(issue.sent_at || issue.scheduled_for)}</TableCell>
-                        <TableCell className="text-right text-gray-300 font-mono text-sm">{issue.open_count ?? '--'}</TableCell>
-                        <TableCell className="text-right text-gray-300 font-mono text-sm">{issue.click_count ?? '--'}</TableCell>
+                        <TableCell className="text-neutral-400 text-sm">{formatDate(issue.sent_at || issue.scheduled_for)}</TableCell>
+                        <TableCell className="text-right text-neutral-300 font-mono text-sm">{issue.open_count ?? '--'}</TableCell>
+                        <TableCell className="text-right text-neutral-300 font-mono text-sm">{issue.click_count ?? '--'}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
@@ -326,8 +326,8 @@ export default function NewsletterDashboardPage() {
         )}
       </main>
 
-      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-gray-800/50 text-center">
-        <p className="text-gray-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
+      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-neutral-800/50 text-center">
+        <p className="text-neutral-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
       </footer>
     </div>
   )
@@ -383,7 +383,7 @@ function SetupNewsletterInline({
         variant={compact ? 'outline' : 'gradient'}
         size={compact ? 'sm' : 'default'}
         onClick={() => setOpen(true)}
-        className={compact ? 'border-gray-700 text-gray-300 hover:text-white' : ''}
+        className={compact ? 'border-neutral-700 text-neutral-300 hover:text-neutral-100' : ''}
       >
         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
         {compact ? 'Add Newsletter' : 'Set Up Newsletter'}
@@ -393,61 +393,61 @@ function SetupNewsletterInline({
 
   return (
     <div className={compact ? 'mt-4' : ''}>
-      <Card className="bg-gray-900/60 border-gray-800 text-white max-w-lg mx-auto">
+      <Card className="bg-neutral-900/60 border-neutral-800 text-neutral-100 max-w-lg mx-auto">
         <CardHeader>
-          <CardTitle className="text-white">Create Newsletter</CardTitle>
-          <CardDescription className="text-gray-400">Configure your newsletter settings.</CardDescription>
+          <CardTitle className="text-neutral-100">Create Newsletter</CardTitle>
+          <CardDescription className="text-neutral-400">Configure your newsletter settings.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 block">Newsletter Name *</label>
+            <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1 block">Newsletter Name *</label>
             <input
               type="text"
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="e.g. Weekly AI Digest"
-              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-600 focus:outline-none focus:border-violet-500 transition-colors"
+              className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-violet-500 transition-colors"
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 block">From Name</label>
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1 block">From Name</label>
               <input
                 type="text"
                 value={form.from_name}
                 onChange={(e) => setForm({ ...form, from_name: e.target.value })}
                 placeholder="Your Name"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-600 focus:outline-none focus:border-violet-500 transition-colors"
+                className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-violet-500 transition-colors"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 block">From Email</label>
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1 block">From Email</label>
               <input
                 type="email"
                 value={form.from_email}
                 onChange={(e) => setForm({ ...form, from_email: e.target.value })}
                 placeholder="you@company.com"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-600 focus:outline-none focus:border-violet-500 transition-colors"
+                className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-violet-500 transition-colors"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 block">Reply-To</label>
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1 block">Reply-To</label>
               <input
                 type="email"
                 value={form.reply_to}
                 onChange={(e) => setForm({ ...form, reply_to: e.target.value })}
                 placeholder="reply@company.com"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder:text-gray-600 focus:outline-none focus:border-violet-500 transition-colors"
+                className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder:text-neutral-600 focus:outline-none focus:border-violet-500 transition-colors"
               />
             </div>
             <div>
-              <label className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1 block">Cadence</label>
+              <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-1 block">Cadence</label>
               <select
                 value={form.cadence}
                 onChange={(e) => setForm({ ...form, cadence: e.target.value as 'weekly' | 'biweekly' | 'monthly' })}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-violet-500 transition-colors"
+                className="w-full bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 focus:outline-none focus:border-violet-500 transition-colors"
               >
                 <option value="weekly">Weekly</option>
                 <option value="biweekly">Biweekly</option>
@@ -455,9 +455,9 @@ function SetupNewsletterInline({
               </select>
             </div>
           </div>
-          <Separator className="bg-gray-800" />
+          <Separator className="bg-neutral-800" />
           <div className="flex gap-3 justify-end">
-            <Button variant="ghost" onClick={() => setOpen(false)} className="text-gray-400 hover:text-white">
+            <Button variant="ghost" onClick={() => setOpen(false)} className="text-neutral-400 hover:text-neutral-100">
               Cancel
             </Button>
             <Button variant="gradient" onClick={handleSubmit} disabled={saving || !form.name.trim()}>

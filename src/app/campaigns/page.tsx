@@ -217,16 +217,16 @@ export default function CampaignsPage() {
     const { profile } = useAuth()
 
     return (
-        <div className="min-h-screen bg-gray-950 text-white selection:bg-violet-500/30">
+        <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-violet-500/30">
             {/* Top Navigation - matches dashboard */}
-            <header className="relative z-50 border-b border-gray-800/50 bg-gray-950/50 backdrop-blur-xl">
+            <header className="relative z-50 border-b border-neutral-800/50 bg-neutral-950/50 backdrop-blur-xl">
                 <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                     <div className="flex items-center gap-8">
                         <Link href="/dashboard" className="flex items-center gap-3 group">
-                            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-                                <span className="text-xl font-black text-white italic">V</span>
+                            <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
+                                <span className="text-xl font-semibold text-neutral-100 italic">V</span>
                             </div>
-                            <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
+                            <span className="text-2xl font-semibold tracking-tighter text-neutral-100">Vera.AI</span>
                         </Link>
 
                         <nav className="hidden md:flex items-center gap-1">
@@ -235,7 +235,7 @@ export default function CampaignsPage() {
                                 { label: 'Projects', href: '/projects' },
                                 { label: 'Settings', href: '/settings' },
                             ].map((item) => (
-                                <Link key={item.label} href={item.href} className="px-4 py-2 text-sm font-medium rounded-lg transition-all text-gray-400 hover:text-white hover:bg-white/5">
+                                <Link key={item.label} href={item.href} className="px-4 py-2 text-sm font-medium rounded-lg transition-all text-neutral-400 hover:text-neutral-100 hover:bg-white/5">
                                     {item.label}
                                 </Link>
                             ))}
@@ -259,15 +259,15 @@ export default function CampaignsPage() {
                 {/* Page Header with View Tabs */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
-                        <h1 className="text-3xl font-black tracking-tight text-white">{getViewTitle()}</h1>
-                        <p className="text-gray-500 text-sm mt-1">{getViewDescription()}</p>
+                        <h1 className="text-3xl font-semibold tracking-tight text-neutral-100">{getViewTitle()}</h1>
+                        <p className="text-neutral-500 text-sm mt-1">{getViewDescription()}</p>
                     </div>
-                    <div className="flex bg-gray-900 rounded-xl p-1 border border-gray-800">
+                    <div className="flex bg-neutral-900 rounded-xl p-1 border border-neutral-800">
                         <button
                             onClick={() => setActiveView('review')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'review'
-                                ? 'bg-violet-600 text-white shadow-sm'
-                                : 'text-gray-400 hover:text-white'
+                                ? 'bg-violet-600 text-neutral-100 shadow-sm'
+                                : 'text-neutral-400 hover:text-neutral-100'
                                 }`}
                         >
                             📋 Review
@@ -275,8 +275,8 @@ export default function CampaignsPage() {
                         <button
                             onClick={() => setActiveView('setup')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'setup'
-                                ? 'bg-violet-600 text-white shadow-sm'
-                                : 'text-gray-400 hover:text-white'
+                                ? 'bg-violet-600 text-neutral-100 shadow-sm'
+                                : 'text-neutral-400 hover:text-neutral-100'
                                 }`}
                         >
                             🎯 New Campaign
@@ -285,8 +285,8 @@ export default function CampaignsPage() {
                             <button
                                 onClick={() => setActiveView('output')}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${activeView === 'output'
-                                    ? 'bg-violet-600 text-white shadow-sm'
-                                    : 'text-gray-400 hover:text-white'
+                                    ? 'bg-violet-600 text-neutral-100 shadow-sm'
+                                    : 'text-neutral-400 hover:text-neutral-100'
                                     }`}
                             >
                                 ✨ Output

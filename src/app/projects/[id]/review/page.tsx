@@ -9,7 +9,7 @@ export default function ReviewPage() {
   if (!currentWorkspace) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-500">Loading workspace...</p>
+        <p className="text-neutral-500">Loading workspace...</p>
       </div>
     )
   }

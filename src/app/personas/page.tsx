@@ -44,20 +44,20 @@ export default function PersonasPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-gray-950">
+        <div className="min-h-screen bg-neutral-950">
             {/* Header */}
-            <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur sticky top-0 z-50">
+            <header className="border-b border-neutral-800 bg-neutral-900/50 backdrop-blur sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center gap-4">
-                            <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
+                            <Link href="/dashboard" className="text-neutral-400 hover:text-neutral-100 transition-colors">
                                 ← Dashboard
                             </Link>
-                            <h1 className="text-xl font-bold text-white">🎭 Personas</h1>
+                            <h1 className="text-xl font-bold text-neutral-100">🎭 Personas</h1>
                         </div>
                         <Link
                             href="/personas/new"
-                            className="bg-violet-600 hover:bg-violet-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                            className="bg-violet-600 hover:bg-violet-700 text-neutral-100 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                         >
                             + Create Persona
                         </Link>
@@ -67,14 +67,14 @@ export default function PersonasPage() {
 
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-white mb-2">My Personas</h2>
-                    <p className="text-gray-400">Define your brand identity, target audience segments, and product value propositions.</p>
+                    <h2 className="text-2xl font-bold text-neutral-100 mb-2">My Personas</h2>
+                    <p className="text-neutral-400">Define your brand identity, target audience segments, and product value propositions.</p>
                 </div>
 
                 {isLoading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[1, 2, 3].map(i => (
-                            <div key={i} className="h-48 bg-gray-900/50 border border-gray-800 rounded-2xl animate-pulse"></div>
+                            <div key={i} className="h-48 bg-neutral-900/50 border border-neutral-800 rounded-xl animate-pulse"></div>
                         ))}
                     </div>
                 ) : (
@@ -85,15 +85,15 @@ export default function PersonasPage() {
                                 <section key={type.id}>
                                     <div className="flex items-center gap-3 mb-6">
                                         <span className="text-2xl">{type.icon}</span>
-                                        <h3 className="text-xl font-semibold text-white">{type.label}</h3>
-                                        <span className="bg-gray-800 text-gray-400 text-xs px-2 py-0.5 rounded-full">
+                                        <h3 className="text-xl font-semibold text-neutral-100">{type.label}</h3>
+                                        <span className="bg-neutral-800 text-neutral-400 text-xs px-2 py-0.5 rounded-full">
                                             {filteredPersonas.length}
                                         </span>
                                     </div>
 
                                     {filteredPersonas.length === 0 ? (
-                                        <div className={`bg-gradient-to-br ${type.color} border ${type.border} border-dashed rounded-2xl p-12 text-center`}>
-                                            <p className="text-gray-400 mb-4">No {type.label.toLowerCase()} created yet.</p>
+                                        <div className={`bg-gradient-to-br ${type.color} border ${type.border} border-dashed rounded-xl p-12 text-center`}>
+                                            <p className="text-neutral-400 mb-4">No {type.label.toLowerCase()} created yet.</p>
                                             <Link
                                                 href={`/personas/new?type=${type.id}`}
                                                 className="text-violet-400 hover:text-violet-300 font-medium transition-colors"
@@ -107,24 +107,24 @@ export default function PersonasPage() {
                                                 <Link
                                                     key={persona.id}
                                                     href={`/personas/${persona.id}`}
-                                                    className="bg-gray-900 border border-gray-800 rounded-2xl p-6 hover:border-violet-500/50 transition-all group"
+                                                    className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 hover:border-violet-500/50 transition-all group"
                                                 >
                                                     <div className="flex justify-between items-start mb-4">
-                                                        <h4 className="text-lg font-bold text-white group-hover:text-violet-400 transition-colors">
+                                                        <h4 className="text-lg font-bold text-neutral-100 group-hover:text-violet-400 transition-colors">
                                                             {persona.name}
                                                         </h4>
                                                         {!persona.is_active && (
-                                                            <span className="bg-gray-800 text-gray-500 text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded">
+                                                            <span className="bg-neutral-800 text-neutral-500 text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded">
                                                                 Inactive
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-gray-400 text-sm line-clamp-2 mb-4">
+                                                    <p className="text-neutral-400 text-sm line-clamp-2 mb-4">
                                                         {persona.description || 'No description provided.'}
                                                     </p>
                                                     <div className="flex flex-wrap gap-2">
                                                         {Object.keys(persona.attributes || {}).slice(0, 3).map(attr => (
-                                                            <span key={attr} className="bg-gray-800/50 text-gray-500 text-[10px] px-2 py-0.5 rounded border border-gray-800">
+                                                            <span key={attr} className="bg-neutral-800/50 text-neutral-500 text-[10px] px-2 py-0.5 rounded border border-neutral-800">
                                                                 {attr}
                                                             </span>
                                                         ))}

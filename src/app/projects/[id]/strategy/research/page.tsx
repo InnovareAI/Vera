@@ -126,7 +126,7 @@ export default function ProjectResearchPage() {
       case 'reddit': return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
       case 'hackernews': return 'bg-amber-500/20 text-amber-400 border-amber-500/30'
       case 'googlenews': return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30'
+      default: return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30'
     }
   }
 
@@ -135,7 +135,7 @@ export default function ProjectResearchPage() {
       high_intent: 'bg-green-500/20 text-green-400 border-green-500/30',
       problem_aware: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
       pain_point: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
-      general: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+      general: 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30',
     }
     return styles[category] || styles.general
   }
@@ -161,12 +161,12 @@ export default function ProjectResearchPage() {
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && fetchResearch()}
             placeholder="Search topics (e.g., AI SDR, outbound, sales automation)..."
-            className="flex-1 px-4 py-3 rounded-xl bg-gray-900 border border-gray-800 focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20 text-white placeholder-gray-600 transition-all"
+            className="flex-1 px-4 py-3 rounded-xl bg-neutral-900 border border-neutral-800 focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20 text-neutral-100 placeholder-neutral-600 transition-all"
           />
           <button
             onClick={fetchResearch}
             disabled={loading || !query.trim()}
-            className="px-6 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 font-bold text-white transition-all disabled:opacity-50"
+            className="px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 font-semibold text-neutral-100 transition-all disabled:opacity-50"
           >
             {loading ? 'Searching...' : 'Search'}
           </button>
@@ -182,9 +182,9 @@ export default function ProjectResearchPage() {
                 onChange={() =>
                   setSelectedSources((prev) => ({ ...prev, [source]: !prev[source as keyof typeof prev] }))
                 }
-                className="w-4 h-4 rounded border-gray-700 bg-gray-800 text-violet-500 focus:ring-violet-500/20"
+                className="w-4 h-4 rounded border-neutral-700 bg-neutral-800 text-violet-500 focus:ring-violet-500/20"
               />
-              <span className="text-sm text-gray-400">
+              <span className="text-sm text-neutral-400">
                 {source === 'hackernews' ? 'Hacker News' : source === 'googlenews' ? 'Google News' : 'Reddit'}
               </span>
             </label>
@@ -195,37 +195,37 @@ export default function ProjectResearchPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Research Feed */}
         <div>
-          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
             Research Feed
-            {results.length > 0 && <span className="text-gray-600 font-normal">({results.length})</span>}
+            {results.length > 0 && <span className="text-neutral-600 font-normal">({results.length})</span>}
           </h3>
 
           <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
             {results.length === 0 && !loading && (
-              <div className="text-center py-12 bg-gray-900/40 border border-gray-800 rounded-2xl">
-                <svg className="w-12 h-12 text-gray-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="text-center py-12 bg-neutral-900/40 border border-neutral-800 rounded-xl">
+                <svg className="w-12 h-12 text-neutral-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <p className="text-gray-500 text-sm">Search for topics to discover content opportunities</p>
+                <p className="text-neutral-500 text-sm">Search for topics to discover content opportunities</p>
               </div>
             )}
 
             {loading && (
               <div className="text-center py-12">
                 <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                <p className="text-gray-500 text-sm">Scanning sources...</p>
+                <p className="text-neutral-500 text-sm">Scanning sources...</p>
               </div>
             )}
 
             {results.map((result) => (
               <div
                 key={result.id}
-                className="p-4 rounded-2xl bg-gray-900 border border-gray-800 hover:border-gray-700 transition-all"
+                className="p-4 rounded-xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 transition-all"
               >
                 <div className="flex items-start justify-between gap-4 mb-2">
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
-                    <span className={`px-2 py-0.5 rounded-full border text-xs font-bold ${getSourceColor(result.source)}`}>
+                  <div className="flex items-center gap-2 text-xs text-neutral-500">
+                    <span className={`px-2 py-0.5 rounded-full border text-xs font-semibold ${getSourceColor(result.source)}`}>
                       {getSourceIcon(result.source)}
                     </span>
                     <span>{result.author}</span>
@@ -236,10 +236,10 @@ export default function ProjectResearchPage() {
                   </span>
                 </div>
 
-                <h4 className="font-bold text-white text-sm mb-2 line-clamp-2">{result.title}</h4>
+                <h4 className="font-semibold text-neutral-100 text-sm mb-2 line-clamp-2">{result.title}</h4>
 
                 {result.content && (
-                  <p className="text-xs text-gray-500 mb-3 line-clamp-2">{result.content}</p>
+                  <p className="text-xs text-neutral-500 mb-3 line-clamp-2">{result.content}</p>
                 )}
 
                 {result.matchedKeywords.length > 0 && (
@@ -258,7 +258,7 @@ export default function ProjectResearchPage() {
                       key={platform}
                       onClick={() => generateContent(result, platform)}
                       disabled={generating === `${result.id}_${platform}`}
-                      className="px-3 py-1.5 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-600 transition-all disabled:opacity-50 text-gray-300 font-bold"
+                      className="px-3 py-1.5 text-xs rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 hover:border-neutral-600 transition-all disabled:opacity-50 text-neutral-300 font-semibold"
                     >
                       {generating === `${result.id}_${platform}` ? '...' : platform}
                     </button>
@@ -267,7 +267,7 @@ export default function ProjectResearchPage() {
                     href={result.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-3 py-1.5 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-gray-600 transition-all text-gray-300 font-bold"
+                    className="px-3 py-1.5 text-xs rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 hover:border-neutral-600 transition-all text-neutral-300 font-semibold"
                   >
                     Open
                   </a>
@@ -279,37 +279,37 @@ export default function ProjectResearchPage() {
 
         {/* Generated Content */}
         <div>
-          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-widest mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-fuchsia-500"></span>
             Generated Content
           </h3>
 
           {!generatedContent ? (
-            <div className="p-8 rounded-2xl bg-gray-900 border border-gray-800 border-dashed text-center">
-              <svg className="w-12 h-12 text-gray-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-8 rounded-xl bg-neutral-900 border border-neutral-800 border-dashed text-center">
+              <svg className="w-12 h-12 text-neutral-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
               </svg>
-              <p className="text-gray-500 text-sm">Select a topic and platform to generate content</p>
+              <p className="text-neutral-500 text-sm">Select a topic and platform to generate content</p>
             </div>
           ) : (
-            <div className="p-6 rounded-2xl bg-gray-900 border border-gray-800">
+            <div className="p-6 rounded-xl bg-neutral-900 border border-neutral-800">
               <div className="flex items-center justify-between mb-4">
-                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600 text-sm font-bold text-white">
+                <span className="px-3 py-1 rounded-full bg-violet-600 text-sm font-semibold text-neutral-100">
                   {generatedContent.platform}
                 </span>
                 <button
                   onClick={() => navigator.clipboard.writeText(generatedContent.content)}
-                  className="px-3 py-1.5 text-xs rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 transition-all text-gray-300 font-bold"
+                  className="px-3 py-1.5 text-xs rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 transition-all text-neutral-300 font-semibold"
                 >
                   Copy
                 </button>
               </div>
 
-              <div className="mb-4 text-xs text-gray-600">
+              <div className="mb-4 text-xs text-neutral-600">
                 Based on: {generatedContent.topic.title.slice(0, 60)}...
               </div>
 
-              <div className="p-4 rounded-xl bg-gray-950 whitespace-pre-wrap text-sm leading-relaxed max-h-[50vh] overflow-y-auto text-gray-300 border border-gray-800">
+              <div className="p-4 rounded-xl bg-neutral-950 whitespace-pre-wrap text-sm leading-relaxed max-h-[50vh] overflow-y-auto text-neutral-300 border border-neutral-800">
                 {generatedContent.content}
               </div>
 
@@ -346,7 +346,7 @@ export default function ProjectResearchPage() {
                     }
                   }}
                   disabled={savingDraft || draftSaved}
-                  className="flex-1 px-4 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 font-bold text-sm text-white transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 font-semibold text-sm text-neutral-100 transition-all disabled:opacity-70 flex items-center justify-center gap-2"
                 >
                   {savingDraft ? (
                     <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> Saving...</>
@@ -356,7 +356,7 @@ export default function ProjectResearchPage() {
                     'Save to Review'
                   )}
                 </button>
-                <button className="px-4 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 border border-gray-700 text-sm text-gray-300 font-bold transition-all">
+                <button className="px-4 py-2.5 rounded-xl bg-neutral-800 hover:bg-neutral-700 border border-neutral-700 text-sm text-neutral-300 font-semibold transition-all">
                   Regenerate
                 </button>
               </div>

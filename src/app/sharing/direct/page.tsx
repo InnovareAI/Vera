@@ -89,11 +89,11 @@ export default function DirectSharePage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-950 text-white font-sans">
-            <header className="border-b border-gray-800 bg-gray-950/50 backdrop-blur sticky top-0 z-50">
+        <div className="min-h-screen bg-neutral-950 text-neutral-100 font-sans">
+            <header className="border-b border-neutral-800 bg-neutral-950/50 backdrop-blur sticky top-0 z-50">
                 <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link href="/dashboard" className="text-gray-400 hover:text-white transition-colors">
+                        <Link href="/dashboard" className="text-neutral-400 hover:text-neutral-100 transition-colors">
                             ← Back
                         </Link>
                         <h1 className="text-xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
@@ -106,26 +106,26 @@ export default function DirectSharePage() {
             <main className="max-w-4xl mx-auto px-6 py-12">
                 <div className="mb-12">
                     <h2 className="text-3xl font-bold mb-4">Post your POV</h2>
-                    <p className="text-gray-400">
+                    <p className="text-neutral-400">
                         Share your thoughts directly to LinkedIn without any AI generation or branding overhead.
                         Just clean, direct communication.
                     </p>
                 </div>
 
                 {message && (
-                    <div className={`p-4 rounded-2xl mb-8 flex items-center gap-3 ${message.includes('Error') || message.includes('❌') ? 'bg-red-500/10 border border-red-500/20 text-red-400' : 'bg-green-500/10 border border-green-500/20 text-green-400'}`}>
+                    <div className={`p-4 rounded-xl mb-8 flex items-center gap-3 ${message.includes('Error') || message.includes('❌') ? 'bg-red-500/10 border border-red-500/20 text-red-400' : 'bg-green-500/10 border border-green-500/20 text-green-400'}`}>
                         <span>{message}</span>
                     </div>
                 )}
 
                 <form onSubmit={handlePost} className="space-y-8">
                     {/* Account Selector */}
-                    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-                        <label className="block text-sm font-medium text-gray-400 mb-4 font-mono uppercase tracking-widest">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+                        <label className="block text-sm font-medium text-neutral-400 mb-4 font-mono uppercase tracking-widest">
                             1. Select Account
                         </label>
                         {isLoading ? (
-                            <div className="h-12 bg-gray-800 animate-pulse rounded-xl"></div>
+                            <div className="h-12 bg-neutral-800 animate-pulse rounded-xl"></div>
                         ) : accounts.length === 0 ? (
                             <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-400 text-sm">
                                 No connected LinkedIn accounts found. Please connect an account in Team Settings.
@@ -139,16 +139,16 @@ export default function DirectSharePage() {
                                         onClick={() => setSelectedAccountId(account.integration_account_id)}
                                         className={`p-4 rounded-xl border transition-all text-left ${selectedAccountId === account.integration_account_id
                                             ? 'bg-violet-600/20 border-violet-500 shadow-lg shadow-violet-900/20'
-                                            : 'bg-gray-800 border-gray-700 hover:border-gray-600'
+                                            : 'bg-neutral-800 border-neutral-700 hover:border-neutral-600'
                                             }`}
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center font-bold text-xs">
+                                            <div className="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center font-bold text-xs">
                                                 {account.owner_name[0]}
                                             </div>
                                             <div>
-                                                <div className="text-sm font-bold text-white truncate">{account.owner_name}</div>
-                                                <div className="text-[10px] text-gray-500 uppercase font-mono">{account.platform}</div>
+                                                <div className="text-sm font-bold text-neutral-100 truncate">{account.owner_name}</div>
+                                                <div className="text-[10px] text-neutral-500 uppercase font-mono">{account.platform}</div>
                                             </div>
                                         </div>
                                     </button>
@@ -158,18 +158,18 @@ export default function DirectSharePage() {
                     </div>
 
                     {/* Content Area */}
-                    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-                        <label className="block text-sm font-medium text-gray-400 mb-4 font-mono uppercase tracking-widest">
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+                        <label className="block text-sm font-medium text-neutral-400 mb-4 font-mono uppercase tracking-widest">
                             2. Your Content
                         </label>
                         <textarea
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
                             placeholder="What's your perspective today?"
-                            className="w-full h-64 bg-gray-800 border border-gray-700 rounded-xl p-6 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all resize-none text-lg leading-relaxed"
+                            className="w-full h-64 bg-neutral-800 border border-neutral-700 rounded-xl p-6 text-neutral-100 placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all resize-none text-lg leading-relaxed"
                             required
                         />
-                        <div className="mt-4 flex justify-between items-center text-xs text-gray-500">
+                        <div className="mt-4 flex justify-between items-center text-xs text-neutral-500">
                             <span>Character count: {content.length}</span>
                             <span>LinkedIn limit: ~3,000</span>
                         </div>
@@ -180,7 +180,7 @@ export default function DirectSharePage() {
                         <button
                             type="submit"
                             disabled={isPosting || !content.trim() || accounts.length === 0}
-                            className="px-12 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-2xl font-bold text-lg hover:from-violet-500 hover:to-fuchsia-500 transition-all shadow-xl shadow-violet-900/40 disabled:opacity-50 disabled:cursor-not-allowed group"
+                            className="px-12 py-4 bg-violet-600 text-neutral-100 rounded-xl font-bold text-lg hover:bg-violet-500 transition-all shadow-violet-900/40 disabled:opacity-50 disabled:cursor-not-allowed group"
                         >
                             {isPosting ? 'Sending to LinkedIn...' : 'Post to LinkedIn'}
                             <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">🚀</span>

@@ -80,10 +80,10 @@ interface ColdEmailEvent {
 
 // ── Status badge mapping ──────────────────────────────
 const statusConfig: Record<string, { variant: 'outline' | 'default' | 'secondary' | 'destructive'; label: string; className?: string }> = {
-  draft: { variant: 'outline', label: 'Draft', className: 'border-gray-600 text-gray-400' },
+  draft: { variant: 'outline', label: 'Draft', className: 'border-neutral-600 text-neutral-400' },
   active: { variant: 'default', label: 'Active', className: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
   sending: { variant: 'default', label: 'Sending', className: 'bg-amber-500/20 text-amber-400 border-amber-500/30 animate-pulse' },
-  paused: { variant: 'secondary', label: 'Paused', className: 'bg-gray-700/50 text-gray-400 border-gray-600' },
+  paused: { variant: 'secondary', label: 'Paused', className: 'bg-neutral-700/50 text-neutral-400 border-neutral-600' },
   completed: { variant: 'secondary', label: 'Completed', className: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
 }
 
@@ -94,7 +94,7 @@ const eventTypeIcons: Record<string, { icon: string; color: string; label: strin
   clicked: { icon: '🔗', color: 'text-fuchsia-400', label: 'Clicked' },
   replied: { icon: '💬', color: 'text-amber-400', label: 'Replied' },
   bounced: { icon: '❌', color: 'text-red-400', label: 'Bounced' },
-  unsubscribed: { icon: '🚫', color: 'text-gray-400', label: 'Unsubscribed' },
+  unsubscribed: { icon: '🚫', color: 'text-neutral-400', label: 'Unsubscribed' },
 }
 
 export default function CampaignDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -279,10 +279,10 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
   if (authLoading || workspaceLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-400 mt-4 font-medium">Loading...</p>
+          <p className="text-neutral-400 mt-4 font-medium">Loading...</p>
         </div>
       </div>
     )
@@ -290,10 +290,10 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p className="text-gray-400 mt-4 font-medium">Loading campaign...</p>
+          <p className="text-neutral-400 mt-4 font-medium">Loading campaign...</p>
         </div>
       </div>
     )
@@ -301,17 +301,17 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
   if (error && !campaign) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gray-800/50 rounded-2xl flex items-center justify-center mb-4 mx-auto">
-            <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 bg-neutral-800/50 rounded-2xl flex items-center justify-center mb-4 mx-auto">
+            <svg className="w-8 h-8 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <p className="text-white font-bold text-lg mb-2">Campaign Not Found</p>
-          <p className="text-gray-500 mb-6">{error}</p>
+          <p className="text-neutral-100 font-bold text-lg mb-2">Campaign Not Found</p>
+          <p className="text-neutral-500 mb-6">{error}</p>
           <Link href="/cold-email">
-            <Button variant="outline" className="border-gray-700 text-white hover:bg-gray-800 font-bold rounded-xl">
+            <Button variant="outline" className="border-neutral-700 text-neutral-100 hover:bg-neutral-800 font-bold rounded-xl">
               Back to Campaigns
             </Button>
           </Link>
@@ -325,43 +325,43 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
   const cfg = statusConfig[campaign.status] || statusConfig.draft
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white selection:bg-violet-500/30">
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-violet-500/30">
       {/* Navigation Overlay */}
       <div className="fixed top-0 left-0 right-0 h-24 bg-gradient-to-b from-gray-950 to-transparent pointer-events-none z-40" />
 
       {/* Header */}
-      <header className="relative z-50 border-b border-gray-800/50 bg-gray-950/50 backdrop-blur-xl">
+      <header className="relative z-50 border-b border-neutral-800/50 bg-neutral-950/50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/dashboard" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-                <span className="text-xl font-black text-white italic">V</span>
+              <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
+                <span className="text-xl font-semibold text-neutral-100 italic">V</span>
               </div>
-              <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
+              <span className="text-2xl font-semibold tracking-tighter text-neutral-100">Vera.AI</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
-              <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+              <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-neutral-100 hover:bg-white/5 rounded-lg transition-all">
                 Dashboard
               </Link>
-              <Link href="/projects" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+              <Link href="/projects" className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-neutral-100 hover:bg-white/5 rounded-lg transition-all">
                 Projects
               </Link>
-              <Link href="/settings" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+              <Link href="/settings" className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-neutral-100 hover:bg-white/5 rounded-lg transition-all">
                 Settings
               </Link>
             </nav>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-1 flex items-center gap-1">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-1 flex items-center gap-1">
               <select
                 value={currentWorkspace?.id || ''}
                 onChange={(e) => switchWorkspace(e.target.value)}
-                className="bg-transparent text-sm font-bold px-3 py-1.5 focus:outline-none cursor-pointer text-white"
+                className="bg-transparent text-sm font-bold px-3 py-1.5 focus:outline-none cursor-pointer text-neutral-100"
               >
                 {workspaces.map((ws) => (
-                  <option key={ws.id} value={ws.id} className="bg-gray-900">
+                  <option key={ws.id} value={ws.id} className="bg-neutral-900">
                     {ws.name}
                   </option>
                 ))}
@@ -374,10 +374,10 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
       <main className="max-w-7xl mx-auto px-6 py-12 space-y-10">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2">
-          <Link href="/cold-email" className="text-gray-500 hover:text-gray-300 text-xs font-bold uppercase tracking-widest transition-colors">
+          <Link href="/cold-email" className="text-neutral-500 hover:text-neutral-300 text-xs font-bold uppercase tracking-widest transition-colors">
             Cold Email
           </Link>
-          <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-3 h-3 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
           <span className="text-violet-400 text-xs font-bold uppercase tracking-widest truncate max-w-[200px]">
@@ -389,12 +389,12 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <h1 className="text-4xl font-black tracking-tight text-white">{campaign.name}</h1>
+              <h1 className="text-4xl font-semibold tracking-tight text-neutral-100">{campaign.name}</h1>
               <Badge variant={cfg.variant} className={cfg.className}>
                 {cfg.label}
               </Badge>
             </div>
-            <p className="text-gray-500 text-sm">
+            <p className="text-neutral-500 text-sm">
               Created {new Date(campaign.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
               {campaign.from_email && ` · From: ${campaign.from_name || campaign.from_email}`}
             </p>
@@ -427,7 +427,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
             {campaign.status === 'active' && (
               <Button
                 variant="outline"
-                className="border-gray-700 text-white hover:bg-gray-800 font-bold rounded-xl"
+                className="border-neutral-700 text-neutral-100 hover:bg-neutral-800 font-bold rounded-xl"
                 onClick={() => handleStatusChange('paused')}
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -454,7 +454,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
             <Link href={`/cold-email/new?edit=${id}`}>
               <Button
                 variant="outline"
-                className="border-gray-700 text-white hover:bg-gray-800 font-bold rounded-xl"
+                className="border-neutral-700 text-neutral-100 hover:bg-neutral-800 font-bold rounded-xl"
               >
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -465,7 +465,7 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
             <Button
               variant="ghost"
-              className="text-gray-500 hover:text-red-400 font-bold rounded-xl"
+              className="text-neutral-500 hover:text-red-400 font-bold rounded-xl"
               onClick={() => setShowDeleteDialog(true)}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -484,17 +484,17 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Send Progress Bar */}
         {(campaign.status === 'sending' || campaign.status === 'active') && recipients.length > 0 && (
-          <div className="bg-gray-900/40 border border-gray-800 p-6 rounded-2xl space-y-3">
+          <div className="bg-neutral-900/40 border border-neutral-800 p-6 rounded-2xl space-y-3">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-400 font-bold">Send Progress</span>
-              <span className="text-white font-black">{sendProgress}%</span>
+              <span className="text-neutral-400 font-bold">Send Progress</span>
+              <span className="text-neutral-100 font-semibold">{sendProgress}%</span>
             </div>
             <Progress
               value={sendProgress}
-              className="h-3 bg-gray-800 rounded-full"
-              indicatorClassName="bg-gradient-to-r from-violet-500 to-fuchsia-500 rounded-full"
+              className="h-3 bg-neutral-800 rounded-full"
+              indicatorClassName="bg-violet-500 rounded-full"
             />
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-neutral-500">
               {sentCount} of {recipients.length} emails sent
             </p>
           </div>
@@ -512,11 +512,11 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
           ].map((stat) => (
             <div
               key={stat.label}
-              className="bg-gray-900/40 border border-gray-800 p-6 rounded-2xl hover:bg-gray-900/60 transition-all"
+              className="bg-neutral-900/40 border border-neutral-800 p-6 rounded-2xl hover:bg-neutral-900/60 transition-all"
             >
-              <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px] mb-1">{stat.label}</p>
+              <p className="text-neutral-500 font-bold uppercase tracking-widest text-[10px] mb-1">{stat.label}</p>
               <div className="flex items-end gap-2">
-                <span className="text-3xl font-black text-white">{stat.value}</span>
+                <span className="text-3xl font-semibold text-neutral-100">{stat.value}</span>
                 {stat.sub && (
                   <span className={`text-xs font-bold mb-1 ${
                     stat.color === 'blue' ? 'text-blue-400' :
@@ -534,22 +534,22 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
         {/* Tabs */}
         <Tabs defaultValue="overview" className="space-y-8">
-          <TabsList className="bg-gray-900/50 border border-gray-800 rounded-xl p-1 h-auto">
+          <TabsList className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-1 h-auto">
             <TabsTrigger
               value="overview"
-              className="px-6 py-2.5 rounded-lg text-sm font-bold data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400 text-gray-500 transition-all"
+              className="px-6 py-2.5 rounded-lg text-sm font-bold data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400 text-neutral-500 transition-all"
             >
               Overview
             </TabsTrigger>
             <TabsTrigger
               value="recipients"
-              className="px-6 py-2.5 rounded-lg text-sm font-bold data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400 text-gray-500 transition-all"
+              className="px-6 py-2.5 rounded-lg text-sm font-bold data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400 text-neutral-500 transition-all"
             >
               Recipients ({recipients.length})
             </TabsTrigger>
             <TabsTrigger
               value="events"
-              className="px-6 py-2.5 rounded-lg text-sm font-bold data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400 text-gray-500 transition-all"
+              className="px-6 py-2.5 rounded-lg text-sm font-bold data-[state=active]:bg-violet-500/20 data-[state=active]:text-violet-400 text-neutral-500 transition-all"
             >
               Events ({eventTimeline.length})
             </TabsTrigger>
@@ -559,25 +559,25 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
           <TabsContent value="overview" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Email Preview */}
-              <div className="bg-gray-900 border border-gray-800 p-1 rounded-[2rem]">
-                <div className="bg-gray-800/50 rounded-[1.8rem] p-8 space-y-6">
+              <div className="bg-neutral-900 border border-neutral-800 p-1 rounded-xl">
+                <div className="bg-neutral-800/50 rounded-xl p-8 space-y-6">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-black text-white">Email Preview</h2>
-                    <Badge variant="outline" className="border-gray-600 text-gray-400">
+                    <h2 className="text-xl font-semibold text-neutral-100">Email Preview</h2>
+                    <Badge variant="outline" className="border-neutral-600 text-neutral-400">
                       Variant A
                     </Badge>
                   </div>
 
                   <div className="bg-white rounded-xl p-6 text-gray-900 space-y-4">
                     <div className="space-y-1">
-                      <p className="text-xs text-gray-500">From: {campaign.from_name || 'Sender'} &lt;{campaign.from_email || 'sender@example.com'}&gt;</p>
-                      <p className="text-xs text-gray-500">To: recipient@example.com</p>
-                      {campaign.reply_to && <p className="text-xs text-gray-500">Reply-To: {campaign.reply_to}</p>}
+                      <p className="text-xs text-neutral-500">From: {campaign.from_name || 'Sender'} &lt;{campaign.from_email || 'sender@example.com'}&gt;</p>
+                      <p className="text-xs text-neutral-500">To: recipient@example.com</p>
+                      {campaign.reply_to && <p className="text-xs text-neutral-500">Reply-To: {campaign.reply_to}</p>}
                     </div>
                     <Separator className="bg-gray-200" />
                     <h3 className="font-bold text-lg text-gray-900">{campaign.subject}</h3>
                     <Separator className="bg-gray-200" />
-                    <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                    <div className="text-sm text-neutral-700 whitespace-pre-wrap leading-relaxed">
                       {campaign.body_template}
                     </div>
                   </div>
@@ -586,10 +586,10 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
               {/* B variant or campaign details */}
               {campaign.subject_b ? (
-                <div className="bg-gray-900 border border-gray-800 p-1 rounded-[2rem]">
-                  <div className="bg-gray-800/50 rounded-[1.8rem] p-8 space-y-6">
+                <div className="bg-neutral-900 border border-neutral-800 p-1 rounded-xl">
+                  <div className="bg-neutral-800/50 rounded-xl p-8 space-y-6">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-black text-white">Email Preview</h2>
+                      <h2 className="text-xl font-semibold text-neutral-100">Email Preview</h2>
                       <Badge variant="outline" className="border-fuchsia-500/30 text-fuchsia-400">
                         Variant B
                       </Badge>
@@ -597,48 +597,48 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
                     <div className="bg-white rounded-xl p-6 text-gray-900 space-y-4">
                       <div className="space-y-1">
-                        <p className="text-xs text-gray-500">From: {campaign.from_name || 'Sender'} &lt;{campaign.from_email || 'sender@example.com'}&gt;</p>
-                        <p className="text-xs text-gray-500">To: recipient@example.com</p>
+                        <p className="text-xs text-neutral-500">From: {campaign.from_name || 'Sender'} &lt;{campaign.from_email || 'sender@example.com'}&gt;</p>
+                        <p className="text-xs text-neutral-500">To: recipient@example.com</p>
                       </div>
                       <Separator className="bg-gray-200" />
                       <h3 className="font-bold text-lg text-gray-900">{campaign.subject_b}</h3>
                       <Separator className="bg-gray-200" />
-                      <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
+                      <div className="text-sm text-neutral-700 whitespace-pre-wrap leading-relaxed">
                         {campaign.body_template_b || campaign.body_template}
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="bg-gray-900 border border-gray-800 p-1 rounded-[2rem]">
-                  <div className="bg-gray-800/50 rounded-[1.8rem] p-8 space-y-6">
-                    <h2 className="text-xl font-black text-white">Campaign Details</h2>
+                <div className="bg-neutral-900 border border-neutral-800 p-1 rounded-xl">
+                  <div className="bg-neutral-800/50 rounded-xl p-8 space-y-6">
+                    <h2 className="text-xl font-semibold text-neutral-100">Campaign Details</h2>
 
                     <div className="space-y-4">
-                      <div className="flex justify-between py-3 border-b border-gray-700/50">
-                        <span className="text-gray-500 text-sm font-bold">Status</span>
+                      <div className="flex justify-between py-3 border-b border-neutral-700/50">
+                        <span className="text-neutral-500 text-sm font-bold">Status</span>
                         <Badge variant={cfg.variant} className={cfg.className}>{cfg.label}</Badge>
                       </div>
-                      <div className="flex justify-between py-3 border-b border-gray-700/50">
-                        <span className="text-gray-500 text-sm font-bold">Recipients</span>
-                        <span className="text-white font-bold">{recipients.length}</span>
+                      <div className="flex justify-between py-3 border-b border-neutral-700/50">
+                        <span className="text-neutral-500 text-sm font-bold">Recipients</span>
+                        <span className="text-neutral-100 font-bold">{recipients.length}</span>
                       </div>
-                      <div className="flex justify-between py-3 border-b border-gray-700/50">
-                        <span className="text-gray-500 text-sm font-bold">From</span>
-                        <span className="text-white text-sm">{campaign.from_name || '-'} &lt;{campaign.from_email || '-'}&gt;</span>
+                      <div className="flex justify-between py-3 border-b border-neutral-700/50">
+                        <span className="text-neutral-500 text-sm font-bold">From</span>
+                        <span className="text-neutral-100 text-sm">{campaign.from_name || '-'} &lt;{campaign.from_email || '-'}&gt;</span>
                       </div>
-                      <div className="flex justify-between py-3 border-b border-gray-700/50">
-                        <span className="text-gray-500 text-sm font-bold">Reply To</span>
-                        <span className="text-white text-sm">{campaign.reply_to || 'Same as sender'}</span>
+                      <div className="flex justify-between py-3 border-b border-neutral-700/50">
+                        <span className="text-neutral-500 text-sm font-bold">Reply To</span>
+                        <span className="text-neutral-100 text-sm">{campaign.reply_to || 'Same as sender'}</span>
                       </div>
-                      <div className="flex justify-between py-3 border-b border-gray-700/50">
-                        <span className="text-gray-500 text-sm font-bold">A/B Test</span>
-                        <span className="text-gray-400 text-sm">Disabled</span>
+                      <div className="flex justify-between py-3 border-b border-neutral-700/50">
+                        <span className="text-neutral-500 text-sm font-bold">A/B Test</span>
+                        <span className="text-neutral-400 text-sm">Disabled</span>
                       </div>
                       {campaign.send_at && (
-                        <div className="flex justify-between py-3 border-b border-gray-700/50">
-                          <span className="text-gray-500 text-sm font-bold">Scheduled</span>
-                          <span className="text-white text-sm">
+                        <div className="flex justify-between py-3 border-b border-neutral-700/50">
+                          <span className="text-neutral-500 text-sm font-bold">Scheduled</span>
+                          <span className="text-neutral-100 text-sm">
                             {new Date(campaign.send_at).toLocaleString('en-US', {
                               month: 'short',
                               day: 'numeric',
@@ -650,8 +650,8 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
                         </div>
                       )}
                       <div className="flex justify-between py-3">
-                        <span className="text-gray-500 text-sm font-bold">Created</span>
-                        <span className="text-white text-sm">
+                        <span className="text-neutral-500 text-sm font-bold">Created</span>
+                        <span className="text-neutral-100 text-sm">
                           {new Date(campaign.created_at).toLocaleString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -670,53 +670,53 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
           {/* ── Recipients Tab ───────────────────────── */}
           <TabsContent value="recipients">
-            <div className="bg-gray-900/20 border border-gray-800/50 rounded-[2.5rem] p-10">
+            <div className="bg-neutral-900/20 border border-neutral-800/50 rounded-xl p-10">
               {recipients.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="w-16 h-16 bg-gray-800/50 rounded-2xl flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-16 h-16 bg-neutral-800/50 rounded-2xl flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                   </div>
-                  <p className="text-white font-bold text-lg mb-2">No recipients</p>
-                  <p className="text-gray-500 text-sm">Add recipients to this campaign to start sending.</p>
+                  <p className="text-neutral-100 font-bold text-lg mb-2">No recipients</p>
+                  <p className="text-neutral-500 text-sm">Add recipients to this campaign to start sending.</p>
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-2xl border border-gray-800/50">
+                <div className="overflow-hidden rounded-2xl border border-neutral-800/50">
                   <Table>
                     <TableHeader>
-                      <TableRow className="border-gray-800/50 hover:bg-transparent">
-                        <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Email</TableHead>
-                        <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Name</TableHead>
-                        <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Company</TableHead>
-                        <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Status</TableHead>
-                        <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Sent At</TableHead>
-                        <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs py-4 px-4 text-center">Opened</TableHead>
-                        <TableHead className="text-gray-500 font-bold uppercase tracking-widest text-xs py-4 px-4 text-center">Clicked</TableHead>
+                      <TableRow className="border-neutral-800/50 hover:bg-transparent">
+                        <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Email</TableHead>
+                        <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Name</TableHead>
+                        <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Company</TableHead>
+                        <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Status</TableHead>
+                        <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs py-4 px-4">Sent At</TableHead>
+                        <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs py-4 px-4 text-center">Opened</TableHead>
+                        <TableHead className="text-neutral-500 font-bold uppercase tracking-widest text-xs py-4 px-4 text-center">Clicked</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {recipients.map((r) => (
-                        <TableRow key={r.id} className="border-gray-800/50 hover:bg-gray-800/20">
-                          <TableCell className="py-4 px-4 text-sm text-white font-mono">{r.email}</TableCell>
-                          <TableCell className="py-4 px-4 text-sm text-gray-300">
+                        <TableRow key={r.id} className="border-neutral-800/50 hover:bg-neutral-800/20">
+                          <TableCell className="py-4 px-4 text-sm text-neutral-100 font-mono">{r.email}</TableCell>
+                          <TableCell className="py-4 px-4 text-sm text-neutral-300">
                             {[r.first_name, r.last_name].filter(Boolean).join(' ') || '-'}
                           </TableCell>
-                          <TableCell className="py-4 px-4 text-sm text-gray-300">{r.company || '-'}</TableCell>
+                          <TableCell className="py-4 px-4 text-sm text-neutral-300">{r.company || '-'}</TableCell>
                           <TableCell className="py-4 px-4">
                             <Badge
                               variant="outline"
                               className={
                                 r.status === 'sent' ? 'border-blue-500/30 text-blue-400' :
-                                r.status === 'pending' ? 'border-gray-600 text-gray-400' :
+                                r.status === 'pending' ? 'border-neutral-600 text-neutral-400' :
                                 r.status === 'bounced' ? 'border-red-500/30 text-red-400' :
-                                'border-gray-600 text-gray-400'
+                                'border-neutral-600 text-neutral-400'
                               }
                             >
                               {r.status || 'pending'}
                             </Badge>
                           </TableCell>
-                          <TableCell className="py-4 px-4 text-sm text-gray-500">
+                          <TableCell className="py-4 px-4 text-sm text-neutral-500">
                             {r.sent_at
                               ? new Date(r.sent_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
                               : '-'
@@ -726,14 +726,14 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
                             {r.opened_at ? (
                               <span className="text-violet-400 font-bold text-sm">Yes</span>
                             ) : (
-                              <span className="text-gray-600 text-sm">-</span>
+                              <span className="text-neutral-600 text-sm">-</span>
                             )}
                           </TableCell>
                           <TableCell className="py-4 px-4 text-center">
                             {r.clicked_at ? (
                               <span className="text-fuchsia-400 font-bold text-sm">Yes</span>
                             ) : (
-                              <span className="text-gray-600 text-sm">-</span>
+                              <span className="text-neutral-600 text-sm">-</span>
                             )}
                           </TableCell>
                         </TableRow>
@@ -747,42 +747,42 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
           {/* ── Events Tab ───────────────────────────── */}
           <TabsContent value="events">
-            <div className="bg-gray-900/20 border border-gray-800/50 rounded-[2.5rem] p-10">
+            <div className="bg-neutral-900/20 border border-neutral-800/50 rounded-xl p-10">
               {eventTimeline.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="w-16 h-16 bg-gray-800/50 rounded-2xl flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-16 h-16 bg-neutral-800/50 rounded-2xl flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <p className="text-white font-bold text-lg mb-2">No events yet</p>
-                  <p className="text-gray-500 text-sm">Events will appear here once the campaign starts sending.</p>
+                  <p className="text-neutral-100 font-bold text-lg mb-2">No events yet</p>
+                  <p className="text-neutral-500 text-sm">Events will appear here once the campaign starts sending.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <h3 className="text-xl font-black text-white mb-6">Event Timeline</h3>
+                  <h3 className="text-xl font-semibold text-neutral-100 mb-6">Event Timeline</h3>
                   {eventTimeline.slice(0, 100).map((event) => {
-                    const config = eventTypeIcons[event.event_type] || { icon: '📧', color: 'text-gray-400', label: event.event_type }
+                    const config = eventTypeIcons[event.event_type] || { icon: '📧', color: 'text-neutral-400', label: event.event_type }
                     const email = (event.metadata as { email?: string })?.email || 'Unknown'
                     const firstName = (event.metadata as { first_name?: string })?.first_name || ''
 
                     return (
                       <div
                         key={event.id}
-                        className="flex items-center justify-between p-4 bg-gray-900/40 rounded-2xl border border-gray-800/50 hover:bg-gray-900/60 transition-all"
+                        className="flex items-center justify-between p-4 bg-neutral-900/40 rounded-2xl border border-neutral-800/50 hover:bg-neutral-900/60 transition-all"
                       >
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 bg-gray-800 rounded-xl flex items-center justify-center text-xl">
+                          <div className="w-10 h-10 bg-neutral-800 rounded-xl flex items-center justify-center text-xl">
                             {config.icon}
                           </div>
                           <div className="text-sm">
                             <span className={`font-bold ${config.color}`}>{config.label}</span>
-                            <span className="text-gray-500"> — </span>
-                            <span className="text-white font-medium">{firstName ? `${firstName} ` : ''}</span>
-                            <span className="text-gray-400 font-mono text-xs">{email}</span>
+                            <span className="text-neutral-500"> — </span>
+                            <span className="text-neutral-100 font-medium">{firstName ? `${firstName} ` : ''}</span>
+                            <span className="text-neutral-400 font-mono text-xs">{email}</span>
                           </div>
                         </div>
-                        <span className="text-xs text-gray-600 font-mono whitespace-nowrap">
+                        <span className="text-xs text-neutral-600 font-mono whitespace-nowrap">
                           {new Date(event.created_at).toLocaleString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -802,17 +802,17 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <DialogContent className="bg-gray-900 border border-gray-800 text-white rounded-2xl">
+        <DialogContent className="bg-neutral-900 border border-neutral-800 text-neutral-100 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-white font-black text-xl">Delete Campaign</DialogTitle>
-            <DialogDescription className="text-gray-400">
+            <DialogTitle className="text-neutral-100 font-semibold text-xl">Delete Campaign</DialogTitle>
+            <DialogDescription className="text-neutral-400">
               Are you sure you want to delete &quot;{campaign.name}&quot;? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-3 pt-4">
             <Button
               variant="ghost"
-              className="text-gray-400 hover:text-white font-bold rounded-xl"
+              className="text-neutral-400 hover:text-neutral-100 font-bold rounded-xl"
               onClick={() => setShowDeleteDialog(false)}
             >
               Cancel
@@ -837,8 +837,8 @@ export default function CampaignDetailPage({ params }: { params: Promise<{ id: s
       </Dialog>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-gray-800/50 text-center">
-        <p className="text-gray-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
+      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-neutral-800/50 text-center">
+        <p className="text-neutral-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
       </footer>
     </div>
   )

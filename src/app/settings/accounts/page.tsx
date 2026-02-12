@@ -84,10 +84,10 @@ export default function AccountsSettingsPage() {
 
     if (authLoading || workspaceLoading) {
         return (
-            <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+            <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-gray-400 mt-4 font-medium">Loading accounts...</p>
+                    <p className="text-neutral-400 mt-4 font-medium">Loading accounts...</p>
                 </div>
             </div>
         )
@@ -119,8 +119,8 @@ export default function AccountsSettingsPage() {
             description: 'Share short-form insights and engage in real-time conversations.',
             account: twitterAccount,
             icon: (
-                <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center border border-gray-700">
-                    <span className="text-white text-xl font-black">𝕏</span>
+                <div className="w-10 h-10 bg-black rounded-xl flex items-center justify-center border border-neutral-700">
+                    <span className="text-neutral-100 text-xl font-semibold">𝕏</span>
                 </div>
             ),
             connectUrl: `/api/auth/twitter?workspace_id=${currentWorkspace?.id}`,
@@ -134,7 +134,7 @@ export default function AccountsSettingsPage() {
             account: mediumAccount,
             icon: (
                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center">
-                    <span className="text-black text-2xl font-black">M</span>
+                    <span className="text-black text-2xl font-semibold">M</span>
                 </div>
             ),
             connectUrl: `/api/auth/medium?workspace_id=${currentWorkspace?.id}`,
@@ -148,7 +148,7 @@ export default function AccountsSettingsPage() {
             account: null,
             icon: (
                 <div className="w-10 h-10 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-5 h-5 text-neutral-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                 </div>
@@ -161,22 +161,22 @@ export default function AccountsSettingsPage() {
     ]
 
     return (
-        <div className="min-h-screen bg-gray-950">
+        <div className="min-h-screen bg-neutral-950">
             {/* Header */}
-            <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur sticky top-0 z-50">
+            <header className="border-b border-neutral-800 bg-neutral-900/50 backdrop-blur sticky top-0 z-50">
                 <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center h-16">
-                        <Link href="/dashboard" className="text-gray-400 hover:text-white mr-4 transition-colors">
+                        <Link href="/dashboard" className="text-neutral-400 hover:text-neutral-100 mr-4 transition-colors">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                             </svg>
                         </Link>
                         <nav className="flex items-center gap-2 text-sm">
-                            <Link href="/dashboard" className="text-gray-500 hover:text-gray-300 transition-colors">Dashboard</Link>
-                            <span className="text-gray-700">/</span>
-                            <span className="text-gray-500">Settings</span>
-                            <span className="text-gray-700">/</span>
-                            <span className="text-white font-semibold">Connected Accounts</span>
+                            <Link href="/dashboard" className="text-neutral-500 hover:text-neutral-300 transition-colors">Dashboard</Link>
+                            <span className="text-neutral-700">/</span>
+                            <span className="text-neutral-500">Settings</span>
+                            <span className="text-neutral-700">/</span>
+                            <span className="text-neutral-100 font-semibold">Connected Accounts</span>
                         </nav>
                     </div>
                 </div>
@@ -185,8 +185,8 @@ export default function AccountsSettingsPage() {
             <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
                 {/* Page Title */}
                 <div>
-                    <h1 className="text-3xl font-black text-white tracking-tight">Connected Accounts</h1>
-                    <p className="text-gray-500 mt-2 text-sm leading-relaxed max-w-2xl">
+                    <h1 className="text-3xl font-semibold text-neutral-100 tracking-tight">Connected Accounts</h1>
+                    <p className="text-neutral-500 mt-2 text-sm leading-relaxed max-w-2xl">
                         Link your social platforms and email services to enable multi-channel publishing from Vera.AI.
                     </p>
                 </div>
@@ -202,14 +202,14 @@ export default function AccountsSettingsPage() {
                 {isLoading ? (
                     <div className="space-y-4">
                         {[1, 2, 3, 4].map((i) => (
-                            <div key={i} className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 animate-pulse">
+                            <div key={i} className="bg-neutral-900/40 border border-neutral-800 rounded-xl p-6 animate-pulse">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-10 h-10 bg-gray-800 rounded-xl" />
+                                    <div className="w-10 h-10 bg-neutral-800 rounded-xl" />
                                     <div className="flex-1">
-                                        <div className="h-4 w-32 bg-gray-800 rounded mb-2" />
-                                        <div className="h-3 w-64 bg-gray-800/60 rounded" />
+                                        <div className="h-4 w-32 bg-neutral-800 rounded mb-2" />
+                                        <div className="h-3 w-64 bg-neutral-800/60 rounded" />
                                     </div>
-                                    <div className="h-8 w-24 bg-gray-800 rounded-lg" />
+                                    <div className="h-8 w-24 bg-neutral-800 rounded-lg" />
                                 </div>
                             </div>
                         ))}
@@ -225,7 +225,7 @@ export default function AccountsSettingsPage() {
                             return (
                                 <div
                                     key={platform.id}
-                                    className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6 hover:bg-gray-900/60 transition-all group"
+                                    className="bg-neutral-900/40 border border-neutral-800 rounded-xl p-6 hover:bg-neutral-900/60 transition-all group"
                                 >
                                     <div className="flex items-center gap-5">
                                         {/* Platform Icon */}
@@ -236,33 +236,33 @@ export default function AccountsSettingsPage() {
                                         {/* Platform Info */}
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-3 mb-1">
-                                                <h3 className="text-lg font-bold text-white">{platform.name}</h3>
+                                                <h3 className="text-lg font-semibold text-neutral-100">{platform.name}</h3>
                                                 {isConnected ? (
                                                     <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-500/10 text-green-400 border border-green-500/20">
                                                         <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" />
                                                         Connected
                                                     </span>
                                                 ) : (
-                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold text-gray-500 border border-gray-700">
+                                                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold text-neutral-500 border border-neutral-700">
                                                         Not Connected
                                                     </span>
                                                 )}
                                             </div>
 
-                                            <p className="text-gray-500 text-sm">{platform.description}</p>
+                                            <p className="text-neutral-500 text-sm">{platform.description}</p>
 
                                             {/* Connected Account Details */}
                                             {platform.account && (
-                                                <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+                                                <div className="flex items-center gap-4 mt-2 text-xs text-neutral-400">
                                                     {platform.account.platform_display_name && (
-                                                        <span className="font-medium text-gray-300">
+                                                        <span className="font-medium text-neutral-300">
                                                             {platform.account.platform_display_name}
                                                         </span>
                                                     )}
                                                     {platform.account.platform_username && (
                                                         <span>@{platform.account.platform_username}</span>
                                                     )}
-                                                    <span className="text-gray-600">
+                                                    <span className="text-neutral-600">
                                                         Connected {formatDate(platform.account.connected_at)}
                                                     </span>
                                                 </div>
@@ -270,9 +270,9 @@ export default function AccountsSettingsPage() {
 
                                             {/* Email Config Details */}
                                             {platform.id === 'email' && emailConfigured && (
-                                                <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
-                                                    <span className="font-medium text-gray-300">Postmark Configured</span>
-                                                    <span className="text-gray-600">Server-side integration</span>
+                                                <div className="flex items-center gap-4 mt-2 text-xs text-neutral-400">
+                                                    <span className="font-medium text-neutral-300">Postmark Configured</span>
+                                                    <span className="text-neutral-600">Server-side integration</span>
                                                 </div>
                                             )}
                                         </div>
@@ -295,7 +295,7 @@ export default function AccountsSettingsPage() {
                                                 </Link>
                                             ) : platform.id === 'linkedin' ? (
                                                 <div className="text-right">
-                                                    <span className="text-xs text-gray-500 block mb-1">Via Unipile</span>
+                                                    <span className="text-xs text-neutral-500 block mb-1">Via Unipile</span>
                                                     <button
                                                         onClick={() => {
                                                             setMessage('LinkedIn is connected via Unipile. Contact your admin to manage the connection.')
@@ -311,7 +311,7 @@ export default function AccountsSettingsPage() {
                                                     href={platform.connectUrl}
                                                     className={`px-4 py-2 text-sm font-medium rounded-xl transition-all inline-block ${
                                                         platform.accentColor === 'gray'
-                                                            ? 'text-white bg-white/10 border border-white/20 hover:bg-white/20'
+                                                            ? 'text-neutral-100 bg-white/10 border border-white/20 hover:bg-white/20'
                                                             : 'text-green-400 bg-green-500/10 border border-green-500/20 hover:bg-green-500/20'
                                                     }`}
                                                 >
@@ -327,15 +327,15 @@ export default function AccountsSettingsPage() {
                 )}
 
                 {/* Info Banner */}
-                <div className="p-6 bg-violet-600/10 border border-violet-500/20 rounded-2xl flex items-start gap-4">
+                <div className="p-6 bg-violet-600/10 border border-violet-500/20 rounded-xl flex items-start gap-4">
                     <div className="p-2 bg-violet-500/20 rounded-lg text-violet-400 flex-shrink-0">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
                     <div>
-                        <h4 className="text-white font-medium mb-1">Multi-Channel Publishing</h4>
-                        <p className="text-gray-400 text-sm leading-relaxed">
+                        <h4 className="text-neutral-100 font-medium mb-1">Multi-Channel Publishing</h4>
+                        <p className="text-neutral-400 text-sm leading-relaxed">
                             Once connected, your accounts become available for publishing across all Vera.AI workflows -- content engine, direct POV, cold email campaigns, and newsletters. LinkedIn is managed through Unipile for enhanced reliability.
                         </p>
                     </div>

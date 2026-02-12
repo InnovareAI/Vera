@@ -263,7 +263,6 @@ export default function ProjectSettingsPage() {
 
       const { data } = await res.json()
 
-      // Populate fields — override existing values
       const newDescription = data.description || description
       const newIndustry = data.industry || industry
       const newProducts = data.products?.length > 0
@@ -278,7 +277,6 @@ export default function ProjectSettingsPage() {
       const newFormality = data.tone_of_voice?.formality || formality
       const newPersonality = data.tone_of_voice?.personality?.length > 0 ? data.tone_of_voice.personality : personality
 
-      // Update local state
       setDescription(newDescription)
       setIndustry(newIndustry)
       setProducts(newProducts)
@@ -293,7 +291,6 @@ export default function ProjectSettingsPage() {
 
       setOpenSections({ brand: true, products: true, icp: true, tone: true, platforms: true })
 
-      // Auto-save to database
       const saveBody = {
         name: name.trim(),
         description: newDescription?.trim() || null,
@@ -351,12 +348,12 @@ export default function ProjectSettingsPage() {
     setInput: (v: string) => void
   ) => (
     <div>
-      <label className="block text-sm font-bold text-gray-400 mb-2">{label}</label>
+      <label className="block text-sm font-medium text-neutral-400 mb-2">{label}</label>
       <div className="flex flex-wrap gap-2 mb-2">
         {tags.map((tag, i) => (
           <span
             key={i}
-            className="inline-flex items-center gap-1.5 px-3 py-1 bg-violet-500/10 text-violet-400 text-sm font-bold rounded-full border border-violet-500/20"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-violet-500/10 text-violet-400 text-sm rounded-md"
           >
             {tag}
             <button
@@ -365,7 +362,7 @@ export default function ProjectSettingsPage() {
               className="hover:text-white transition-colors"
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </span>
@@ -377,20 +374,20 @@ export default function ProjectSettingsPage() {
         onChange={(e) => setInput(e.target.value)}
         onKeyDown={(e) => handleTagKeyDown(e, input, setInput, tags, setTags)}
         placeholder={placeholder}
-        className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+        className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors"
       />
-      <p className="text-xs text-gray-600 mt-1">Press Enter to add</p>
+      <p className="text-xs text-neutral-600 mt-1">Press Enter to add</p>
     </div>
   )
 
   const renderSectionHeader = (key: string, title: string) => (
     <button
       onClick={() => toggleSection(key)}
-      className="w-full flex items-center justify-between p-6 text-left"
+      className="w-full flex items-center justify-between p-5 text-left"
     >
-      <h2 className="text-xl font-black text-white">{title}</h2>
+      <h2 className="text-sm font-semibold text-neutral-100">{title}</h2>
       <svg
-        className={`w-5 h-5 text-gray-500 transition-transform ${openSections[key] ? 'rotate-180' : ''}`}
+        className={`w-4 h-4 text-neutral-500 transition-transform ${openSections[key] ? 'rotate-180' : ''}`}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -403,56 +400,56 @@ export default function ProjectSettingsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
-        <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-8 h-8 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="max-w-3xl space-y-8">
+    <div className="max-w-3xl space-y-6">
       <div>
-        <h2 className="text-xl font-black text-white mb-1">Settings</h2>
-        <p className="text-gray-500 text-sm">Configure your project brand, ICP, tone of voice, and platforms</p>
+        <h2 className="text-lg font-semibold text-neutral-100 mb-1">Settings</h2>
+        <p className="text-neutral-500 text-sm">Configure your project brand, ICP, tone of voice, and platforms</p>
       </div>
 
       {/* Success Toast */}
       {success && (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 flex items-center gap-3">
-          <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4 flex items-center gap-3">
+          <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
-          <p className="text-emerald-400 text-sm font-bold">Project updated successfully!</p>
+          <p className="text-emerald-400 text-sm">Project updated successfully!</p>
         </div>
       )}
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
-          <p className="text-red-400 text-sm font-bold">{error}</p>
+        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+          <p className="text-red-400 text-sm">{error}</p>
         </div>
       )}
 
       {/* Brand Info */}
-      <div className="bg-gray-900/40 border border-gray-800 rounded-3xl overflow-hidden">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
         {renderSectionHeader('brand', 'Brand Info')}
         {openSections.brand && (
-          <div className="px-6 pb-6 space-y-4">
+          <div className="px-5 pb-5 space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-400 mb-2">Project Name *</label>
-              <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. InnovareAI" className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors" />
+              <label className="block text-sm font-medium text-neutral-400 mb-2">Project Name *</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. InnovareAI" className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors" />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-400 mb-2">Description</label>
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What does this brand/project do?" rows={3} className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors resize-none" />
+              <label className="block text-sm font-medium text-neutral-400 mb-2">Description</label>
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What does this brand/project do?" rows={3} className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors resize-none" />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-400 mb-2">Website URL</label>
+              <label className="block text-sm font-medium text-neutral-400 mb-2">Website URL</label>
               <div className="flex gap-3">
-                <input type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://example.com" className="flex-1 bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors" />
+                <input type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} placeholder="https://example.com" className="flex-1 bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors" />
                 <button
                   type="button"
                   onClick={fetchBrandInfo}
                   disabled={extracting || !websiteUrl.trim()}
-                  className="px-5 py-3 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold rounded-xl hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap text-sm"
+                  className="px-4 py-2.5 bg-violet-500 text-white font-medium rounded-lg hover:bg-violet-600 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 whitespace-nowrap text-sm"
                 >
                   {extracting ? (
                     <>
@@ -460,12 +457,7 @@ export default function ProjectSettingsPage() {
                       Analyzing...
                     </>
                   ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                      </svg>
-                      Fetch Brand Info
-                    </>
+                    'Fetch Brand Info'
                   )}
                 </button>
               </div>
@@ -474,22 +466,22 @@ export default function ProjectSettingsPage() {
               )}
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-400 mb-2">Industry</label>
-              <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="e.g. AI/Tech, SaaS, Healthcare" className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors" />
+              <label className="block text-sm font-medium text-neutral-400 mb-2">Industry</label>
+              <input type="text" value={industry} onChange={(e) => setIndustry(e.target.value)} placeholder="e.g. AI/Tech, SaaS, Healthcare" className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-400 mb-2">Primary Color</label>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Primary Color</label>
                 <div className="flex items-center gap-3">
-                  <input type="color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="w-10 h-10 rounded-lg border border-gray-700 cursor-pointer bg-transparent" />
-                  <input type="text" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="flex-1 bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-violet-500/50 transition-colors" />
+                  <input type="color" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="w-10 h-10 rounded-lg border border-neutral-700 cursor-pointer bg-transparent" />
+                  <input type="text" value={primaryColor} onChange={(e) => setPrimaryColor(e.target.value)} className="flex-1 bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 font-mono text-sm focus:outline-none focus:border-violet-500/50 transition-colors" />
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-400 mb-2">Secondary Color</label>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Secondary Color</label>
                 <div className="flex items-center gap-3">
-                  <input type="color" value={secondaryColor} onChange={(e) => setSecondaryColor(e.target.value)} className="w-10 h-10 rounded-lg border border-gray-700 cursor-pointer bg-transparent" />
-                  <input type="text" value={secondaryColor} onChange={(e) => setSecondaryColor(e.target.value)} className="flex-1 bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white font-mono text-sm focus:outline-none focus:border-violet-500/50 transition-colors" />
+                  <input type="color" value={secondaryColor} onChange={(e) => setSecondaryColor(e.target.value)} className="w-10 h-10 rounded-lg border border-neutral-700 cursor-pointer bg-transparent" />
+                  <input type="text" value={secondaryColor} onChange={(e) => setSecondaryColor(e.target.value)} className="flex-1 bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 font-mono text-sm focus:outline-none focus:border-violet-500/50 transition-colors" />
                 </div>
               </div>
             </div>
@@ -498,34 +490,34 @@ export default function ProjectSettingsPage() {
       </div>
 
       {/* Products */}
-      <div className="bg-gray-900/40 border border-gray-800 rounded-3xl overflow-hidden">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
         {renderSectionHeader('products', 'Products & Services')}
         {openSections.products && (
-          <div className="px-6 pb-6 space-y-4">
+          <div className="px-5 pb-5 space-y-4">
             <div className="flex justify-end">
-              <button onClick={addProduct} className="px-4 py-2 text-sm font-bold text-violet-400 hover:text-white bg-violet-500/10 hover:bg-violet-500/20 rounded-lg border border-violet-500/20 transition-all">
+              <button onClick={addProduct} className="px-3 py-1.5 text-sm font-medium text-violet-400 hover:text-white bg-violet-500/10 hover:bg-violet-500/20 rounded-lg transition-all">
                 + Add Product
               </button>
             </div>
             {products.map((product, i) => (
-              <div key={i} className="bg-gray-800/30 border border-gray-700/50 rounded-2xl p-6 space-y-4 relative">
+              <div key={i} className="bg-neutral-800/40 border border-neutral-800 rounded-lg p-5 space-y-4 relative">
                 {products.length > 1 && (
-                  <button onClick={() => removeProduct(i)} className="absolute top-4 right-4 p-1.5 text-gray-600 hover:text-red-400 transition-colors">
+                  <button onClick={() => removeProduct(i)} className="absolute top-4 right-4 p-1.5 text-neutral-600 hover:text-red-400 transition-colors">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
                 )}
-                <div className="text-xs font-bold text-gray-500 uppercase tracking-widest">Product {i + 1}</div>
+                <div className="text-xs font-medium text-neutral-500">Product {i + 1}</div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Name</label>
-                  <input type="text" value={product.name} onChange={(e) => updateProduct(i, 'name', e.target.value)} placeholder="Product name" className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors" />
+                  <label className="block text-sm font-medium text-neutral-400 mb-2">Name</label>
+                  <input type="text" value={product.name} onChange={(e) => updateProduct(i, 'name', e.target.value)} placeholder="Product name" className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Description</label>
-                  <textarea value={product.description} onChange={(e) => updateProduct(i, 'description', e.target.value)} placeholder="What does this product/service do?" rows={2} className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors resize-none" />
+                  <label className="block text-sm font-medium text-neutral-400 mb-2">Description</label>
+                  <textarea value={product.description} onChange={(e) => updateProduct(i, 'description', e.target.value)} placeholder="What does this product/service do?" rows={2} className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors resize-none" />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-400 mb-2">URL (optional)</label>
-                  <input type="url" value={product.url} onChange={(e) => updateProduct(i, 'url', e.target.value)} placeholder="https://..." className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors" />
+                  <label className="block text-sm font-medium text-neutral-400 mb-2">URL (optional)</label>
+                  <input type="url" value={product.url} onChange={(e) => updateProduct(i, 'url', e.target.value)} placeholder="https://..." className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors" />
                 </div>
               </div>
             ))}
@@ -534,18 +526,18 @@ export default function ProjectSettingsPage() {
       </div>
 
       {/* ICP */}
-      <div className="bg-gray-900/40 border border-gray-800 rounded-3xl overflow-hidden">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
         {renderSectionHeader('icp', 'Ideal Customer Profile')}
         {openSections.icp && (
-          <div className="px-6 pb-6 space-y-4">
+          <div className="px-5 pb-5 space-y-4">
             {renderTagInput('Target Roles', 'e.g. CTO, VP Engineering', targetRoles, setTargetRoles, roleInput, setRoleInput)}
             {renderTagInput('Target Industries', 'e.g. SaaS, FinTech', targetIndustries, setTargetIndustries, industryInput, setIndustryInput)}
             <div>
-              <label className="block text-sm font-bold text-gray-400 mb-2">Company Size</label>
-              <select value={companySize} onChange={(e) => setCompanySize(e.target.value)} className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-500/50 transition-colors">
-                <option value="" className="bg-gray-900">Select size...</option>
+              <label className="block text-sm font-medium text-neutral-400 mb-2">Company Size</label>
+              <select value={companySize} onChange={(e) => setCompanySize(e.target.value)} className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 text-sm focus:outline-none focus:border-violet-500/50 transition-colors">
+                <option value="" className="bg-neutral-900">Select size...</option>
                 {COMPANY_SIZES.map((size) => (
-                  <option key={size} value={size} className="bg-gray-900">{size} employees</option>
+                  <option key={size} value={size} className="bg-neutral-900">{size} employees</option>
                 ))}
               </select>
             </div>
@@ -556,47 +548,47 @@ export default function ProjectSettingsPage() {
       </div>
 
       {/* Tone of Voice */}
-      <div className="bg-gray-900/40 border border-gray-800 rounded-3xl overflow-hidden">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
         {renderSectionHeader('tone', 'Tone of Voice')}
         {openSections.tone && (
-          <div className="px-6 pb-6 space-y-4">
+          <div className="px-5 pb-5 space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-bold text-gray-400 mb-2">Style</label>
-                <select value={style} onChange={(e) => setStyle(e.target.value)} className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-500/50 transition-colors capitalize">
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Style</label>
+                <select value={style} onChange={(e) => setStyle(e.target.value)} className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 text-sm focus:outline-none focus:border-violet-500/50 transition-colors capitalize">
                   {STYLE_OPTIONS.map((s) => (
-                    <option key={s} value={s} className="bg-gray-900 capitalize">{s}</option>
+                    <option key={s} value={s} className="bg-neutral-900 capitalize">{s}</option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-bold text-gray-400 mb-2">Formality</label>
-                <select value={formality} onChange={(e) => setFormality(e.target.value)} className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-500/50 transition-colors capitalize">
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Formality</label>
+                <select value={formality} onChange={(e) => setFormality(e.target.value)} className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 text-sm focus:outline-none focus:border-violet-500/50 transition-colors capitalize">
                   {FORMALITY_OPTIONS.map((f) => (
-                    <option key={f} value={f} className="bg-gray-900 capitalize">{f}</option>
+                    <option key={f} value={f} className="bg-neutral-900 capitalize">{f}</option>
                   ))}
                 </select>
               </div>
             </div>
             {renderTagInput('Personality Traits', 'e.g. Witty, Empathetic', personality, setPersonality, personalityInput, setPersonalityInput)}
             <div>
-              <label className="block text-sm font-bold text-gray-400 mb-2">Dos (one per line)</label>
-              <textarea value={dosText} onChange={(e) => setDosText(e.target.value)} placeholder={"Use data-driven insights\nReference industry trends"} rows={4} className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors resize-none" />
+              <label className="block text-sm font-medium text-neutral-400 mb-2">Dos (one per line)</label>
+              <textarea value={dosText} onChange={(e) => setDosText(e.target.value)} placeholder={"Use data-driven insights\nReference industry trends"} rows={4} className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors resize-none" />
             </div>
             <div>
-              <label className="block text-sm font-bold text-gray-400 mb-2">Don&apos;ts (one per line)</label>
-              <textarea value={dontsText} onChange={(e) => setDontsText(e.target.value)} placeholder={"Avoid jargon overload\nDon't be salesy"} rows={4} className="w-full bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors resize-none" />
+              <label className="block text-sm font-medium text-neutral-400 mb-2">Don&apos;ts (one per line)</label>
+              <textarea value={dontsText} onChange={(e) => setDontsText(e.target.value)} placeholder={"Avoid jargon overload\nDon't be salesy"} rows={4} className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg px-4 py-2.5 text-neutral-100 placeholder-neutral-600 text-sm focus:outline-none focus:border-violet-500/50 transition-colors resize-none" />
             </div>
           </div>
         )}
       </div>
 
       {/* Platforms */}
-      <div className="bg-gray-900/40 border border-gray-800 rounded-3xl overflow-hidden">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl overflow-hidden">
         {renderSectionHeader('platforms', 'Platforms')}
         {openSections.platforms && (
-          <div className="px-6 pb-6">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="px-5 pb-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {PLATFORMS.map((platform) => {
                 const active = enabledPlatforms.includes(platform.id)
                 return (
@@ -604,20 +596,20 @@ export default function ProjectSettingsPage() {
                     key={platform.id}
                     type="button"
                     onClick={() => togglePlatform(platform.id)}
-                    className={`p-6 rounded-2xl border-2 text-center transition-all ${
+                    className={`p-4 rounded-lg border text-center transition-all ${
                       active
-                        ? 'border-violet-500 bg-violet-500/10'
-                        : 'border-gray-800 bg-gray-800/30 hover:border-gray-700'
+                        ? 'border-violet-500/50 bg-violet-500/8'
+                        : 'border-neutral-800 bg-neutral-800/30 hover:border-neutral-700'
                     }`}
                   >
-                    <div className={`w-12 h-12 rounded-xl mx-auto flex items-center justify-center text-lg font-black mb-3 ${
+                    <div className={`w-10 h-10 rounded-lg mx-auto flex items-center justify-center text-sm font-medium mb-2 ${
                       active
-                        ? 'bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white'
-                        : 'bg-gray-700/50 text-gray-400'
+                        ? 'bg-violet-500 text-white'
+                        : 'bg-neutral-700/50 text-neutral-400'
                     }`}>
                       {platform.icon}
                     </div>
-                    <span className={`text-sm font-bold ${active ? 'text-white' : 'text-gray-500'}`}>
+                    <span className={`text-sm ${active ? 'text-neutral-200 font-medium' : 'text-neutral-500'}`}>
                       {platform.label}
                     </span>
                   </button>
@@ -629,10 +621,10 @@ export default function ProjectSettingsPage() {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-between pt-4">
+      <div className="flex items-center justify-between pt-2">
         <button
           onClick={() => setShowDeleteConfirm(true)}
-          className="px-6 py-3 text-red-400 hover:text-red-300 hover:bg-red-500/10 font-bold rounded-xl transition-all"
+          className="px-4 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 font-medium rounded-lg transition-all text-sm"
         >
           Delete Project
         </button>
@@ -640,7 +632,7 @@ export default function ProjectSettingsPage() {
         <button
           onClick={handleSave}
           disabled={saving || !name.trim()}
-          className="px-8 py-3 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white font-bold rounded-xl hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-2.5 bg-violet-500 text-white font-medium rounded-lg hover:bg-violet-600 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2 text-sm"
         >
           {saving ? (
             <>
@@ -656,29 +648,24 @@ export default function ProjectSettingsPage() {
       {/* Delete Modal */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <div className="bg-gray-900 border border-gray-800 rounded-3xl p-8 max-w-md w-full space-y-6">
-            <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
-            </div>
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 max-w-md w-full space-y-5">
             <div className="text-center">
-              <h3 className="text-xl font-black text-white mb-2">Delete Project</h3>
-              <p className="text-gray-500 text-sm">
-                Are you sure you want to delete <span className="text-white font-bold">{name}</span>? This action cannot be undone.
+              <h3 className="text-lg font-semibold text-neutral-100 mb-2">Delete Project</h3>
+              <p className="text-neutral-500 text-sm">
+                Are you sure you want to delete <span className="text-neutral-200 font-medium">{name}</span>? This action cannot be undone.
               </p>
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="flex-1 px-6 py-3 border border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 font-bold rounded-xl transition-all"
+                className="flex-1 px-4 py-2.5 border border-neutral-700 text-neutral-300 hover:text-white hover:border-neutral-500 font-medium rounded-lg transition-all text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={deleting}
-                className="flex-1 px-6 py-3 bg-red-500/20 text-red-400 hover:bg-red-500/30 font-bold rounded-xl transition-all border border-red-500/30 disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2.5 bg-red-500/20 text-red-400 hover:bg-red-500/30 font-medium rounded-lg transition-all border border-red-500/30 disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
               >
                 {deleting ? (
                   <>

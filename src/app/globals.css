@@ -11,11 +11,11 @@
   --font-sans: var(--font-inter);
   --radius: 0.75rem;
 
-  --background: 224 71% 4%;
-  --foreground: 210 20% 98%;
+  --background: 220 16% 6%;
+  --foreground: 220 10% 92%;
 
-  --card: 222 47% 7%;
-  --card-foreground: 210 20% 98%;
+  --card: 220 14% 8%;
+  --card-foreground: 220 10% 92%;
 
   --popover: 222 47% 7%;
   --popover-foreground: 210 20% 98%;
@@ -29,14 +29,14 @@
   --accent: 192 91% 42%;
   --accent-foreground: 0 0% 100%;
 
-  --muted: 223 47% 11%;
-  --muted-foreground: 215 20% 65%;
+  --muted: 220 14% 11%;
+  --muted-foreground: 220 10% 55%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --border: 217 33% 17%;
-  --input: 217 33% 17%;
+  --border: 220 12% 15%;
+  --input: 220 12% 15%;
   --ring: 217 91% 60%;
 
   --success: 160 84% 39%;
@@ -49,14 +49,14 @@
   --chart-4: 160 84% 39%;
   --chart-5: 38 92% 50%;
 
-  --sidebar-background: 222 47% 7%;
-  --sidebar-foreground: 210 20% 98%;
-  --sidebar-primary: 217 91% 60%;
+  --sidebar-background: 220 16% 6%;
+  --sidebar-foreground: 220 10% 92%;
+  --sidebar-primary: 263 70% 55%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 223 47% 11%;
-  --sidebar-accent-foreground: 210 20% 98%;
-  --sidebar-border: 217 33% 17%;
-  --sidebar-ring: 217 91% 60%;
+  --sidebar-accent: 220 14% 11%;
+  --sidebar-accent-foreground: 220 10% 92%;
+  --sidebar-border: 220 12% 15%;
+  --sidebar-ring: 263 70% 55%;
 }
 
 /* --- Register with Tailwind v4 --- */
@@ -130,10 +130,7 @@ body {
   font-family: var(--font-sans), sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image:
-    radial-gradient(circle at 20% 10%, hsl(var(--primary) / 0.08), transparent 55%),
-    radial-gradient(circle at 80% 0%, hsl(var(--accent) / 0.05), transparent 50%),
-    linear-gradient(180deg, hsl(var(--background)), hsl(var(--background)));
+  background-image: none;
 }
 
 * {

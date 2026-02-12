@@ -91,13 +91,13 @@ function CharLimitBar({ current, limit }: { current: number; limit: number }) {
   const color = pct < 70 ? 'bg-green-500' : pct < 90 ? 'bg-amber-500' : 'bg-red-500'
   return (
     <div className="flex items-center gap-3">
-      <div className="flex-1 h-1 bg-gray-800 rounded-full overflow-hidden">
+      <div className="flex-1 h-1 bg-neutral-800 rounded-full overflow-hidden">
         <div
           className={`h-full ${color} rounded-full transition-all duration-300 ease-out`}
           style={{ width: `${pct}%` }}
         />
       </div>
-      <span className={`text-[11px] font-mono tabular-nums ${pct >= 90 ? 'text-red-400' : 'text-gray-500'}`}>
+      <span className={`text-[11px] font-mono tabular-nums ${pct >= 90 ? 'text-red-400' : 'text-neutral-500'}`}>
         {current.toLocaleString()}/{limit.toLocaleString()}
       </span>
     </div>
@@ -110,7 +110,7 @@ function GenerationSkeleton() {
       {[72, 100, 88, 100, 65, 90, 78, 45].map((w, i) => (
         <div
           key={i}
-          className="h-3.5 bg-gray-800 rounded-md animate-pulse"
+          className="h-3.5 bg-neutral-800 rounded-md animate-pulse"
           style={{ width: `${w}%`, animationDelay: `${i * 80}ms` }}
         />
       ))}
@@ -120,20 +120,20 @@ function GenerationSkeleton() {
 
 function LinkedInPreview({ content, authorName }: { content: string; authorName: string }) {
   return (
-    <div className="rounded-xl bg-[#1b1f23] border border-gray-700/40 overflow-hidden">
+    <div className="rounded-xl bg-[#1b1f23] border border-neutral-700/40 overflow-hidden">
       <div className="p-4 flex items-start gap-3">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-neutral-100 font-bold text-sm shrink-0">
           {authorName[0]?.toUpperCase() || 'U'}
         </div>
         <div className="min-w-0">
-          <p className="text-white font-semibold text-sm">{authorName}</p>
-          <p className="text-gray-500 text-xs">Industry Expert · 2h</p>
+          <p className="text-neutral-100 font-semibold text-sm">{authorName}</p>
+          <p className="text-neutral-500 text-xs">Industry Expert · 2h</p>
         </div>
       </div>
       <div className="px-4 pb-4">
-        <div className="text-[13px] text-gray-200 whitespace-pre-wrap leading-[1.65]">{content}</div>
+        <div className="text-[13px] text-neutral-200 whitespace-pre-wrap leading-[1.65]">{content}</div>
       </div>
-      <div className="px-4 py-2.5 border-t border-gray-700/30 flex items-center justify-around text-gray-500 text-xs font-medium">
+      <div className="px-4 py-2.5 border-t border-neutral-700/30 flex items-center justify-around text-neutral-500 text-xs font-medium">
         <span className="flex items-center gap-1.5 cursor-default">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904m.729-7.534a2.25 2.25 0 00-2.25 2.25v4.5a2.25 2.25 0 002.25 2.25h.382" /></svg>
           Like
@@ -157,19 +157,19 @@ function LinkedInPreview({ content, authorName }: { content: string; authorName:
 
 function TwitterPreview({ content, authorName }: { content: string; authorName: string }) {
   return (
-    <div className="rounded-xl bg-[#16181c] border border-gray-700/40 overflow-hidden">
+    <div className="rounded-xl bg-[#16181c] border border-neutral-700/40 overflow-hidden">
       <div className="p-4 flex items-start gap-3">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-white font-bold text-xs shrink-0">
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-neutral-100 font-bold text-xs shrink-0">
           {authorName[0]?.toUpperCase() || 'U'}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-white font-bold text-sm">{authorName}</span>
+            <span className="text-neutral-100 font-bold text-sm">{authorName}</span>
             <svg className="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="currentColor"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.34 2.19c-1.39-.46-2.9-.2-3.91.81s-1.27 2.52-.81 3.91C2.63 9.33 1.75 10.57 1.75 12s.88 2.67 2.19 3.34c-.46 1.39-.2 2.9.81 3.91s2.52 1.27 3.91.81c.66 1.31 1.91 2.19 3.34 2.19s2.67-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.09 4.38l-3.54-3.54 1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41-5.64 5.66z" /></svg>
-            <span className="text-gray-500 text-sm">@{authorName.toLowerCase().replace(/\s/g, '')}</span>
+            <span className="text-neutral-500 text-sm">@{authorName.toLowerCase().replace(/\s/g, '')}</span>
           </div>
-          <div className="text-[14px] text-gray-100 whitespace-pre-wrap leading-[1.5] mt-2">{content}</div>
-          <div className="flex items-center gap-8 mt-3 text-gray-500 text-xs">
+          <div className="text-[14px] text-neutral-100 whitespace-pre-wrap leading-[1.5] mt-2">{content}</div>
+          <div className="flex items-center gap-8 mt-3 text-neutral-500 text-xs">
             <span className="flex items-center gap-1.5 cursor-default">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" /></svg>
               12
@@ -201,23 +201,23 @@ function MediumPreview({ content, authorName }: { content: string; authorName: s
   const readTime = Math.max(1, Math.round(wordCount / 200))
 
   return (
-    <div className="rounded-xl bg-[#1a1a1a] border border-gray-700/40 overflow-hidden">
+    <div className="rounded-xl bg-[#1a1a1a] border border-neutral-700/40 overflow-hidden">
       <div className="p-6">
-        <h2 className="text-xl font-bold text-white leading-tight mb-3">{title}</h2>
+        <h2 className="text-xl font-bold text-neutral-100 leading-tight mb-3">{title}</h2>
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white font-bold text-xs">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-neutral-100 font-bold text-xs">
             {authorName[0]?.toUpperCase() || 'U'}
           </div>
           <div>
-            <p className="text-white text-xs font-medium">{authorName}</p>
-            <p className="text-gray-500 text-xs">{readTime} min read</p>
+            <p className="text-neutral-100 text-xs font-medium">{authorName}</p>
+            <p className="text-neutral-500 text-xs">{readTime} min read</p>
           </div>
         </div>
-        <div className="border-t border-gray-800 pt-4">
-          <div className="text-[13px] text-gray-300 whitespace-pre-wrap leading-[1.7]">{body}</div>
+        <div className="border-t border-neutral-800 pt-4">
+          <div className="text-[13px] text-neutral-300 whitespace-pre-wrap leading-[1.7]">{body}</div>
         </div>
       </div>
-      <div className="px-6 py-3 border-t border-gray-800/50 flex items-center justify-between text-gray-500">
+      <div className="px-6 py-3 border-t border-neutral-800/50 flex items-center justify-between text-neutral-500">
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1 text-xs cursor-default">
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904m.729-7.534a2.25 2.25 0 00-2.25 2.25v4.5a2.25 2.25 0 002.25 2.25h.382" /></svg>
@@ -238,26 +238,26 @@ function NewsletterPreview({ content, authorName }: { content: string; authorNam
   const body = lines.slice(1).join('\n')
 
   return (
-    <div className="rounded-xl bg-[#1c1c1e] border border-gray-700/40 overflow-hidden">
-      <div className="px-5 py-3 bg-gray-800/30 border-b border-gray-700/30 flex items-center gap-3">
+    <div className="rounded-xl bg-[#1c1c1e] border border-neutral-700/40 overflow-hidden">
+      <div className="px-5 py-3 bg-neutral-800/30 border-b border-neutral-700/30 flex items-center gap-3">
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
           <div className="w-2.5 h-2.5 rounded-full bg-amber-500/60" />
           <div className="w-2.5 h-2.5 rounded-full bg-green-500/60" />
         </div>
-        <span className="text-gray-500 text-xs font-mono truncate flex-1">{authorName}&apos;s Newsletter</span>
+        <span className="text-neutral-500 text-xs font-mono truncate flex-1">{authorName}&apos;s Newsletter</span>
       </div>
       <div className="p-5">
         <div className="mb-4">
-          <p className="text-[11px] text-gray-600 uppercase tracking-wider font-medium mb-1">Subject</p>
-          <p className="text-white font-semibold text-sm">{subjectLine}</p>
+          <p className="text-[11px] text-neutral-600 uppercase tracking-wider font-medium mb-1">Subject</p>
+          <p className="text-neutral-100 font-semibold text-sm">{subjectLine}</p>
         </div>
-        <div className="border-t border-gray-800 pt-4">
-          <div className="text-[13px] text-gray-300 whitespace-pre-wrap leading-[1.7]">{body}</div>
+        <div className="border-t border-neutral-800 pt-4">
+          <div className="text-[13px] text-neutral-300 whitespace-pre-wrap leading-[1.7]">{body}</div>
         </div>
       </div>
-      <div className="px-5 py-2.5 border-t border-gray-800/40 text-center">
-        <span className="text-gray-600 text-[10px]">Unsubscribe | View in browser</span>
+      <div className="px-5 py-2.5 border-t border-neutral-800/40 text-center">
+        <span className="text-neutral-600 text-[10px]">Unsubscribe | View in browser</span>
       </div>
     </div>
   )
@@ -425,7 +425,7 @@ export default function ContentBenchPage() {
   if (!currentWorkspace) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-500">Loading workspace...</p>
+        <p className="text-neutral-500">Loading workspace...</p>
       </div>
     )
   }
@@ -442,11 +442,11 @@ export default function ContentBenchPage() {
     <div className="flex flex-col lg:flex-row gap-0" style={{ minHeight: 'calc(100vh - 18rem)' }}>
 
       {/* ─── COMPOSE PANEL ─────────────────────────────────────── */}
-      <div className="w-full lg:w-[420px] lg:shrink-0 lg:border-r border-gray-800/40 lg:pr-8 space-y-5 pb-8 lg:pb-0">
+      <div className="w-full lg:w-[420px] lg:shrink-0 lg:border-r border-neutral-800/40 lg:pr-8 space-y-5 pb-8 lg:pb-0">
 
         {/* Content Type Grid */}
         <div>
-          <label className="block text-[11px] uppercase tracking-[0.15em] text-gray-500 font-semibold mb-2.5">
+          <label className="block text-[11px] uppercase tracking-[0.15em] text-neutral-500 font-semibold mb-2.5">
             Content Type
           </label>
           <div className="grid grid-cols-3 gap-1.5">
@@ -459,14 +459,14 @@ export default function ContentBenchPage() {
                   className={`relative p-2.5 rounded-xl text-center transition-all duration-150 border ${
                     active
                       ? 'border-violet-500/50 bg-violet-500/10 shadow-lg shadow-violet-500/5'
-                      : 'border-gray-800 bg-gray-900/60 hover:border-gray-700 hover:bg-gray-900'
+                      : 'border-neutral-800 bg-neutral-900/60 hover:border-neutral-700 hover:bg-neutral-900'
                   }`}
                   title={type.desc}
                 >
-                  <div className={`mx-auto mb-1.5 ${active ? 'text-violet-400' : 'text-gray-500'} transition-colors`}>
+                  <div className={`mx-auto mb-1.5 ${active ? 'text-violet-400' : 'text-neutral-500'} transition-colors`}>
                     <ContentTypeIcon id={type.id} className="w-4 h-4 mx-auto" />
                   </div>
-                  <span className={`text-[11px] font-semibold leading-none ${active ? 'text-violet-300' : 'text-gray-400'} transition-colors`}>
+                  <span className={`text-[11px] font-semibold leading-none ${active ? 'text-violet-300' : 'text-neutral-400'} transition-colors`}>
                     {type.label}
                   </span>
                 </button>
@@ -477,7 +477,7 @@ export default function ContentBenchPage() {
 
         {/* Topic Brief */}
         <div>
-          <label className="block text-[11px] uppercase tracking-[0.15em] text-gray-500 font-semibold mb-2.5">
+          <label className="block text-[11px] uppercase tracking-[0.15em] text-neutral-500 font-semibold mb-2.5">
             Topic / Brief
           </label>
           <textarea
@@ -486,12 +486,12 @@ export default function ContentBenchPage() {
             onKeyDown={(e) => { if (e.key === 'Enter' && e.metaKey) handleGenerate() }}
             placeholder={selectedType?.placeholder || 'Describe what you want to write about...'}
             rows={4}
-            className="w-full px-4 py-3 rounded-xl bg-gray-900/80 border border-gray-800 focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20 text-white placeholder-gray-600 text-sm resize-none transition-all leading-relaxed"
+            className="w-full px-4 py-3 rounded-xl bg-neutral-900/80 border border-neutral-800 focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20 text-neutral-100 placeholder-gray-600 text-sm resize-none transition-all leading-relaxed"
           />
           {!showRefUrl ? (
             <button
               onClick={() => setShowRefUrl(true)}
-              className="mt-1.5 text-[11px] text-gray-600 hover:text-gray-400 transition-colors flex items-center gap-1"
+              className="mt-1.5 text-[11px] text-neutral-600 hover:text-neutral-400 transition-colors flex items-center gap-1"
             >
               <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101" /><path strokeLinecap="round" strokeLinejoin="round" d="M10.172 13.828a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.102 1.101" /></svg>
               Add reference URL
@@ -502,14 +502,14 @@ export default function ContentBenchPage() {
               value={refUrl}
               onChange={(e) => setRefUrl(e.target.value)}
               placeholder="https://example.com/article"
-              className="mt-2 w-full px-3 py-2 rounded-lg bg-gray-900/80 border border-gray-800 focus:border-violet-500/50 focus:outline-none text-white placeholder-gray-600 text-xs transition-all"
+              className="mt-2 w-full px-3 py-2 rounded-lg bg-neutral-900/80 border border-neutral-800 focus:border-violet-500/50 focus:outline-none text-neutral-100 placeholder-gray-600 text-xs transition-all"
             />
           )}
         </div>
 
         {/* Platform Tiles */}
         <div>
-          <label className="block text-[11px] uppercase tracking-[0.15em] text-gray-500 font-semibold mb-2.5">
+          <label className="block text-[11px] uppercase tracking-[0.15em] text-neutral-500 font-semibold mb-2.5">
             Platform
           </label>
           <div className="grid grid-cols-4 gap-1.5">
@@ -522,7 +522,7 @@ export default function ContentBenchPage() {
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border transition-all duration-150 ${
                     active
                       ? `${PLATFORM_ACTIVE_STYLES[p.id]} shadow-lg`
-                      : 'border-gray-800 bg-gray-900/60 text-gray-500 hover:border-gray-700 hover:text-gray-400'
+                      : 'border-neutral-800 bg-neutral-900/60 text-neutral-500 hover:border-neutral-700 hover:text-neutral-400'
                   }`}
                 >
                   <PlatformIcon id={p.id} className="w-5 h-5" />
@@ -539,32 +539,32 @@ export default function ContentBenchPage() {
         {/* Tone + Format */}
         <div className="flex gap-3">
           <div className="flex-1">
-            <label className="block text-[11px] uppercase tracking-[0.15em] text-gray-500 font-semibold mb-2">
+            <label className="block text-[11px] uppercase tracking-[0.15em] text-neutral-500 font-semibold mb-2">
               Tone
             </label>
             <select
               value={tone}
               onChange={(e) => setTone(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-gray-900/80 border border-gray-800 text-white text-xs font-medium focus:outline-none focus:border-violet-500/50 cursor-pointer appearance-none"
+              className="w-full px-3 py-2.5 rounded-xl bg-neutral-900/80 border border-neutral-800 text-neutral-100 text-xs font-medium focus:outline-none focus:border-violet-500/50 cursor-pointer appearance-none"
               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
             >
               {TONES.map((t) => (
-                <option key={t.id} value={t.id} className="bg-gray-900">{t.label}</option>
+                <option key={t.id} value={t.id} className="bg-neutral-900">{t.label}</option>
               ))}
             </select>
           </div>
           <div className="flex-1">
-            <label className="block text-[11px] uppercase tracking-[0.15em] text-gray-500 font-semibold mb-2">
+            <label className="block text-[11px] uppercase tracking-[0.15em] text-neutral-500 font-semibold mb-2">
               Length
             </label>
             <select
               value={formatLength}
               onChange={(e) => setFormatLength(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl bg-gray-900/80 border border-gray-800 text-white text-xs font-medium focus:outline-none focus:border-violet-500/50 cursor-pointer appearance-none"
+              className="w-full px-3 py-2.5 rounded-xl bg-neutral-900/80 border border-neutral-800 text-neutral-100 text-xs font-medium focus:outline-none focus:border-violet-500/50 cursor-pointer appearance-none"
               style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 12px center' }}
             >
               {FORMAT_LENGTHS.map((f) => (
-                <option key={f.id} value={f.id} className="bg-gray-900">{f.label}</option>
+                <option key={f.id} value={f.id} className="bg-neutral-900">{f.label}</option>
               ))}
             </select>
           </div>
@@ -572,54 +572,54 @@ export default function ContentBenchPage() {
 
         {/* Brand Context */}
         {project && brandItems.length > 0 && (
-          <div className="rounded-xl border border-gray-800/60 bg-gray-900/40 overflow-hidden">
+          <div className="rounded-xl border border-neutral-800/60 bg-neutral-900/40 overflow-hidden">
             <button
               onClick={() => setBrandExpanded(!brandExpanded)}
               className="w-full px-3.5 py-2.5 flex items-center justify-between text-left group"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0" />
-                <span className="text-[11px] text-gray-400 font-medium truncate">
+                <span className="text-[11px] text-neutral-400 font-medium truncate">
                   Brand: {brandItems.slice(0, 2).join(' · ')}
                 </span>
               </div>
-              <svg className={`w-3.5 h-3.5 text-gray-600 shrink-0 transition-transform ${brandExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+              <svg className={`w-3.5 h-3.5 text-neutral-600 shrink-0 transition-transform ${brandExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
             </button>
             {brandExpanded && (
-              <div className="px-3.5 pb-3 pt-0 space-y-1.5 border-t border-gray-800/40">
+              <div className="px-3.5 pb-3 pt-0 space-y-1.5 border-t border-neutral-800/40">
                 {project.name && (
                   <div className="flex items-center gap-2 text-[11px]">
                     <span className="text-green-500">&#10003;</span>
-                    <span className="text-gray-500">Brand:</span>
-                    <span className="text-gray-300">{project.name}</span>
+                    <span className="text-neutral-500">Brand:</span>
+                    <span className="text-neutral-300">{project.name}</span>
                   </div>
                 )}
                 {project.industry && (
                   <div className="flex items-center gap-2 text-[11px]">
                     <span className="text-green-500">&#10003;</span>
-                    <span className="text-gray-500">Industry:</span>
-                    <span className="text-gray-300">{project.industry}</span>
+                    <span className="text-neutral-500">Industry:</span>
+                    <span className="text-neutral-300">{project.industry}</span>
                   </div>
                 )}
                 {project.icp?.target_roles?.length ? (
                   <div className="flex items-center gap-2 text-[11px]">
                     <span className="text-green-500">&#10003;</span>
-                    <span className="text-gray-500">ICP:</span>
-                    <span className="text-gray-300">{project.icp.target_roles.slice(0, 3).join(', ')}</span>
+                    <span className="text-neutral-500">ICP:</span>
+                    <span className="text-neutral-300">{project.icp.target_roles.slice(0, 3).join(', ')}</span>
                   </div>
                 ) : null}
                 {project.products?.length ? (
                   <div className="flex items-center gap-2 text-[11px]">
                     <span className="text-green-500">&#10003;</span>
-                    <span className="text-gray-500">Products:</span>
-                    <span className="text-gray-300">{project.products.map(p => p.name).join(', ')}</span>
+                    <span className="text-neutral-500">Products:</span>
+                    <span className="text-neutral-300">{project.products.map(p => p.name).join(', ')}</span>
                   </div>
                 ) : null}
                 {project.tone_of_voice?.style && (
                   <div className="flex items-center gap-2 text-[11px]">
                     <span className="text-green-500">&#10003;</span>
-                    <span className="text-gray-500">Voice:</span>
-                    <span className="text-gray-300">{project.tone_of_voice.style}</span>
+                    <span className="text-neutral-500">Voice:</span>
+                    <span className="text-neutral-300">{project.tone_of_voice.style}</span>
                   </div>
                 )}
               </div>
@@ -628,34 +628,34 @@ export default function ContentBenchPage() {
         )}
 
         {/* Performance Insights */}
-        <div className="rounded-xl border border-gray-800/60 bg-gray-900/40 overflow-hidden">
+        <div className="rounded-xl border border-neutral-800/60 bg-neutral-900/40 overflow-hidden">
           <button
             onClick={() => setInsightsExpanded(!insightsExpanded)}
             className="w-full px-3.5 py-2.5 flex items-center justify-between text-left group"
           >
             <div className="flex items-center gap-2 min-w-0">
               <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-              <span className="text-[11px] text-gray-400 font-medium truncate">
+              <span className="text-[11px] text-neutral-400 font-medium truncate">
                 Performance: 3 insights available
               </span>
             </div>
-            <svg className={`w-3.5 h-3.5 text-gray-600 shrink-0 transition-transform ${insightsExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+            <svg className={`w-3.5 h-3.5 text-neutral-600 shrink-0 transition-transform ${insightsExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
           </button>
           {insightsExpanded && (
-            <div className="px-3.5 pb-3 pt-0 space-y-1.5 border-t border-gray-800/40">
+            <div className="px-3.5 pb-3 pt-0 space-y-1.5 border-t border-neutral-800/40">
               <div className="flex items-center gap-2 text-[11px]">
                 <svg className="w-3 h-3 text-amber-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>
-                <span className="text-gray-300">Posts with questions get 2x comments on LinkedIn</span>
+                <span className="text-neutral-300">Posts with questions get 2x comments on LinkedIn</span>
               </div>
               <div className="flex items-center gap-2 text-[11px]">
                 <svg className="w-3 h-3 text-amber-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>
-                <span className="text-gray-300">How-to posts outperform hot takes 3:1</span>
+                <span className="text-neutral-300">How-to posts outperform hot takes 3:1</span>
               </div>
               <div className="flex items-center gap-2 text-[11px]">
                 <svg className="w-3 h-3 text-amber-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>
-                <span className="text-gray-300">Tuesday 9am posts get highest LinkedIn engagement</span>
+                <span className="text-neutral-300">Tuesday 9am posts get highest LinkedIn engagement</span>
               </div>
-              <p className="text-[9px] text-gray-700 pt-1">AI-generated from performance data</p>
+              <p className="text-[9px] text-neutral-700 pt-1">AI-generated from performance data</p>
             </div>
           )}
         </div>
@@ -664,7 +664,7 @@ export default function ContentBenchPage() {
         <button
           onClick={handleGenerate}
           disabled={generating || !topic.trim()}
-          className="w-full relative px-6 py-3.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 font-bold text-white text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 shadow-lg shadow-violet-500/20 overflow-hidden group"
+          className="w-full relative px-6 py-3.5 rounded-xl bg-violet-600 hover:bg-violet-500 font-bold text-neutral-100 text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2.5 shadow-lg shadow-violet-500/20 overflow-hidden group"
         >
           {/* Shimmer effect */}
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out" />
@@ -682,8 +682,8 @@ export default function ContentBenchPage() {
         </button>
 
         {/* Keyboard shortcut hint */}
-        <p className="text-[10px] text-gray-700 text-center -mt-2">
-          Press <kbd className="px-1.5 py-0.5 rounded bg-gray-800 text-gray-500 font-mono text-[9px]">Cmd</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-gray-800 text-gray-500 font-mono text-[9px]">Enter</kbd> to generate
+        <p className="text-[10px] text-neutral-700 text-center -mt-2">
+          Press <kbd className="px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-500 font-mono text-[9px]">Cmd</kbd> + <kbd className="px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-500 font-mono text-[9px]">Enter</kbd> to generate
         </p>
       </div>
 
@@ -706,9 +706,9 @@ export default function ContentBenchPage() {
                 <PlatformIcon id={platform} className="w-3.5 h-3.5 inline mr-1.5" />
                 {selectedPlatform?.label}
               </div>
-              <div className="w-16 h-1.5 bg-gray-800 rounded-full animate-pulse" />
+              <div className="w-16 h-1.5 bg-neutral-800 rounded-full animate-pulse" />
             </div>
-            <div className="flex-1 rounded-xl border border-gray-800/50 bg-gray-900/30 overflow-hidden">
+            <div className="flex-1 rounded-xl border border-neutral-800/50 bg-neutral-900/30 overflow-hidden">
               <GenerationSkeleton />
             </div>
           </div>
@@ -718,13 +718,13 @@ export default function ContentBenchPage() {
         {!generating && !generatedContent && (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center max-w-xs">
-              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-gray-900/60 border border-gray-800/50 border-dashed flex items-center justify-center">
-                <svg className="w-7 h-7 text-gray-700" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-xl bg-neutral-900/60 border border-neutral-800/50 border-dashed flex items-center justify-center">
+                <svg className="w-7 h-7 text-neutral-700" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
                 </svg>
               </div>
-              <h3 className="text-white font-bold text-sm mb-1.5">Create something great</h3>
-              <p className="text-gray-600 text-xs leading-relaxed">
+              <h3 className="text-neutral-100 font-bold text-sm mb-1.5">Create something great</h3>
+              <p className="text-neutral-600 text-xs leading-relaxed">
                 Pick a content type, describe your topic, and hit generate to see your content come to life.
               </p>
             </div>
@@ -742,17 +742,17 @@ export default function ContentBenchPage() {
                   <PlatformIcon id={platform} className="w-3.5 h-3.5 inline mr-1.5" />
                   {selectedPlatform?.label}
                 </div>
-                <span className="text-gray-600 text-[11px]">
+                <span className="text-neutral-600 text-[11px]">
                   {selectedType?.label} · {tone}
                 </span>
               </div>
 
               {/* View mode toggle */}
-              <div className="flex items-center bg-gray-900 border border-gray-800 rounded-lg p-0.5">
+              <div className="flex items-center bg-neutral-900 border border-neutral-800 rounded-lg p-0.5">
                 <button
                   onClick={() => setViewMode('preview')}
                   className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
-                    viewMode === 'preview' ? 'bg-gray-800 text-white' : 'text-gray-500 hover:text-gray-300'
+                    viewMode === 'preview' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-500 hover:text-neutral-300'
                   }`}
                 >
                   Preview
@@ -760,7 +760,7 @@ export default function ContentBenchPage() {
                 <button
                   onClick={() => setViewMode('edit')}
                   className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
-                    viewMode === 'edit' ? 'bg-gray-800 text-white' : 'text-gray-500 hover:text-gray-300'
+                    viewMode === 'edit' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-500 hover:text-neutral-300'
                   }`}
                 >
                   Edit
@@ -787,17 +787,17 @@ export default function ContentBenchPage() {
                 <textarea
                   value={editableContent}
                   onChange={(e) => setEditableContent(e.target.value)}
-                  className="w-full h-full min-h-[400px] px-5 py-4 rounded-xl bg-gray-900/60 border border-gray-800 focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20 text-gray-200 text-sm leading-[1.7] resize-none font-mono transition-all"
+                  className="w-full h-full min-h-[400px] px-5 py-4 rounded-xl bg-neutral-900/60 border border-neutral-800 focus:border-violet-500/50 focus:outline-none focus:ring-2 focus:ring-violet-500/20 text-neutral-200 text-sm leading-[1.7] resize-none font-mono transition-all"
                 />
               )}
             </div>
 
             {/* Action bar */}
-            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-800/40">
+            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-neutral-800/40">
               <button
                 onClick={handleSave}
                 disabled={saving || saved || !editableContent.trim()}
-                className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 font-bold text-white text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20"
+                className="flex-1 px-4 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 font-bold text-neutral-100 text-sm transition-all disabled:opacity-60 flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20"
               >
                 {saving ? (
                   <>
@@ -816,14 +816,14 @@ export default function ContentBenchPage() {
               <button
                 onClick={handleGenerate}
                 disabled={generating}
-                className="px-4 py-3 rounded-xl bg-gray-800/80 hover:bg-gray-800 border border-gray-700/50 text-gray-300 text-sm font-semibold transition-all flex items-center gap-2"
+                className="px-4 py-3 rounded-xl bg-neutral-800/80 hover:bg-neutral-800 border border-neutral-700/50 text-neutral-300 text-sm font-semibold transition-all flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg>
                 Regenerate
               </button>
               <button
                 onClick={handleCopy}
-                className="px-4 py-3 rounded-xl bg-gray-800/80 hover:bg-gray-800 border border-gray-700/50 text-gray-300 text-sm font-semibold transition-all flex items-center gap-2"
+                className="px-4 py-3 rounded-xl bg-neutral-800/80 hover:bg-neutral-800 border border-neutral-700/50 text-neutral-300 text-sm font-semibold transition-all flex items-center gap-2"
               >
                 {copied ? (
                   <>
@@ -840,7 +840,7 @@ export default function ContentBenchPage() {
             </div>
 
             {/* Stats line */}
-            <div className="mt-2 text-[11px] text-gray-600 text-center">
+            <div className="mt-2 text-[11px] text-neutral-600 text-center">
               {editableContent.length} chars · {editableContent.split(/\s+/).filter(Boolean).length} words · {selectedPlatform?.label} · {selectedType?.label} · {tone}
             </div>
           </div>

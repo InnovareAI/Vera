@@ -54,7 +54,7 @@ interface NewsletterIssue {
 function statusBadge(status: NewsletterIssue['status']) {
   switch (status) {
     case 'draft':
-      return <Badge variant="outline" className="border-gray-600 text-gray-400 text-sm">Draft</Badge>
+      return <Badge variant="outline" className="border-neutral-600 text-neutral-400 text-sm">Draft</Badge>
     case 'scheduled':
       return <Badge className="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-sm">Scheduled</Badge>
     case 'sending':
@@ -160,10 +160,10 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
 
   if (authLoading || workspaceLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-400 mt-4 font-medium">Powering up Vera.AI...</p>
+          <p className="text-neutral-400 mt-4 font-medium">Powering up Vera.AI...</p>
         </div>
       </div>
     )
@@ -171,8 +171,8 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white">
-        <header className="relative z-50 border-b border-gray-800/50 bg-gray-950/50 backdrop-blur-xl">
+      <div className="min-h-screen bg-neutral-950 text-neutral-100">
+        <header className="relative z-50 border-b border-neutral-800/50 bg-neutral-950/50 backdrop-blur-xl">
           <div className="max-w-7xl mx-auto px-6 h-20 flex items-center gap-4">
             <Skeleton className="h-10 w-10 rounded-xl" />
             <Skeleton className="h-6 w-24" />
@@ -183,9 +183,9 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
         <main className="max-w-5xl mx-auto px-6 py-12 space-y-8">
           <Skeleton className="h-10 w-96" />
           <div className="grid grid-cols-3 gap-6">
-            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-32 rounded-3xl" />)}
+            {[1, 2, 3].map((i) => <Skeleton key={i} className="h-32 rounded-xl" />)}
           </div>
-          <Skeleton className="h-96 rounded-3xl" />
+          <Skeleton className="h-96 rounded-xl" />
         </main>
       </div>
     )
@@ -193,11 +193,11 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
 
   if (!issue) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
         <div className="text-center">
-          <svg className="w-16 h-16 mx-auto text-gray-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
-          <h2 className="text-2xl font-black mb-2">Issue Not Found</h2>
-          <p className="text-gray-500 mb-6">This newsletter issue could not be found.</p>
+          <svg className="w-16 h-16 mx-auto text-neutral-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" /></svg>
+          <h2 className="text-2xl font-semibold mb-2">Issue Not Found</h2>
+          <p className="text-neutral-500 mb-6">This newsletter issue could not be found.</p>
           <Link href="/newsletter">
             <Button variant="gradient">Back to Newsletter</Button>
           </Link>
@@ -209,31 +209,31 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
   const config = issue.vera_newsletter_config
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white selection:bg-violet-500/30">
-      <div className="fixed top-0 left-0 right-0 h-24 bg-gradient-to-b from-gray-950 to-transparent pointer-events-none z-40" />
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-violet-500/30">
+      <div className="fixed top-0 left-0 right-0 h-24 bg-gradient-to-b from-neutral-950 to-transparent pointer-events-none z-40" />
 
       {/* Header */}
-      <header className="relative z-50 border-b border-gray-800/50 bg-gray-950/50 backdrop-blur-xl">
+      <header className="relative z-50 border-b border-neutral-800/50 bg-neutral-950/50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-                <span className="text-xl font-black text-white italic">V</span>
+              <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
+                <span className="text-xl font-semibold text-neutral-100 italic">V</span>
               </div>
-              <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
+              <span className="text-2xl font-semibold tracking-tighter text-neutral-100">Vera.AI</span>
             </Link>
-            <span className="text-gray-600">|</span>
-            <Link href="/newsletter" className="text-gray-400 hover:text-white text-sm font-medium transition-colors">
+            <span className="text-neutral-600">|</span>
+            <Link href="/newsletter" className="text-neutral-400 hover:text-neutral-100 text-sm font-medium transition-colors">
               Newsletter
             </Link>
-            <span className="text-gray-700">/</span>
-            <h1 className="text-white font-medium text-sm truncate max-w-[200px]">{issue.subject}</h1>
+            <span className="text-neutral-700">/</span>
+            <h1 className="text-neutral-100 font-medium text-sm truncate max-w-[200px]">{issue.subject}</h1>
           </div>
 
           <div className="flex items-center gap-3">
             {issue.status === 'draft' && (
               <Link href={`/newsletter/new?edit=${issue.id}`}>
-                <Button variant="outline" className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-500">
+                <Button variant="outline" className="border-neutral-700 text-neutral-300 hover:text-neutral-100 hover:border-neutral-500">
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" /></svg>
                   Edit
                 </Button>
@@ -248,15 +248,15 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
                   Delete
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-gray-900 border-gray-700 text-white">
+              <DialogContent className="bg-neutral-900 border-neutral-700 text-neutral-100">
                 <DialogHeader>
-                  <DialogTitle className="text-white">Delete Issue</DialogTitle>
-                  <DialogDescription className="text-gray-400">
+                  <DialogTitle className="text-neutral-100">Delete Issue</DialogTitle>
+                  <DialogDescription className="text-neutral-400">
                     Are you sure you want to delete &quot;{issue.subject}&quot;? This action cannot be undone.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="flex gap-3 justify-end mt-4">
-                  <Button variant="ghost" onClick={() => setDeleteDialogOpen(false)} className="text-gray-400 hover:text-white">Cancel</Button>
+                  <Button variant="ghost" onClick={() => setDeleteDialogOpen(false)} className="text-neutral-400 hover:text-neutral-100">Cancel</Button>
                   <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
                     {deleting ? 'Deleting...' : 'Delete Issue'}
                   </Button>
@@ -286,11 +286,11 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
       <main className="max-w-5xl mx-auto px-6 py-12 space-y-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-2">
-          <Link href="/dashboard" className="text-gray-500 hover:text-gray-300 text-xs font-bold uppercase tracking-widest transition-colors">Dashboard</Link>
-          <span className="text-gray-700 text-xs">/</span>
-          <Link href="/newsletter" className="text-gray-500 hover:text-gray-300 text-xs font-bold uppercase tracking-widest transition-colors">Newsletter</Link>
-          <span className="text-gray-700 text-xs">/</span>
-          <span className="text-violet-400 text-xs font-bold uppercase tracking-widest truncate max-w-[200px]">{issue.subject}</span>
+          <Link href="/dashboard" className="text-neutral-500 hover:text-neutral-300 text-xs font-semibold uppercase tracking-widest transition-colors">Dashboard</Link>
+          <span className="text-neutral-700 text-xs">/</span>
+          <Link href="/newsletter" className="text-neutral-500 hover:text-neutral-300 text-xs font-semibold uppercase tracking-widest transition-colors">Newsletter</Link>
+          <span className="text-neutral-700 text-xs">/</span>
+          <span className="text-violet-400 text-xs font-semibold uppercase tracking-widest truncate max-w-[200px]">{issue.subject}</span>
         </div>
 
         {/* Issue header */}
@@ -299,14 +299,14 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
             <div className="flex items-center gap-3 mb-2">
               {statusBadge(issue.status)}
               {config && (
-                <span className="text-gray-500 text-sm">{config.name}</span>
+                <span className="text-neutral-500 text-sm">{config.name}</span>
               )}
             </div>
-            <h2 className="text-3xl font-black tracking-tight text-white mb-1">{issue.subject}</h2>
+            <h2 className="text-3xl font-semibold tracking-tight text-neutral-100 mb-1">{issue.subject}</h2>
             {issue.preview_text && (
-              <p className="text-gray-400 text-lg">{issue.preview_text}</p>
+              <p className="text-neutral-400 text-lg">{issue.preview_text}</p>
             )}
-            <div className="flex items-center gap-4 mt-3 text-sm text-gray-600">
+            <div className="flex items-center gap-4 mt-3 text-sm text-neutral-600">
               <span>Created: {formatDate(issue.created_at)}</span>
               {issue.sent_at && <span>Sent: {formatDate(issue.sent_at)}</span>}
               {issue.scheduled_for && issue.status === 'scheduled' && (
@@ -318,53 +318,53 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-gray-900/40 border border-gray-800 p-8 rounded-3xl relative overflow-hidden group hover:bg-gray-900/60 transition-all">
+          <div className="bg-neutral-900/40 border border-neutral-800 p-8 rounded-xl relative overflow-hidden group hover:bg-neutral-900/60 transition-all">
             <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 blur-3xl -mr-16 -mt-16 group-hover:bg-violet-500/10 transition-all" />
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mb-1">Recipients</p>
+            <p className="text-neutral-500 font-semibold uppercase tracking-widest text-xs mb-1">Recipients</p>
             <div className="flex items-end gap-3">
-              <span className="text-5xl font-black text-white">{issue.recipient_count ?? '--'}</span>
+              <span className="text-5xl font-semibold text-neutral-100">{issue.recipient_count ?? '--'}</span>
             </div>
           </div>
-          <div className="bg-gray-900/40 border border-gray-800 p-8 rounded-3xl relative overflow-hidden group hover:bg-gray-900/60 transition-all">
+          <div className="bg-neutral-900/40 border border-neutral-800 p-8 rounded-xl relative overflow-hidden group hover:bg-neutral-900/60 transition-all">
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 blur-3xl -mr-16 -mt-16 group-hover:bg-blue-500/10 transition-all" />
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mb-1">Opens</p>
+            <p className="text-neutral-500 font-semibold uppercase tracking-widest text-xs mb-1">Opens</p>
             <div className="flex items-end gap-3">
-              <span className="text-5xl font-black text-white">{issue.open_count ?? '--'}</span>
-              <span className="text-blue-400 text-sm font-bold mb-2">{pct(issue.open_count, issue.recipient_count)}%</span>
+              <span className="text-5xl font-semibold text-neutral-100">{issue.open_count ?? '--'}</span>
+              <span className="text-blue-400 text-sm font-semibold mb-2">{pct(issue.open_count, issue.recipient_count)}%</span>
             </div>
           </div>
-          <div className="bg-gray-900/40 border border-gray-800 p-8 rounded-3xl relative overflow-hidden group hover:bg-gray-900/60 transition-all">
+          <div className="bg-neutral-900/40 border border-neutral-800 p-8 rounded-xl relative overflow-hidden group hover:bg-neutral-900/60 transition-all">
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 blur-3xl -mr-16 -mt-16 group-hover:bg-emerald-500/10 transition-all" />
-            <p className="text-gray-500 font-bold uppercase tracking-widest text-xs mb-1">Clicks</p>
+            <p className="text-neutral-500 font-semibold uppercase tracking-widest text-xs mb-1">Clicks</p>
             <div className="flex items-end gap-3">
-              <span className="text-5xl font-black text-white">{issue.click_count ?? '--'}</span>
-              <span className="text-emerald-400 text-sm font-bold mb-2">{pct(issue.click_count, issue.recipient_count)}%</span>
+              <span className="text-5xl font-semibold text-neutral-100">{issue.click_count ?? '--'}</span>
+              <span className="text-emerald-400 text-sm font-semibold mb-2">{pct(issue.click_count, issue.recipient_count)}%</span>
             </div>
           </div>
         </div>
 
         {/* Tabs: Preview | Analytics */}
         <Tabs defaultValue="preview" className="w-full">
-          <TabsList className="bg-gray-900 border border-gray-800 p-1 rounded-xl">
-            <TabsTrigger value="preview" className="data-[state=active]:bg-violet-500 data-[state=active]:text-white rounded-lg px-6">
+          <TabsList className="bg-neutral-900 border border-neutral-800 p-1 rounded-xl">
+            <TabsTrigger value="preview" className="data-[state=active]:bg-violet-500 data-[state=active]:text-neutral-100 rounded-lg px-6">
               Preview
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="data-[state=active]:bg-violet-500 data-[state=active]:text-white rounded-lg px-6">
+            <TabsTrigger value="analytics" className="data-[state=active]:bg-violet-500 data-[state=active]:text-neutral-100 rounded-lg px-6">
               Analytics
             </TabsTrigger>
           </TabsList>
 
           {/* Preview tab */}
           <TabsContent value="preview" className="mt-6">
-            <div className="bg-gray-900/20 border border-gray-800/50 rounded-[2.5rem] overflow-hidden">
+            <div className="bg-neutral-900/20 border border-neutral-800/50 rounded-[2.5rem] overflow-hidden">
               {/* Markdown source toggle */}
-              <div className="flex items-center justify-between px-8 py-4 border-b border-gray-800/50">
-                <span className="text-gray-500 text-sm font-bold uppercase tracking-widest">
+              <div className="flex items-center justify-between px-8 py-4 border-b border-neutral-800/50">
+                <span className="text-neutral-500 text-sm font-semibold uppercase tracking-widest">
                   {showMarkdown ? 'Markdown Source' : 'HTML Preview'}
                 </span>
                 <button
                   onClick={() => setShowMarkdown(!showMarkdown)}
-                  className="text-sm font-bold text-violet-400 hover:text-violet-300 transition-colors"
+                  className="text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors"
                 >
                   {showMarkdown ? 'Show HTML Preview' : 'Show Markdown'}
                 </button>
@@ -372,7 +372,7 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
 
               {showMarkdown ? (
                 <div className="p-8">
-                  <pre className="bg-gray-900 border border-gray-800 rounded-2xl p-6 text-gray-300 text-sm font-mono whitespace-pre-wrap overflow-x-auto max-h-[600px] overflow-y-auto">
+                  <pre className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 text-neutral-300 text-sm font-mono whitespace-pre-wrap overflow-x-auto max-h-[600px] overflow-y-auto">
                     {issue.body_markdown || '(No markdown content)'}
                   </pre>
                 </div>
@@ -394,7 +394,7 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-64 text-gray-600">
+                <div className="flex items-center justify-center h-64 text-neutral-600">
                   <p>No content available for preview.</p>
                 </div>
               )}
@@ -403,72 +403,72 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
 
           {/* Analytics tab */}
           <TabsContent value="analytics" className="mt-6">
-            <div className="bg-gray-900/20 border border-gray-800/50 rounded-[2.5rem] p-10">
+            <div className="bg-neutral-900/20 border border-neutral-800/50 rounded-[2.5rem] p-10">
               {issue.status === 'sent' ? (
                 <div className="space-y-8">
                   {/* Open/Click metrics */}
                   <div>
-                    <h3 className="text-xl font-black text-white mb-6">Performance Metrics</h3>
+                    <h3 className="text-xl font-semibold text-neutral-100 mb-6">Performance Metrics</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Open Rate Bar */}
-                      <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+                      <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-gray-400 font-bold text-sm">Open Rate</span>
-                          <span className="text-blue-400 font-black text-2xl">
+                          <span className="text-neutral-400 font-semibold text-sm">Open Rate</span>
+                          <span className="text-blue-400 font-semibold text-2xl">
                             {pct(issue.open_count, issue.recipient_count)}%
                           </span>
                         </div>
-                        <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+                        <div className="w-full bg-neutral-800 rounded-full h-3 overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-blue-500 to-blue-400 h-full rounded-full transition-all duration-700"
+                            className="bg-blue-500 h-full rounded-full transition-all duration-700"
                             style={{ width: `${pct(issue.open_count, issue.recipient_count)}%` }}
                           />
                         </div>
-                        <p className="text-gray-600 text-xs mt-2">
+                        <p className="text-neutral-600 text-xs mt-2">
                           {issue.open_count || 0} of {issue.recipient_count || 0} recipients opened
                         </p>
                       </div>
 
                       {/* Click Rate Bar */}
-                      <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-6">
+                      <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-6">
                         <div className="flex items-center justify-between mb-3">
-                          <span className="text-gray-400 font-bold text-sm">Click Rate</span>
-                          <span className="text-emerald-400 font-black text-2xl">
+                          <span className="text-neutral-400 font-semibold text-sm">Click Rate</span>
+                          <span className="text-emerald-400 font-semibold text-2xl">
                             {pct(issue.click_count, issue.recipient_count)}%
                           </span>
                         </div>
-                        <div className="w-full bg-gray-800 rounded-full h-3 overflow-hidden">
+                        <div className="w-full bg-neutral-800 rounded-full h-3 overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full rounded-full transition-all duration-700"
+                            className="bg-emerald-500 h-full rounded-full transition-all duration-700"
                             style={{ width: `${pct(issue.click_count, issue.recipient_count)}%` }}
                           />
                         </div>
-                        <p className="text-gray-600 text-xs mt-2">
+                        <p className="text-neutral-600 text-xs mt-2">
                           {issue.click_count || 0} of {issue.recipient_count || 0} recipients clicked
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <Separator className="bg-gray-800" />
+                  <Separator className="bg-neutral-800" />
 
                   {/* Timeline chart placeholder */}
                   <div>
-                    <h3 className="text-xl font-black text-white mb-6">Engagement Timeline</h3>
-                    <div className="bg-gray-900/60 border border-gray-800 rounded-2xl p-8 flex items-center justify-center h-64">
+                    <h3 className="text-xl font-semibold text-neutral-100 mb-6">Engagement Timeline</h3>
+                    <div className="bg-neutral-900/60 border border-neutral-800 rounded-xl p-8 flex items-center justify-center h-64">
                       <div className="text-center">
-                        <svg className="w-12 h-12 mx-auto text-gray-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
-                        <p className="text-gray-500 font-medium">Timeline chart coming soon</p>
-                        <p className="text-gray-600 text-sm mt-1">Detailed engagement analytics over time will appear here.</p>
+                        <svg className="w-12 h-12 mx-auto text-neutral-700 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+                        <p className="text-neutral-500 font-medium">Timeline chart coming soon</p>
+                        <p className="text-neutral-600 text-sm mt-1">Detailed engagement analytics over time will appear here.</p>
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-16">
-                  <svg className="w-12 h-12 mx-auto text-gray-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
-                  <p className="text-gray-500 font-medium">Analytics available after sending</p>
-                  <p className="text-gray-600 text-sm mt-1">
+                  <svg className="w-12 h-12 mx-auto text-neutral-700 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" /></svg>
+                  <p className="text-neutral-500 font-medium">Analytics available after sending</p>
+                  <p className="text-neutral-600 text-sm mt-1">
                     Send this issue to start tracking opens and clicks.
                   </p>
                 </div>
@@ -478,8 +478,8 @@ export default function IssueDetailPage({ params }: { params: Promise<{ id: stri
         </Tabs>
       </main>
 
-      <footer className="max-w-5xl mx-auto px-6 py-12 border-t border-gray-800/50 text-center">
-        <p className="text-gray-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
+      <footer className="max-w-5xl mx-auto px-6 py-12 border-t border-neutral-800/50 text-center">
+        <p className="text-neutral-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
       </footer>
     </div>
   )

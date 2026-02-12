@@ -67,10 +67,10 @@ export default function WorkspaceSettingsPage() {
 
     if (authLoading || workspaceLoading) {
         return (
-            <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+            <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                    <p className="text-gray-400 mt-4">Loading...</p>
+                    <p className="text-neutral-400 mt-4">Loading...</p>
                 </div>
             </div>
         )
@@ -84,15 +84,15 @@ export default function WorkspaceSettingsPage() {
     const canEdit = currentWorkspace ? ['owner', 'admin'].includes(currentWorkspace.role) : true
 
     return (
-        <div className="min-h-screen bg-gray-950">
+        <div className="min-h-screen bg-neutral-950">
             {/* Header */}
-            <header className="border-b border-gray-800 bg-gray-900/50 backdrop-blur sticky top-0 z-50">
+            <header className="border-b border-neutral-800 bg-neutral-900/50 backdrop-blur sticky top-0 z-50">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center h-16">
-                        <Link href="/dashboard" className="text-gray-400 hover:text-white mr-4">
+                        <Link href="/dashboard" className="text-neutral-400 hover:text-neutral-100 mr-4">
                             ← Back
                         </Link>
-                        <h1 className="text-xl font-semibold text-white">Workspace Settings</h1>
+                        <h1 className="text-xl font-semibold text-neutral-100">Workspace Settings</h1>
                     </div>
                 </div>
             </header>
@@ -100,12 +100,12 @@ export default function WorkspaceSettingsPage() {
             <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <form onSubmit={handleSave} className="space-y-8">
                     {/* General Settings */}
-                    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-                        <h2 className="text-lg font-semibold text-white mb-4">General</h2>
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+                        <h2 className="text-lg font-semibold text-neutral-100 mb-4">General</h2>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">
+                                <label className="block text-sm font-medium text-neutral-300 mb-1">
                                     Workspace Name
                                 </label>
                                 <input
@@ -113,7 +113,7 @@ export default function WorkspaceSettingsPage() {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     disabled={!canEdit}
-                                    className="w-full max-w-md px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent disabled:opacity-50"
+                                    className="w-full max-w-md px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent disabled:opacity-50"
                                     required
                                 />
                             </div>
@@ -121,18 +121,18 @@ export default function WorkspaceSettingsPage() {
                     </div>
 
                     {/* Brand Settings */}
-                    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-                        <h2 className="text-lg font-semibold text-white mb-4">Brand Identity</h2>
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+                        <h2 className="text-lg font-semibold text-neutral-100 mb-4">Brand Identity</h2>
 
                         <div className="space-y-6">
                             {/* Colors */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-3">
+                                <label className="block text-sm font-medium text-neutral-300 mb-3">
                                     Brand Colors
                                 </label>
                                 <div className="flex gap-4">
                                     <div>
-                                        <p className="text-xs text-gray-500 mb-1">Primary</p>
+                                        <p className="text-xs text-neutral-500 mb-1">Primary</p>
                                         <div className="flex items-center gap-2">
                                             <input
                                                 type="color"
@@ -146,12 +146,12 @@ export default function WorkspaceSettingsPage() {
                                                 value={primaryColor}
                                                 onChange={(e) => setPrimaryColor(e.target.value)}
                                                 disabled={!canEdit}
-                                                className="w-28 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm disabled:opacity-50"
+                                                className="w-28 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-100 text-sm disabled:opacity-50"
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <p className="text-xs text-gray-500 mb-1">Secondary</p>
+                                        <p className="text-xs text-neutral-500 mb-1">Secondary</p>
                                         <div className="flex items-center gap-2">
                                             <input
                                                 type="color"
@@ -165,7 +165,7 @@ export default function WorkspaceSettingsPage() {
                                                 value={secondaryColor}
                                                 onChange={(e) => setSecondaryColor(e.target.value)}
                                                 disabled={!canEdit}
-                                                className="w-28 px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm disabled:opacity-50"
+                                                className="w-28 px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-neutral-100 text-sm disabled:opacity-50"
                                             />
                                         </div>
                                     </div>
@@ -174,10 +174,10 @@ export default function WorkspaceSettingsPage() {
 
                             {/* Brand Voice */}
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">
+                                <label className="block text-sm font-medium text-neutral-300 mb-1">
                                     Brand Voice Guidelines
                                 </label>
-                                <p className="text-xs text-gray-500 mb-2">
+                                <p className="text-xs text-neutral-500 mb-2">
                                     Describe your brand's tone and style. This will guide AI-generated content.
                                 </p>
                                 <textarea
@@ -186,17 +186,17 @@ export default function WorkspaceSettingsPage() {
                                     disabled={!canEdit}
                                     rows={4}
                                     placeholder="e.g., Professional yet approachable. Use clear, concise language. Avoid jargon. Emphasize innovation and customer success."
-                                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent disabled:opacity-50"
+                                    className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-neutral-100 placeholder-neutral-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent disabled:opacity-50"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Preview */}
-                    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
-                        <h2 className="text-lg font-semibold text-white mb-4">Preview</h2>
+                    <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+                        <h2 className="text-lg font-semibold text-neutral-100 mb-4">Preview</h2>
                         <div
-                            className="rounded-xl p-6 text-white"
+                            className="rounded-xl p-6 text-neutral-100"
                             style={{
                                 background: `linear-gradient(135deg, ${primaryColor}40, ${secondaryColor}40)`,
                                 borderColor: primaryColor,
@@ -204,10 +204,10 @@ export default function WorkspaceSettingsPage() {
                                 borderStyle: 'solid'
                             }}
                         >
-                            <h3 className="text-xl font-bold mb-2" style={{ color: primaryColor }}>
+                            <h3 className="text-xl font-semibold mb-2" style={{ color: primaryColor }}>
                                 {name}
                             </h3>
-                            <p className="text-gray-300 text-sm">
+                            <p className="text-neutral-300 text-sm">
                                 This is how your brand colors will appear in generated content and the UI.
                             </p>
                         </div>
@@ -219,7 +219,7 @@ export default function WorkspaceSettingsPage() {
                             <button
                                 type="submit"
                                 disabled={isSaving}
-                                className="px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-fuchsia-700 transition-all disabled:opacity-50"
+                                className="px-6 py-3 bg-violet-600 text-neutral-100 rounded-xl font-medium hover:from-violet-700 hover:to-fuchsia-700 transition-all disabled:opacity-50"
                             >
                                 {isSaving ? 'Saving...' : 'Save Settings'}
                             </button>
@@ -232,7 +232,7 @@ export default function WorkspaceSettingsPage() {
                     )}
 
                     {!canEdit && (
-                        <p className="text-gray-500 text-sm">
+                        <p className="text-neutral-500 text-sm">
                             You don't have permission to edit workspace settings. Contact a workspace admin.
                         </p>
                     )}

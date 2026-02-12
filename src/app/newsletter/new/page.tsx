@@ -230,35 +230,35 @@ export default function NewIssuePage() {
 
   if (authLoading || workspaceLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-400 mt-4 font-medium">Powering up Vera.AI...</p>
+          <p className="text-neutral-400 mt-4 font-medium">Powering up Vera.AI...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white selection:bg-violet-500/30">
-      <div className="fixed top-0 left-0 right-0 h-24 bg-gradient-to-b from-gray-950 to-transparent pointer-events-none z-40" />
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-violet-500/30">
+      <div className="fixed top-0 left-0 right-0 h-24 bg-gradient-to-b from-neutral-950 to-transparent pointer-events-none z-40" />
 
       {/* Header */}
-      <header className="relative z-50 border-b border-gray-800/50 bg-gray-950/50 backdrop-blur-xl">
+      <header className="relative z-50 border-b border-neutral-800/50 bg-neutral-950/50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/dashboard" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-                <span className="text-xl font-black text-white italic">V</span>
+              <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
+                <span className="text-xl font-semibold text-neutral-100 italic">V</span>
               </div>
-              <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
+              <span className="text-2xl font-semibold tracking-tighter text-neutral-100">Vera.AI</span>
             </Link>
-            <span className="text-gray-600">|</span>
-            <Link href="/newsletter" className="text-gray-400 hover:text-white text-sm font-medium transition-colors">
+            <span className="text-neutral-600">|</span>
+            <Link href="/newsletter" className="text-neutral-400 hover:text-neutral-100 text-sm font-medium transition-colors">
               Newsletter
             </Link>
-            <span className="text-gray-700">/</span>
-            <h1 className="text-white font-medium text-sm">New Issue</h1>
+            <span className="text-neutral-700">/</span>
+            <h1 className="text-neutral-100 font-medium text-sm">New Issue</h1>
           </div>
 
           <div className="flex items-center gap-3">
@@ -266,7 +266,7 @@ export default function NewIssuePage() {
               variant="outline"
               onClick={() => handleSave('draft')}
               disabled={saving || !subject.trim() || !selectedConfigId}
-              className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-500"
+              className="border-neutral-700 text-neutral-300 hover:text-neutral-100 hover:border-neutral-500"
             >
               {saving ? 'Saving...' : 'Save Draft'}
             </Button>
@@ -294,20 +294,20 @@ export default function NewIssuePage() {
       <main className="max-w-5xl mx-auto px-6 py-12 space-y-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-2">
-          <Link href="/dashboard" className="text-gray-500 hover:text-gray-300 text-xs font-bold uppercase tracking-widest transition-colors">Dashboard</Link>
-          <span className="text-gray-700 text-xs">/</span>
-          <Link href="/newsletter" className="text-gray-500 hover:text-gray-300 text-xs font-bold uppercase tracking-widest transition-colors">Newsletter</Link>
-          <span className="text-gray-700 text-xs">/</span>
-          <span className="text-violet-400 text-xs font-bold uppercase tracking-widest">New Issue</span>
+          <Link href="/dashboard" className="text-neutral-500 hover:text-neutral-300 text-xs font-semibold uppercase tracking-widest transition-colors">Dashboard</Link>
+          <span className="text-neutral-700 text-xs">/</span>
+          <Link href="/newsletter" className="text-neutral-500 hover:text-neutral-300 text-xs font-semibold uppercase tracking-widest transition-colors">Newsletter</Link>
+          <span className="text-neutral-700 text-xs">/</span>
+          <span className="text-violet-400 text-xs font-semibold uppercase tracking-widest">New Issue</span>
         </div>
 
         {/* Newsletter selector */}
         {loadingConfigs ? (
           <Skeleton className="h-10 w-64 rounded-lg" />
         ) : configs.length === 0 ? (
-          <div className="bg-amber-500/10 border border-amber-500/20 rounded-2xl p-6">
-            <p className="text-amber-400 font-bold mb-1">No newsletter configured</p>
-            <p className="text-gray-400 text-sm">
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-6">
+            <p className="text-amber-400 font-semibold mb-1">No newsletter configured</p>
+            <p className="text-neutral-400 text-sm">
               Go to the{' '}
               <Link href="/newsletter" className="text-violet-400 underline">Newsletter Hub</Link>{' '}
               to set up your first newsletter before creating an issue.
@@ -315,14 +315,14 @@ export default function NewIssuePage() {
           </div>
         ) : (
           <div className="flex items-center gap-4">
-            <Label className="text-gray-400 font-bold text-xs uppercase tracking-widest whitespace-nowrap">Newsletter</Label>
+            <Label className="text-neutral-400 font-semibold text-xs uppercase tracking-widest whitespace-nowrap">Newsletter</Label>
             <Select value={selectedConfigId} onValueChange={setSelectedConfigId}>
-              <SelectTrigger className="w-72 bg-gray-900 border-gray-700 text-white">
+              <SelectTrigger className="w-72 bg-neutral-900 border-neutral-700 text-neutral-100">
                 <SelectValue placeholder="Select newsletter" />
               </SelectTrigger>
-              <SelectContent className="bg-gray-900 border-gray-700">
+              <SelectContent className="bg-neutral-900 border-neutral-700">
                 {configs.map((cfg) => (
-                  <SelectItem key={cfg.id} value={cfg.id} className="text-white hover:bg-gray-800">
+                  <SelectItem key={cfg.id} value={cfg.id} className="text-neutral-100 hover:bg-neutral-800">
                     {cfg.name}
                   </SelectItem>
                 ))}
@@ -331,14 +331,14 @@ export default function NewIssuePage() {
           </div>
         )}
 
-        <Separator className="bg-gray-800" />
+        <Separator className="bg-neutral-800" />
 
         {/* Subject + Preview Text */}
         <div className="space-y-6">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Subject Line</Label>
-              <span className={`text-xs font-mono ${subject.length > 60 ? 'text-amber-400' : 'text-gray-600'}`}>
+              <Label className="text-neutral-400 font-semibold text-xs uppercase tracking-widest">Subject Line</Label>
+              <span className={`text-xs font-mono ${subject.length > 60 ? 'text-amber-400' : 'text-neutral-600'}`}>
                 {subject.length}/60
               </span>
             </div>
@@ -346,7 +346,7 @@ export default function NewIssuePage() {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Your attention-grabbing subject line"
-              className="bg-gray-900 border-gray-700 text-white text-lg font-bold placeholder:text-gray-600 focus:border-violet-500 h-14"
+              className="bg-neutral-900 border-neutral-700 text-neutral-100 text-lg font-semibold placeholder:text-neutral-600 focus:border-violet-500 h-14"
             />
             {subject.length > 60 && (
               <p className="text-amber-400 text-xs mt-1">Subject lines under 60 characters tend to perform better.</p>
@@ -355,8 +355,8 @@ export default function NewIssuePage() {
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Preview Text</Label>
-              <span className={`text-xs font-mono ${previewText.length > 100 ? 'text-amber-400' : 'text-gray-600'}`}>
+              <Label className="text-neutral-400 font-semibold text-xs uppercase tracking-widest">Preview Text</Label>
+              <span className={`text-xs font-mono ${previewText.length > 100 ? 'text-amber-400' : 'text-neutral-600'}`}>
                 {previewText.length}/100
               </span>
             </div>
@@ -364,7 +364,7 @@ export default function NewIssuePage() {
               value={previewText}
               onChange={(e) => setPreviewText(e.target.value)}
               placeholder="Short preview shown in inbox (optional)"
-              className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-600 focus:border-violet-500"
+              className="bg-neutral-900 border-neutral-700 text-neutral-100 placeholder:text-neutral-600 focus:border-violet-500"
             />
             {previewText.length > 100 && (
               <p className="text-amber-400 text-xs mt-1">Preview text under 100 characters is recommended.</p>
@@ -372,25 +372,25 @@ export default function NewIssuePage() {
           </div>
         </div>
 
-        <Separator className="bg-gray-800" />
+        <Separator className="bg-neutral-800" />
 
         {/* Body Editor with Actions */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <Label className="text-gray-400 font-bold text-xs uppercase tracking-widest">Body (Markdown)</Label>
+            <Label className="text-neutral-400 font-semibold text-xs uppercase tracking-widest">Body (Markdown)</Label>
             <div className="flex items-center gap-3">
               {/* Content Queue */}
               <Dialog open={contentQueueDialogOpen} onOpenChange={(v) => { setContentQueueDialogOpen(v); if (v) handleFetchContentQueue() }}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-500">
+                  <Button variant="outline" size="sm" className="border-neutral-700 text-neutral-300 hover:text-neutral-100 hover:border-neutral-500">
                     <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12H9m1.5-12H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>
                     Pull from Queue
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-gray-900 border-gray-700 text-white max-w-xl">
+                <DialogContent className="bg-neutral-900 border-neutral-700 text-neutral-100 max-w-xl">
                   <DialogHeader>
-                    <DialogTitle className="text-white">Content Queue</DialogTitle>
-                    <DialogDescription className="text-gray-400">Select approved content to insert into the newsletter body.</DialogDescription>
+                    <DialogTitle className="text-neutral-100">Content Queue</DialogTitle>
+                    <DialogDescription className="text-neutral-400">Select approved content to insert into the newsletter body.</DialogDescription>
                   </DialogHeader>
                   <div className="max-h-80 overflow-y-auto space-y-3 mt-4">
                     {loadingContentQueue ? (
@@ -398,16 +398,16 @@ export default function NewIssuePage() {
                         {[1, 2, 3].map((i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)}
                       </div>
                     ) : contentQueueItems.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">No approved content found.</p>
+                      <p className="text-neutral-500 text-center py-8">No approved content found.</p>
                     ) : (
                       contentQueueItems.map((item) => (
                         <button
                           key={item.id}
                           onClick={() => handleInsertFromQueue(item)}
-                          className="w-full text-left bg-gray-800/50 border border-gray-700 rounded-lg p-4 hover:bg-gray-800 hover:border-violet-500/50 transition-all"
+                          className="w-full text-left bg-neutral-800/50 border border-neutral-700 rounded-lg p-4 hover:bg-neutral-800 hover:border-violet-500/50 transition-all"
                         >
-                          <p className="font-bold text-white text-sm">{item.topic}</p>
-                          <p className="text-gray-500 text-xs mt-1 line-clamp-2">{item.generated_content?.slice(0, 120)}...</p>
+                          <p className="font-semibold text-neutral-100 text-sm">{item.topic}</p>
+                          <p className="text-neutral-500 text-xs mt-1 line-clamp-2">{item.generated_content?.slice(0, 120)}...</p>
                         </button>
                       ))
                     )}
@@ -423,21 +423,21 @@ export default function NewIssuePage() {
                     AI Generate
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="bg-gray-900 border-gray-700 text-white">
+                <DialogContent className="bg-neutral-900 border-neutral-700 text-neutral-100">
                   <DialogHeader>
-                    <DialogTitle className="text-white">AI Newsletter Generator</DialogTitle>
-                    <DialogDescription className="text-gray-400">
+                    <DialogTitle className="text-neutral-100">AI Newsletter Generator</DialogTitle>
+                    <DialogDescription className="text-neutral-400">
                       Generate newsletter content from your approved content queue using AI.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4 mt-4">
                     <div>
-                      <Label className="text-gray-400 font-bold text-xs uppercase tracking-widest mb-2 block">Topic / Theme (optional)</Label>
+                      <Label className="text-neutral-400 font-semibold text-xs uppercase tracking-widest mb-2 block">Topic / Theme (optional)</Label>
                       <Input
                         value={aiTopic}
                         onChange={(e) => setAiTopic(e.target.value)}
                         placeholder="e.g. Weekly AI Roundup, Product Updates"
-                        className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-600"
+                        className="bg-neutral-800 border-neutral-700 text-neutral-100 placeholder:text-neutral-600"
                       />
                     </div>
                     <Button
@@ -461,7 +461,7 @@ export default function NewIssuePage() {
 
               {/* Preview Toggle */}
               <div className="flex items-center gap-2">
-                <span className="text-gray-500 text-xs font-bold uppercase tracking-widest">Preview</span>
+                <span className="text-neutral-500 text-xs font-semibold uppercase tracking-widest">Preview</span>
                 <Switch
                   checked={showPreview}
                   onCheckedChange={setShowPreview}
@@ -471,7 +471,7 @@ export default function NewIssuePage() {
           </div>
 
           {showPreview ? (
-            <div className="bg-white rounded-2xl p-0 min-h-[500px] overflow-hidden">
+            <div className="bg-white rounded-xl p-0 min-h-[500px] overflow-hidden">
               {bodyHtml ? (
                 <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
               ) : bodyMarkdown ? (
@@ -479,7 +479,7 @@ export default function NewIssuePage() {
                   <pre className="whitespace-pre-wrap text-sm font-sans" style={{ color: '#1f2937' }}>{bodyMarkdown}</pre>
                 </div>
               ) : (
-                <div className="flex items-center justify-center h-96 text-gray-400">
+                <div className="flex items-center justify-center h-96 text-neutral-400">
                   <p>No content to preview. Write some markdown first.</p>
                 </div>
               )}
@@ -489,16 +489,16 @@ export default function NewIssuePage() {
               value={bodyMarkdown}
               onChange={(e) => setBodyMarkdown(e.target.value)}
               placeholder="Write your newsletter content in Markdown...&#10;&#10;# Welcome to this week's digest&#10;&#10;Here's what happened this week...&#10;&#10;## Section 1&#10;Content goes here..."
-              className="bg-gray-900 border-gray-700 text-white placeholder:text-gray-600 focus:border-violet-500 min-h-[500px] font-mono text-sm leading-relaxed resize-y"
+              className="bg-neutral-900 border-neutral-700 text-neutral-100 placeholder:text-neutral-600 focus:border-violet-500 min-h-[500px] font-mono text-sm leading-relaxed resize-y"
             />
           )}
         </div>
 
-        <Separator className="bg-gray-800" />
+        <Separator className="bg-neutral-800" />
 
         {/* Schedule Section */}
-        <div className="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
-          <h3 className="font-black text-white mb-4">Delivery</h3>
+        <div className="bg-neutral-900/40 border border-neutral-800 rounded-xl p-6">
+          <h3 className="font-semibold text-neutral-100 mb-4">Delivery</h3>
           <div className="flex items-center gap-6">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -507,7 +507,7 @@ export default function NewIssuePage() {
                 onChange={() => setSendMode('now')}
                 className="accent-violet-500"
               />
-              <span className="text-white font-medium">Send immediately</span>
+              <span className="text-neutral-100 font-medium">Send immediately</span>
             </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input
@@ -516,28 +516,28 @@ export default function NewIssuePage() {
                 onChange={() => setSendMode('schedule')}
                 className="accent-violet-500"
               />
-              <span className="text-white font-medium">Schedule for later</span>
+              <span className="text-neutral-100 font-medium">Schedule for later</span>
             </label>
           </div>
 
           {sendMode === 'schedule' && (
             <div className="flex items-center gap-4 mt-4">
               <div>
-                <Label className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-1 block">Date</Label>
+                <Label className="text-neutral-400 text-xs uppercase tracking-widest font-semibold mb-1 block">Date</Label>
                 <Input
                   type="date"
                   value={scheduledDate}
                   onChange={(e) => setScheduledDate(e.target.value)}
-                  className="bg-gray-800 border-gray-700 text-white w-48"
+                  className="bg-neutral-800 border-neutral-700 text-neutral-100 w-48"
                 />
               </div>
               <div>
-                <Label className="text-gray-400 text-xs uppercase tracking-widest font-bold mb-1 block">Time</Label>
+                <Label className="text-neutral-400 text-xs uppercase tracking-widest font-semibold mb-1 block">Time</Label>
                 <Input
                   type="time"
                   value={scheduledTime}
                   onChange={(e) => setScheduledTime(e.target.value)}
-                  className="bg-gray-800 border-gray-700 text-white w-36"
+                  className="bg-neutral-800 border-neutral-700 text-neutral-100 w-36"
                 />
               </div>
             </div>
@@ -547,7 +547,7 @@ export default function NewIssuePage() {
         {/* Bottom Actions */}
         <div className="flex items-center justify-between pt-4">
           <Link href="/newsletter">
-            <Button variant="ghost" className="text-gray-400 hover:text-white">
+            <Button variant="ghost" className="text-neutral-400 hover:text-neutral-100">
               Cancel
             </Button>
           </Link>
@@ -556,7 +556,7 @@ export default function NewIssuePage() {
               variant="outline"
               onClick={() => handleSave('draft')}
               disabled={saving || !subject.trim() || !selectedConfigId}
-              className="border-gray-700 text-gray-300 hover:text-white hover:border-gray-500"
+              className="border-neutral-700 text-neutral-300 hover:text-neutral-100 hover:border-neutral-500"
             >
               Save Draft
             </Button>

@@ -56,21 +56,21 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
             <div className="w-full max-w-md">
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <Link href="/" className="inline-flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center">
-                            <span className="text-2xl font-bold text-white">V</span>
+                        <div className="w-12 h-12 bg-violet-500 rounded-xl flex items-center justify-center">
+                            <span className="text-2xl font-bold text-neutral-100">V</span>
                         </div>
-                        <span className="text-2xl font-bold text-white">Vera.AI</span>
+                        <span className="text-2xl font-bold text-neutral-100">Vera.AI</span>
                     </Link>
-                    <p className="text-gray-400 mt-2">Create your account</p>
+                    <p className="text-neutral-400 mt-2">Create your account</p>
                 </div>
 
                 {/* Form Card */}
-                <div className="bg-gray-900 rounded-2xl border border-gray-800 p-8">
+                <div className="bg-neutral-900 rounded-xl border border-neutral-800 p-8">
                     {error && (
                         <div className="mb-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg text-red-400 text-sm">
                             {error}
@@ -85,53 +85,53 @@ export default function SignupPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                            <label className="block text-sm font-medium text-neutral-300 mb-1">
                                 Full Name
                             </label>
                             <input
                                 type="text"
                                 value={fullName}
                                 onChange={(e) => setFullName(e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                                className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-neutral-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                                 placeholder="John Doe"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                            <label className="block text-sm font-medium text-neutral-300 mb-1">
                                 Email
                             </label>
                             <input
                                 type="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                                className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-neutral-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                                 placeholder="you@company.com"
                                 required
                             />
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-300 mb-1">
+                            <label className="block text-sm font-medium text-neutral-300 mb-1">
                                 Password
                             </label>
                             <input
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                                className="w-full px-4 py-3 bg-neutral-800 border border-neutral-700 rounded-xl text-neutral-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
                                 placeholder="••••••••"
                                 minLength={6}
                                 required
                             />
-                            <p className="text-gray-500 text-xs mt-1">Minimum 6 characters</p>
+                            <p className="text-neutral-500 text-xs mt-1">Minimum 6 characters</p>
                         </div>
 
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl font-medium hover:from-violet-700 hover:to-fuchsia-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full py-3 bg-violet-600 text-neutral-100 rounded-xl font-medium hover:from-violet-700 hover:to-fuchsia-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? 'Creating account...' : 'Create Account'}
                         </button>
@@ -139,17 +139,17 @@ export default function SignupPage() {
 
                     <div className="relative my-6">
                         <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-700"></div>
+                            <div className="w-full border-t border-neutral-700"></div>
                         </div>
                         <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-gray-900 text-gray-500">or continue with</span>
+                            <span className="px-2 bg-neutral-900 text-neutral-500">or continue with</span>
                         </div>
                     </div>
 
                     <button
                         onClick={handleGoogleSignIn}
                         disabled={isLoading}
-                        className="w-full py-3 bg-gray-800 text-white rounded-xl font-medium hover:bg-gray-700 transition-all flex items-center justify-center gap-2 border border-gray-700 disabled:opacity-50"
+                        className="w-full py-3 bg-neutral-800 text-neutral-100 rounded-xl font-medium hover:bg-neutral-700 transition-all flex items-center justify-center gap-2 border border-neutral-700 disabled:opacity-50"
                     >
                         <svg className="w-5 h-5" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -160,7 +160,7 @@ export default function SignupPage() {
                         Google
                     </button>
 
-                    <p className="mt-6 text-center text-gray-500 text-sm">
+                    <p className="mt-6 text-center text-neutral-500 text-sm">
                         Already have an account?{' '}
                         <Link href="/login" className="text-violet-400 hover:text-violet-300">
                             Sign in
@@ -169,11 +169,11 @@ export default function SignupPage() {
                 </div>
 
                 {/* Terms */}
-                <p className="mt-4 text-center text-gray-600 text-xs">
+                <p className="mt-4 text-center text-neutral-600 text-xs">
                     By creating an account, you agree to our{' '}
-                    <a href="#" className="text-gray-500 hover:text-gray-400">Terms of Service</a>
+                    <a href="#" className="text-neutral-500 hover:text-neutral-400">Terms of Service</a>
                     {' '}and{' '}
-                    <a href="#" className="text-gray-500 hover:text-gray-400">Privacy Policy</a>
+                    <a href="#" className="text-neutral-500 hover:text-neutral-400">Privacy Policy</a>
                 </p>
             </div>
         </div>

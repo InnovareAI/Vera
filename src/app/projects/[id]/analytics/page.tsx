@@ -2,10 +2,6 @@
 
 import { useState } from 'react'
 
-// ═══════════════════════════════════════════════════════════════════
-// MOCK DATA — structured to match future ProjectPerformanceStats
-// ═══════════════════════════════════════════════════════════════════
-
 const STATS = [
   { label: 'Total Posts', value: '47', change: '+12', trend: 'up' as const, period: 'vs last 30d' },
   { label: 'Avg Engagement', value: '4.2%', change: '+0.8%', trend: 'up' as const, period: 'vs last 30d' },
@@ -14,9 +10,9 @@ const STATS = [
 ]
 
 const FUNNEL = [
-  { label: 'Social Engagement', value: '2,847', sub: 'likes, comments, shares', icon: 'social', connected: true },
-  { label: 'Website Traffic', value: '—', sub: 'page views from content', icon: 'traffic', connected: false, cta: 'Connect GA4' },
-  { label: 'Search Visibility', value: '—', sub: 'impressions in search', icon: 'search', connected: false, cta: 'Connect GSC' },
+  { label: 'Social Engagement', value: '2,847', sub: 'likes, comments, shares', connected: true },
+  { label: 'Website Traffic', value: '\u2014', sub: 'page views from content', connected: false, cta: 'Connect GA4' },
+  { label: 'Search Visibility', value: '\u2014', sub: 'impressions in search', connected: false, cta: 'Connect GSC' },
 ]
 
 const CHART_DATA = [
@@ -28,9 +24,9 @@ const CHART_DATA = [
 ]
 
 const PLATFORM_BREAKDOWN = [
-  { platform: 'LinkedIn', posts: 24, engagement: '5.1%', impressions: '8.2K', clicks: '412', ctr: '5.0%', traffic: '—', icon: 'in', color: 'blue' },
-  { platform: 'X (Twitter)', posts: 15, engagement: '3.4%', impressions: '3.1K', clicks: '89', ctr: '2.9%', traffic: '—', icon: 'X', color: 'gray' },
-  { platform: 'Medium', posts: 8, engagement: '4.8%', impressions: '1.1K', clicks: '67', ctr: '6.1%', traffic: '—', icon: 'M', color: 'emerald' },
+  { platform: 'LinkedIn', posts: 24, engagement: '5.1%', impressions: '8.2K', clicks: '412', ctr: '5.0%', icon: 'in' },
+  { platform: 'X (Twitter)', posts: 15, engagement: '3.4%', impressions: '3.1K', clicks: '89', ctr: '2.9%', icon: 'X' },
+  { platform: 'Medium', posts: 8, engagement: '4.8%', impressions: '1.1K', clicks: '67', ctr: '6.1%', icon: 'M' },
 ]
 
 const TOP_CONTENT = [
@@ -58,10 +54,10 @@ const GA4_DATA = [
 ]
 
 const INSIGHTS = [
-  { id: '1', type: 'format_performance', text: 'Posts with questions get 2.1x more comments', confidence: 0.87 },
-  { id: '2', type: 'traffic_correlation', text: 'How-to content drives 5x more website traffic than hot takes', confidence: 0.92 },
-  { id: '3', type: 'timing_insight', text: 'Tuesday 9am posts get highest engagement on LinkedIn', confidence: 0.78 },
-  { id: '4', type: 'seo_insight', text: 'Content about AI SDRs ranks on page 1 for 3 target keywords', confidence: 0.85 },
+  { id: '1', text: 'Posts with questions get 2.1x more comments', confidence: 0.87 },
+  { id: '2', text: 'How-to content drives 5x more website traffic than hot takes', confidence: 0.92 },
+  { id: '3', text: 'Tuesday 9am posts get highest engagement on LinkedIn', confidence: 0.78 },
+  { id: '4', text: 'Content about AI SDRs ranks on page 1 for 3 target keywords', confidence: 0.85 },
 ]
 
 const DATA_SOURCES = [
@@ -72,16 +68,6 @@ const DATA_SOURCES = [
   { name: 'Search Console', connected: false },
 ]
 
-const COLOR_MAP: Record<string, string> = {
-  blue: 'from-blue-500 to-blue-600',
-  gray: 'from-gray-500 to-gray-600',
-  emerald: 'from-emerald-500 to-emerald-600',
-}
-
-// ═══════════════════════════════════════════════════════════════════
-// COMPONENT
-// ═══════════════════════════════════════════════════════════════════
-
 export default function ProjectAnalyticsPage() {
   const [dismissedInsights, setDismissedInsights] = useState<Set<string>>(new Set())
   const [hoveredBar, setHoveredBar] = useState<number | null>(null)
@@ -89,19 +75,19 @@ export default function ProjectAnalyticsPage() {
   const activeInsights = INSIGHTS.filter(i => !dismissedInsights.has(i.id))
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-black text-white mb-1">Analytics</h2>
-          <p className="text-gray-500 text-sm">Content performance across platforms, traffic, and search</p>
+          <h2 className="text-lg font-semibold text-neutral-100 mb-1">Analytics</h2>
+          <p className="text-neutral-500 text-sm">Content performance across platforms, traffic, and search</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-[11px] text-gray-600">Last synced: —</span>
+          <span className="text-xs text-neutral-600">Last synced: \u2014</span>
           <button
             disabled
-            className="px-3.5 py-2 rounded-xl bg-gray-800/60 border border-gray-700/40 text-gray-500 text-xs font-semibold cursor-not-allowed opacity-50 flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-lg bg-neutral-800 border border-neutral-700/50 text-neutral-500 text-xs font-medium cursor-not-allowed opacity-50 flex items-center gap-1.5"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182" /></svg>
             Sync Now
@@ -112,20 +98,15 @@ export default function ProjectAnalyticsPage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {STATS.map((stat) => (
-          <div key={stat.label} className="bg-gray-900 border border-gray-800 rounded-2xl p-6 hover:border-gray-700 transition-all">
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{stat.label}</p>
+          <div key={stat.label} className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
+            <p className="text-xs font-medium text-neutral-500 mb-2">{stat.label}</p>
             <div className="flex items-end gap-2">
-              <span className="text-3xl font-black text-white">{stat.value}</span>
+              <span className="text-2xl font-semibold text-neutral-100">{stat.value}</span>
               <div className="flex flex-col mb-0.5">
-                <span className={`text-sm font-bold ${stat.trend === 'up' ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {stat.trend === 'up' ? (
-                    <svg className="w-3.5 h-3.5 inline mr-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" /></svg>
-                  ) : (
-                    <svg className="w-3.5 h-3.5 inline mr-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4.5 4.5l15 15m0 0V8.25m0 11.25H8.25" /></svg>
-                  )}
+                <span className={`text-sm font-medium ${stat.trend === 'up' ? 'text-emerald-400' : 'text-red-400'}`}>
                   {stat.change}
                 </span>
-                <span className="text-[10px] text-gray-600">{stat.period}</span>
+                <span className="text-[10px] text-neutral-600">{stat.period}</span>
               </div>
             </div>
           </div>
@@ -133,44 +114,24 @@ export default function ProjectAnalyticsPage() {
       </div>
 
       {/* Content Performance Funnel */}
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">Content Performance Funnel</h3>
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+        <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-5">Content Performance Funnel</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {FUNNEL.map((stage, i) => (
             <div key={stage.label} className="relative">
-              <div className={`p-6 rounded-xl border ${stage.connected ? 'border-gray-700 bg-gray-950' : 'border-dashed border-gray-700/50 bg-gray-950/50'}`}>
-                <div className="flex items-center gap-3 mb-3">
-                  {stage.icon === 'social' && (
-                    <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                      <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" /></svg>
-                    </div>
-                  )}
-                  {stage.icon === 'traffic' && (
-                    <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                      <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
-                    </div>
-                  )}
-                  {stage.icon === 'search' && (
-                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                      <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z" /></svg>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{stage.label}</p>
-                  </div>
-                </div>
-                <p className={`text-2xl font-black ${stage.connected ? 'text-white' : 'text-gray-600'}`}>{stage.value}</p>
-                <p className="text-xs text-gray-500 mt-1">{stage.sub}</p>
+              <div className={`p-5 rounded-lg border ${stage.connected ? 'border-neutral-800 bg-neutral-950' : 'border-dashed border-neutral-800 bg-neutral-950/50'}`}>
+                <p className="text-xs font-medium text-neutral-500 mb-2">{stage.label}</p>
+                <p className={`text-2xl font-semibold ${stage.connected ? 'text-neutral-100' : 'text-neutral-600'}`}>{stage.value}</p>
+                <p className="text-xs text-neutral-500 mt-1">{stage.sub}</p>
                 {stage.cta && (
-                  <button className="mt-4 w-full px-3 py-2 rounded-lg border border-dashed border-gray-700 text-gray-500 text-xs font-semibold hover:border-gray-600 hover:text-gray-400 transition-all">
+                  <button className="mt-3 w-full px-3 py-1.5 rounded-lg border border-dashed border-neutral-700 text-neutral-500 text-xs font-medium hover:border-neutral-600 hover:text-neutral-400 transition-all">
                     {stage.cta}
                   </button>
                 )}
               </div>
-              {/* Arrow between funnel stages */}
               {i < FUNNEL.length - 1 && (
                 <div className="hidden md:flex absolute -right-2 top-1/2 -translate-y-1/2 translate-x-1/2 z-10">
-                  <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                  <svg className="w-4 h-4 text-neutral-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                 </div>
               )}
             </div>
@@ -179,9 +140,9 @@ export default function ProjectAnalyticsPage() {
       </div>
 
       {/* Engagement Over Time */}
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">Engagement Over Time</h3>
-        <div className="h-48 flex items-end gap-2">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+        <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-5">Engagement Over Time</h3>
+        <div className="h-48 flex items-end gap-1.5">
           {CHART_DATA.map((d, i) => (
             <div
               key={i}
@@ -189,24 +150,21 @@ export default function ProjectAnalyticsPage() {
               onMouseEnter={() => setHoveredBar(i)}
               onMouseLeave={() => setHoveredBar(null)}
             >
-              {/* Tooltip */}
               {hoveredBar === i && (
-                <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-gray-800 border border-gray-700 rounded-lg text-[10px] text-white font-semibold whitespace-nowrap z-10 shadow-xl">
+                <div className="absolute -top-10 left-1/2 -translate-x-1/2 px-2.5 py-1.5 bg-neutral-800 border border-neutral-700 rounded-lg text-[10px] text-neutral-200 font-medium whitespace-nowrap z-10">
                   {d.day}: {d.value}
                 </div>
               )}
               <div
-                className={`w-full rounded-t-lg transition-all duration-150 ${
-                  hoveredBar === i
-                    ? 'bg-gradient-to-t from-violet-500 to-fuchsia-400'
-                    : 'bg-gradient-to-t from-violet-600 to-fuchsia-500 opacity-80'
+                className={`w-full rounded-t transition-all duration-150 ${
+                  hoveredBar === i ? 'bg-violet-400' : 'bg-violet-500/60'
                 }`}
                 style={{ height: `${(d.value / 100) * 192}px` }}
               />
             </div>
           ))}
         </div>
-        <div className="flex justify-between mt-3 text-xs text-gray-600">
+        <div className="flex justify-between mt-3 text-xs text-neutral-600">
           <span>{CHART_DATA[0].day}</span>
           <span>{CHART_DATA[Math.floor(CHART_DATA.length / 2)].day}</span>
           <span>{CHART_DATA[CHART_DATA.length - 1].day}</span>
@@ -214,46 +172,40 @@ export default function ProjectAnalyticsPage() {
       </div>
 
       {/* Platform Breakdown */}
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">Platform Breakdown</h3>
-        {/* Table header */}
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+        <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-5">Platform Breakdown</h3>
         <div className="hidden md:grid grid-cols-[auto_1fr_repeat(5,80px)] gap-4 px-4 mb-3">
-          <div className="w-10" />
-          <div className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold">Platform</div>
-          <div className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold text-right">Posts</div>
-          <div className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold text-right">Engagement</div>
-          <div className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold text-right">Impressions</div>
-          <div className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold text-right">Clicks</div>
-          <div className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold text-right">CTR</div>
+          <div className="w-8" />
+          <div className="text-xs text-neutral-600 font-medium">Platform</div>
+          <div className="text-xs text-neutral-600 font-medium text-right">Posts</div>
+          <div className="text-xs text-neutral-600 font-medium text-right">Engagement</div>
+          <div className="text-xs text-neutral-600 font-medium text-right">Impressions</div>
+          <div className="text-xs text-neutral-600 font-medium text-right">Clicks</div>
+          <div className="text-xs text-neutral-600 font-medium text-right">CTR</div>
         </div>
-        <div className="space-y-3">
+        <div className="space-y-2">
           {PLATFORM_BREAKDOWN.map((p) => (
-            <div key={p.platform} className="grid grid-cols-1 md:grid-cols-[auto_1fr_repeat(5,80px)] gap-4 items-center p-4 bg-gray-950 rounded-xl border border-gray-800">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-sm font-black text-white bg-gradient-to-br ${COLOR_MAP[p.color] || COLOR_MAP.gray}`}>
+            <div key={p.platform} className="grid grid-cols-1 md:grid-cols-[auto_1fr_repeat(5,80px)] gap-4 items-center p-3 bg-neutral-950 rounded-lg border border-neutral-800">
+              <div className="w-8 h-8 rounded-lg bg-neutral-800 flex items-center justify-center text-xs font-medium text-neutral-400">
                 {p.icon}
               </div>
               <div>
-                <h4 className="text-sm font-bold text-white">{p.platform}</h4>
+                <h4 className="text-sm font-medium text-neutral-200">{p.platform}</h4>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-white">{p.posts}</p>
-                <p className="text-[10px] text-gray-600 md:hidden">posts</p>
+                <p className="text-sm text-neutral-200">{p.posts}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-white">{p.engagement}</p>
-                <p className="text-[10px] text-gray-600 md:hidden">engagement</p>
+                <p className="text-sm text-neutral-200">{p.engagement}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-white">{p.impressions}</p>
-                <p className="text-[10px] text-gray-600 md:hidden">impressions</p>
+                <p className="text-sm text-neutral-200">{p.impressions}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-white">{p.clicks}</p>
-                <p className="text-[10px] text-gray-600 md:hidden">clicks</p>
+                <p className="text-sm text-neutral-200">{p.clicks}</p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-white">{p.ctr}</p>
-                <p className="text-[10px] text-gray-600 md:hidden">CTR</p>
+                <p className="text-sm text-neutral-200">{p.ctr}</p>
               </div>
             </div>
           ))}
@@ -261,25 +213,25 @@ export default function ProjectAnalyticsPage() {
       </div>
 
       {/* Top Performing Content */}
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-        <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">Top Performing Content</h3>
-        <div className="space-y-3">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+        <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-5">Top Performing Content</h3>
+        <div className="space-y-2">
           {TOP_CONTENT.map((content, i) => (
-            <div key={i} className="flex items-center gap-4 p-4 bg-gray-950 rounded-xl border border-gray-800 hover:border-gray-700 transition-all">
-              <div className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-sm font-black text-gray-400">
+            <div key={i} className="flex items-center gap-4 p-3 bg-neutral-950 rounded-lg border border-neutral-800 hover:border-neutral-700/60 transition-all">
+              <div className="w-7 h-7 rounded-md bg-neutral-800 flex items-center justify-center text-xs font-medium text-neutral-500">
                 {i + 1}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-white truncate">{content.title}</p>
-                <p className="text-xs text-gray-500">{content.platform} &middot; {content.date}</p>
+                <p className="text-sm text-neutral-200 truncate">{content.title}</p>
+                <p className="text-xs text-neutral-500">{content.platform} &middot; {content.date}</p>
               </div>
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-white">{content.clicks}</p>
-                <p className="text-[10px] text-gray-600">clicks</p>
+                <p className="text-sm text-neutral-200">{content.clicks}</p>
+                <p className="text-[10px] text-neutral-600">clicks</p>
               </div>
               <div className="text-right">
-                <p className="text-sm font-bold text-emerald-400">{content.engagement}</p>
-                <p className="text-xs text-gray-500">{content.impressions} views</p>
+                <p className="text-sm font-medium text-emerald-400">{content.engagement}</p>
+                <p className="text-xs text-neutral-500">{content.impressions} views</p>
               </div>
             </div>
           ))}
@@ -287,61 +239,44 @@ export default function ProjectAnalyticsPage() {
       </div>
 
       {/* Search Performance (GSC) */}
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8 relative">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest">Search Performance</h3>
-            <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase">GSC</span>
-          </div>
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-5">
+          <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Search Performance</h3>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-violet-500/10 text-violet-400">GSC</span>
         </div>
 
-        {/* Connect banner */}
-        <div className="mb-6 p-4 rounded-xl border border-dashed border-emerald-500/20 bg-emerald-500/5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607z" /></svg>
-            <div>
-              <p className="text-sm font-semibold text-emerald-300">Connect Google Search Console</p>
-              <p className="text-xs text-gray-500">See which keywords drive traffic to your content</p>
-            </div>
+        <div className="mb-5 p-4 rounded-lg border border-dashed border-neutral-700 bg-neutral-950/50 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-neutral-300">Connect Google Search Console</p>
+            <p className="text-xs text-neutral-500">See which keywords drive traffic to your content</p>
           </div>
-          <button className="px-4 py-2 rounded-lg border border-emerald-500/30 text-emerald-400 text-xs font-bold hover:bg-emerald-500/10 transition-all">
+          <button className="px-3 py-1.5 rounded-lg border border-neutral-700 text-neutral-400 text-xs font-medium hover:bg-neutral-800 transition-all">
             Connect GSC
           </button>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-800">
-                <th className="text-left text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3 pr-4">Query</th>
-                <th className="text-left text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3 pr-4">Page</th>
-                <th className="text-right text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3 pr-4">Clicks</th>
-                <th className="text-right text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3 pr-4">Impressions</th>
-                <th className="text-right text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3 pr-4">CTR</th>
-                <th className="text-right text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3">Position</th>
+              <tr className="border-b border-neutral-800">
+                <th className="text-left text-xs text-neutral-600 font-medium pb-3 pr-4">Query</th>
+                <th className="text-left text-xs text-neutral-600 font-medium pb-3 pr-4">Page</th>
+                <th className="text-right text-xs text-neutral-600 font-medium pb-3 pr-4">Clicks</th>
+                <th className="text-right text-xs text-neutral-600 font-medium pb-3 pr-4">Impressions</th>
+                <th className="text-right text-xs text-neutral-600 font-medium pb-3 pr-4">CTR</th>
+                <th className="text-right text-xs text-neutral-600 font-medium pb-3">Position</th>
               </tr>
             </thead>
             <tbody>
               {SEARCH_DATA.map((row, i) => (
-                <tr key={i} className="border-b border-gray-800/50 last:border-0">
-                  <td className="py-3 pr-4">
-                    <span className="text-sm font-semibold text-white">{row.query}</span>
-                  </td>
-                  <td className="py-3 pr-4">
-                    <span className="text-xs text-gray-400 font-mono">{row.page}</span>
-                  </td>
-                  <td className="py-3 pr-4 text-right">
-                    <span className="text-sm font-bold text-white">{row.clicks}</span>
-                  </td>
-                  <td className="py-3 pr-4 text-right">
-                    <span className="text-sm text-gray-300">{row.impressions}</span>
-                  </td>
-                  <td className="py-3 pr-4 text-right">
-                    <span className="text-sm text-gray-300">{row.ctr}</span>
-                  </td>
+                <tr key={i} className="border-b border-neutral-800/50 last:border-0">
+                  <td className="py-3 pr-4"><span className="text-sm text-neutral-200">{row.query}</span></td>
+                  <td className="py-3 pr-4"><span className="text-xs text-neutral-500 font-mono">{row.page}</span></td>
+                  <td className="py-3 pr-4 text-right"><span className="text-sm text-neutral-200">{row.clicks}</span></td>
+                  <td className="py-3 pr-4 text-right"><span className="text-sm text-neutral-400">{row.impressions}</span></td>
+                  <td className="py-3 pr-4 text-right"><span className="text-sm text-neutral-400">{row.ctr}</span></td>
                   <td className="py-3 text-right">
-                    <span className={`text-sm font-bold ${parseFloat(row.position) <= 5 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    <span className={`text-sm font-medium ${parseFloat(row.position) <= 5 ? 'text-emerald-400' : 'text-amber-400'}`}>
                       #{row.position}
                     </span>
                   </td>
@@ -350,65 +285,48 @@ export default function ProjectAnalyticsPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-[10px] text-gray-700 mt-4 text-center">Sample data — connect Google Search Console to see real rankings</p>
+        <p className="text-[10px] text-neutral-700 mt-4 text-center">Sample data — connect Google Search Console to see real rankings</p>
       </div>
 
       {/* Website Traffic from Content (GA4) */}
-      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest">Website Traffic from Content</h3>
-            <span className="px-2 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/20 text-amber-400 text-[10px] font-bold uppercase">GA4</span>
-          </div>
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+        <div className="flex items-center gap-3 mb-5">
+          <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider">Website Traffic from Content</h3>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-violet-500/10 text-violet-400">GA4</span>
         </div>
 
-        {/* Connect banner */}
-        <div className="mb-6 p-4 rounded-xl border border-dashed border-amber-500/20 bg-amber-500/5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>
-            <div>
-              <p className="text-sm font-semibold text-amber-300">Connect Google Analytics</p>
-              <p className="text-xs text-gray-500">See how your content drives website traffic</p>
-            </div>
+        <div className="mb-5 p-4 rounded-lg border border-dashed border-neutral-700 bg-neutral-950/50 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-neutral-300">Connect Google Analytics</p>
+            <p className="text-xs text-neutral-500">See how your content drives website traffic</p>
           </div>
-          <button className="px-4 py-2 rounded-lg border border-amber-500/30 text-amber-400 text-xs font-bold hover:bg-amber-500/10 transition-all">
+          <button className="px-3 py-1.5 rounded-lg border border-neutral-700 text-neutral-400 text-xs font-medium hover:bg-neutral-800 transition-all">
             Connect GA4
           </button>
         </div>
 
-        {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-800">
-                <th className="text-left text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3 pr-4">Content</th>
-                <th className="text-left text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3 pr-4">Source</th>
-                <th className="text-right text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3 pr-4">Page Views</th>
-                <th className="text-right text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3 pr-4">Avg Time</th>
-                <th className="text-right text-[10px] text-gray-600 uppercase tracking-widest font-semibold pb-3">Bounce Rate</th>
+              <tr className="border-b border-neutral-800">
+                <th className="text-left text-xs text-neutral-600 font-medium pb-3 pr-4">Content</th>
+                <th className="text-left text-xs text-neutral-600 font-medium pb-3 pr-4">Source</th>
+                <th className="text-right text-xs text-neutral-600 font-medium pb-3 pr-4">Page Views</th>
+                <th className="text-right text-xs text-neutral-600 font-medium pb-3 pr-4">Avg Time</th>
+                <th className="text-right text-xs text-neutral-600 font-medium pb-3">Bounce Rate</th>
               </tr>
             </thead>
             <tbody>
               {GA4_DATA.map((row, i) => (
-                <tr key={i} className="border-b border-gray-800/50 last:border-0">
+                <tr key={i} className="border-b border-neutral-800/50 last:border-0">
+                  <td className="py-3 pr-4"><span className="text-sm text-neutral-200">{row.title}</span></td>
                   <td className="py-3 pr-4">
-                    <span className="text-sm font-semibold text-white">{row.title}</span>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-neutral-800 text-neutral-400">{row.platform}</span>
                   </td>
-                  <td className="py-3 pr-4">
-                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
-                      row.platform === 'LinkedIn' ? 'bg-blue-500/10 text-blue-400' :
-                      row.platform === 'X' ? 'bg-gray-700/50 text-gray-300' :
-                      'bg-emerald-500/10 text-emerald-400'
-                    }`}>{row.platform}</span>
-                  </td>
-                  <td className="py-3 pr-4 text-right">
-                    <span className="text-sm font-bold text-white">{row.pageviews.toLocaleString()}</span>
-                  </td>
-                  <td className="py-3 pr-4 text-right">
-                    <span className="text-sm text-gray-300">{row.avgTime}</span>
-                  </td>
+                  <td className="py-3 pr-4 text-right"><span className="text-sm text-neutral-200">{row.pageviews.toLocaleString()}</span></td>
+                  <td className="py-3 pr-4 text-right"><span className="text-sm text-neutral-400">{row.avgTime}</span></td>
                   <td className="py-3 text-right">
-                    <span className={`text-sm font-semibold ${parseInt(row.bounceRate) <= 40 ? 'text-emerald-400' : 'text-amber-400'}`}>
+                    <span className={`text-sm font-medium ${parseInt(row.bounceRate) <= 40 ? 'text-emerald-400' : 'text-amber-400'}`}>
                       {row.bounceRate}
                     </span>
                   </td>
@@ -417,43 +335,38 @@ export default function ProjectAnalyticsPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-[10px] text-gray-700 mt-4 text-center">Sample data — connect Google Analytics to see real traffic metrics</p>
+        <p className="text-[10px] text-neutral-700 mt-4 text-center">Sample data — connect Google Analytics to see real traffic metrics</p>
       </div>
 
       {/* AI Insights */}
       {activeInsights.length > 0 && (
-        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-8">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <h3 className="text-sm font-bold text-gray-500 uppercase tracking-widest">AI Insights</h3>
-              <span className="px-2 py-0.5 rounded-md bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-bold">
-                Generated from your performance data
-              </span>
-            </div>
+        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <h3 className="text-xs font-medium text-neutral-500 uppercase tracking-wider">AI Insights</h3>
+            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium bg-violet-500/10 text-violet-400">
+              Generated from your performance data
+            </span>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {activeInsights.map((insight) => (
-              <div key={insight.id} className="p-4 rounded-xl bg-gray-950 border border-gray-800 hover:border-gray-700 transition-all group">
+              <div key={insight.id} className="p-4 rounded-lg bg-neutral-950 border border-neutral-800 hover:border-neutral-700/60 transition-all group">
                 <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                    <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>
-                  </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium leading-snug">{insight.text}</p>
+                    <p className="text-sm text-neutral-200 leading-snug">{insight.text}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <div className="flex items-center gap-1">
                         <div className={`h-1 rounded-full ${
                           insight.confidence >= 0.85 ? 'bg-emerald-500 w-8' :
                           insight.confidence >= 0.7 ? 'bg-amber-500 w-6' :
-                          'bg-gray-600 w-4'
+                          'bg-neutral-600 w-4'
                         }`} />
-                        <span className="text-[10px] text-gray-600">{Math.round(insight.confidence * 100)}% confidence</span>
+                        <span className="text-[10px] text-neutral-600">{Math.round(insight.confidence * 100)}% confidence</span>
                       </div>
                     </div>
                   </div>
                   <button
                     onClick={() => setDismissedInsights(prev => new Set([...prev, insight.id]))}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-600 hover:text-gray-400 shrink-0"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity text-neutral-600 hover:text-neutral-400 shrink-0"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                   </button>
@@ -465,13 +378,13 @@ export default function ProjectAnalyticsPage() {
       )}
 
       {/* Data Sources Footer */}
-      <div className="bg-gray-900/50 border border-gray-800/50 rounded-2xl p-6">
-        <h4 className="text-[10px] text-gray-600 uppercase tracking-widest font-semibold mb-4">Connected Data Sources</h4>
+      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-5">
+        <h4 className="text-xs font-medium text-neutral-600 mb-3">Connected Data Sources</h4>
         <div className="flex flex-wrap items-center gap-4">
           {DATA_SOURCES.map((source) => (
             <div key={source.name} className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full ${source.connected ? 'bg-emerald-500' : 'bg-gray-600'}`} />
-              <span className={`text-xs font-medium ${source.connected ? 'text-gray-300' : 'text-gray-600'}`}>
+              <div className={`w-1.5 h-1.5 rounded-full ${source.connected ? 'bg-emerald-500' : 'bg-neutral-600'}`} />
+              <span className={`text-xs ${source.connected ? 'text-neutral-400' : 'text-neutral-600'}`}>
                 {source.name}
               </span>
             </div>

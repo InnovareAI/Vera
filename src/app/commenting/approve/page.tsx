@@ -276,7 +276,7 @@ export default function CommentApprovalPage() {
   // ── Confidence badge color ────────────────────────────
   const confidenceBadge = (score: number | null) => {
     if (score === null || score === undefined) {
-      return <Badge variant="outline" className="border-gray-600 text-gray-400">N/A</Badge>
+      return <Badge variant="outline" className="border-neutral-600 text-neutral-400">N/A</Badge>
     }
     if (score > 0.8) {
       return <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">{(score * 100).toFixed(0)}%</Badge>
@@ -290,53 +290,53 @@ export default function CommentApprovalPage() {
   // ── Loading state ─────────────────────────────────────
   if (authLoading || workspaceLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-950 flex items-center justify-center">
         <div className="text-center">
           <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-gray-400 mt-4 font-medium">Loading Comment Review...</p>
+          <p className="text-neutral-400 mt-4 font-medium">Loading Comment Review...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white selection:bg-violet-500/30">
+    <div className="min-h-screen bg-neutral-950 text-neutral-100 selection:bg-violet-500/30">
       {/* Gradient overlay */}
       <div className="fixed top-0 left-0 right-0 h-24 bg-gradient-to-b from-gray-950 to-transparent pointer-events-none z-40" />
 
       {/* Header */}
-      <header className="relative z-50 border-b border-gray-800/50 bg-gray-950/50 backdrop-blur-xl">
+      <header className="relative z-50 border-b border-neutral-800/50 bg-neutral-950/50 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <Link href="/dashboard" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
-                <span className="text-xl font-black text-white italic">V</span>
+              <div className="w-10 h-10 bg-violet-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 group-hover:scale-105 transition-transform">
+                <span className="text-xl font-semibold text-neutral-100 italic">V</span>
               </div>
-              <span className="text-2xl font-black tracking-tighter text-white">Vera.AI</span>
+              <span className="text-2xl font-semibold tracking-tighter text-neutral-100">Vera.AI</span>
             </Link>
 
             <nav className="hidden md:flex items-center gap-1">
-              <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+              <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-neutral-100 hover:bg-white/5 rounded-lg transition-all">
                 Dashboard
               </Link>
-              <Link href="/projects" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+              <Link href="/projects" className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-neutral-100 hover:bg-white/5 rounded-lg transition-all">
                 Projects
               </Link>
-              <Link href="/settings" className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+              <Link href="/settings" className="px-4 py-2 text-sm font-medium text-neutral-400 hover:text-neutral-100 hover:bg-white/5 rounded-lg transition-all">
                 Settings
               </Link>
             </nav>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="bg-gray-900 border border-gray-800 rounded-xl p-1 flex items-center gap-1">
+            <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-1 flex items-center gap-1">
               <select
                 value={currentWorkspace?.id || ''}
                 onChange={(e) => switchWorkspace(e.target.value)}
-                className="bg-transparent text-sm font-bold px-3 py-1.5 focus:outline-none cursor-pointer text-white"
+                className="bg-transparent text-sm font-bold px-3 py-1.5 focus:outline-none cursor-pointer text-neutral-100"
               >
                 {workspaces.map((ws) => (
-                  <option key={ws.id} value={ws.id} className="bg-gray-900">
+                  <option key={ws.id} value={ws.id} className="bg-neutral-900">
                     {ws.name}
                   </option>
                 ))}
@@ -344,7 +344,7 @@ export default function CommentApprovalPage() {
             </div>
 
             <div className="flex items-center gap-3 pl-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-full flex items-center justify-center border-2 border-white/10 shadow-xl overflow-hidden">
+              <div className="w-10 h-10 bg-gradient-to-br from-violet-600 to-fuchsia-600 rounded-full flex items-center justify-center border-2 border-white/10 shadow-md overflow-hidden">
                 {profile?.avatar_url ? (
                   <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -361,26 +361,26 @@ export default function CommentApprovalPage() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Link href="/dashboard" className="text-gray-500 hover:text-gray-300 text-xs font-bold uppercase tracking-widest transition-colors">
+              <Link href="/dashboard" className="text-neutral-500 hover:text-neutral-300 text-xs font-bold uppercase tracking-widest transition-colors">
                 Dashboard
               </Link>
-              <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              <Link href="/commenting/monitors" className="text-gray-500 hover:text-gray-300 text-xs font-bold uppercase tracking-widest transition-colors">
+              <Link href="/commenting/monitors" className="text-neutral-500 hover:text-neutral-300 text-xs font-bold uppercase tracking-widest transition-colors">
                 Commenting
               </Link>
-              <svg className="w-3 h-3 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
               <span className="text-violet-400 text-xs font-bold uppercase tracking-widest">
                 Approve
               </span>
             </div>
-            <h1 className="text-4xl font-black tracking-tight text-white mb-2">
+            <h1 className="text-4xl font-semibold tracking-tight text-neutral-100 mb-2">
               Comment Review
             </h1>
-            <p className="text-lg text-gray-400 max-w-2xl leading-relaxed">
+            <p className="text-lg text-neutral-400 max-w-2xl leading-relaxed">
               Review, edit, and approve AI-generated comments before they go live.
             </p>
           </div>
@@ -411,7 +411,7 @@ export default function CommentApprovalPage() {
 
         {/* Feedback Toast */}
         {actionFeedback && (
-          <div className={`fixed top-24 right-6 z-50 px-6 py-3 rounded-2xl font-bold text-sm shadow-2xl transition-all animate-in slide-in-from-right ${
+          <div className={`fixed top-24 right-6 z-50 px-6 py-3 rounded-2xl font-bold text-sm shadow-lg transition-all animate-in slide-in-from-right ${
             actionFeedback.type === 'success'
               ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
               : 'bg-red-500/20 text-red-400 border border-red-500/30'
@@ -423,21 +423,21 @@ export default function CommentApprovalPage() {
         {/* Progress Indicator */}
         {!loading && comments.length > 0 && (
           <div className="flex items-center justify-between">
-            <p className="text-gray-400 font-bold text-sm">
-              Reviewing <span className="text-white">{currentIndex + 1}</span> of{' '}
-              <span className="text-white">{comments.length}</span> pending
+            <p className="text-neutral-400 font-bold text-sm">
+              Reviewing <span className="text-neutral-100">{currentIndex + 1}</span> of{' '}
+              <span className="text-neutral-100">{comments.length}</span> pending
             </p>
-            <div className="flex items-center gap-2 text-gray-600 text-xs font-medium">
-              <span className="inline-flex items-center gap-1 bg-gray-900/60 border border-gray-800 rounded-lg px-3 py-1.5">
-                <kbd className="bg-gray-800 rounded px-1.5 py-0.5 text-gray-400 font-mono text-[10px]">A</kbd>
+            <div className="flex items-center gap-2 text-neutral-600 text-xs font-medium">
+              <span className="inline-flex items-center gap-1 bg-neutral-900/60 border border-neutral-800 rounded-lg px-3 py-1.5">
+                <kbd className="bg-neutral-800 rounded px-1.5 py-0.5 text-neutral-400 font-mono text-[10px]">A</kbd>
                 <span>Approve</span>
               </span>
-              <span className="inline-flex items-center gap-1 bg-gray-900/60 border border-gray-800 rounded-lg px-3 py-1.5">
-                <kbd className="bg-gray-800 rounded px-1.5 py-0.5 text-gray-400 font-mono text-[10px]">R</kbd>
+              <span className="inline-flex items-center gap-1 bg-neutral-900/60 border border-neutral-800 rounded-lg px-3 py-1.5">
+                <kbd className="bg-neutral-800 rounded px-1.5 py-0.5 text-neutral-400 font-mono text-[10px]">R</kbd>
                 <span>Reject</span>
               </span>
-              <span className="inline-flex items-center gap-1 bg-gray-900/60 border border-gray-800 rounded-lg px-3 py-1.5">
-                <kbd className="bg-gray-800 rounded px-1.5 py-0.5 text-gray-400 font-mono text-[10px]">N</kbd>
+              <span className="inline-flex items-center gap-1 bg-neutral-900/60 border border-neutral-800 rounded-lg px-3 py-1.5">
+                <kbd className="bg-neutral-800 rounded px-1.5 py-0.5 text-neutral-400 font-mono text-[10px]">N</kbd>
                 <span>Next</span>
               </span>
             </div>
@@ -451,14 +451,14 @@ export default function CommentApprovalPage() {
           </div>
         ) : comments.length === 0 ? (
           /* Empty State */
-          <div className="bg-gray-900/40 border border-gray-800 rounded-3xl p-16 text-center">
-            <div className="w-24 h-24 bg-gray-800/50 rounded-3xl flex items-center justify-center mb-6 mx-auto">
-              <svg className="w-12 h-12 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="bg-neutral-900/40 border border-neutral-800 rounded-xl p-16 text-center">
+            <div className="w-24 h-24 bg-neutral-800/50 rounded-xl flex items-center justify-center mb-6 mx-auto">
+              <svg className="w-12 h-12 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-2xl font-black text-white mb-3">All caught up!</h3>
-            <p className="text-gray-500 max-w-md mx-auto mb-8">
+            <h3 className="text-2xl font-semibold text-neutral-100 mb-3">All caught up!</h3>
+            <p className="text-neutral-500 max-w-md mx-auto mb-8">
               No pending comments to review. New comments will appear here once the AI generates them from discovered posts.
             </p>
             <Link href="/commenting/monitors">
@@ -469,20 +469,20 @@ export default function CommentApprovalPage() {
           </div>
         ) : currentComment ? (
           /* Comment Review Card */
-          <div className="bg-gray-900/40 border border-gray-800 rounded-3xl overflow-hidden">
+          <div className="bg-neutral-900/40 border border-neutral-800 rounded-xl overflow-hidden">
             {/* Post Header: Author Info */}
             <div className="px-8 pt-8 pb-4">
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center shrink-0">
-                  <span className="text-lg font-black text-white">
+                  <span className="text-lg font-semibold text-neutral-100">
                     {(currentComment.vera_linkedin_posts_discovered?.author_name || 'U')[0].toUpperCase()}
                   </span>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h4 className="text-white font-black text-lg truncate">
+                  <h4 className="text-neutral-100 font-semibold text-lg truncate">
                     {currentComment.vera_linkedin_posts_discovered?.author_name || 'Unknown Author'}
                   </h4>
-                  <p className="text-gray-500 text-sm truncate">
+                  <p className="text-neutral-500 text-sm truncate">
                     {currentComment.vera_linkedin_posts_discovered?.author_headline || 'LinkedIn User'}
                   </p>
                   {currentComment.vera_linkedin_posts_discovered?.share_url && (
@@ -499,7 +499,7 @@ export default function CommentApprovalPage() {
                 <div className="flex items-center gap-2 shrink-0">
                   {confidenceBadge(currentComment.confidence_score)}
                   {currentComment.tone && (
-                    <Badge variant="outline" className="border-gray-700 text-gray-400 capitalize">
+                    <Badge variant="outline" className="border-neutral-700 text-neutral-400 capitalize">
                       {currentComment.tone}
                     </Badge>
                   )}
@@ -509,8 +509,8 @@ export default function CommentApprovalPage() {
 
             {/* Post Content */}
             <div className="px-8 pb-4">
-              <div className="bg-gray-800/40 border border-gray-700/50 rounded-2xl p-6 max-h-64 overflow-y-auto">
-                <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
+              <div className="bg-neutral-800/40 border border-neutral-700/50 rounded-2xl p-6 max-h-64 overflow-y-auto">
+                <p className="text-neutral-300 text-sm leading-relaxed whitespace-pre-wrap">
                   {currentComment.vera_linkedin_posts_discovered?.post_content || 'Post content not available'}
                 </p>
               </div>
@@ -528,13 +528,13 @@ export default function CommentApprovalPage() {
 
             {/* Divider */}
             <div className="mx-8">
-              <div className="border-t border-gray-800" />
+              <div className="border-t border-neutral-800" />
             </div>
 
             {/* Generated Comment */}
             <div className="px-8 py-6">
               <div className="flex items-center gap-2 mb-3">
-                <p className="text-gray-500 font-bold uppercase tracking-widest text-xs">Generated Comment</p>
+                <p className="text-neutral-500 font-bold uppercase tracking-widest text-xs">Generated Comment</p>
                 {!isEditing && (
                   <button
                     onClick={() => setIsEditing(true)}
@@ -549,12 +549,12 @@ export default function CommentApprovalPage() {
                 <Textarea
                   value={editedText}
                   onChange={(e) => setEditedText(e.target.value)}
-                  className="bg-gray-800/60 border-gray-700 text-white placeholder:text-gray-600 rounded-xl min-h-[120px] focus:border-violet-500 focus:ring-violet-500/20 resize-y"
+                  className="bg-neutral-800/60 border-neutral-700 text-neutral-100 placeholder:text-neutral-600 rounded-xl min-h-[120px] focus:border-violet-500 focus:ring-violet-500/20 resize-y"
                   placeholder="Edit the generated comment..."
                 />
               ) : (
-                <div className="bg-gray-800/30 border border-gray-700/30 rounded-xl p-4">
-                  <p className="text-white text-sm leading-relaxed whitespace-pre-wrap">
+                <div className="bg-neutral-800/30 border border-neutral-700/30 rounded-xl p-4">
+                  <p className="text-neutral-100 text-sm leading-relaxed whitespace-pre-wrap">
                     {currentComment.comment_text}
                   </p>
                 </div>
@@ -563,7 +563,7 @@ export default function CommentApprovalPage() {
               {/* Extracted Facts */}
               {currentComment.extracted_facts && currentComment.extracted_facts.length > 0 && (
                 <div className="mt-4">
-                  <p className="text-gray-600 text-xs font-bold uppercase tracking-widest mb-2">Extracted Facts</p>
+                  <p className="text-neutral-600 text-xs font-bold uppercase tracking-widest mb-2">Extracted Facts</p>
                   <div className="flex flex-wrap gap-1.5">
                     {currentComment.extracted_facts.map((fact, i) => (
                       <span key={i} className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1">
@@ -577,7 +577,7 @@ export default function CommentApprovalPage() {
               {/* Suggested Approaches */}
               {currentComment.suggested_approaches && currentComment.suggested_approaches.length > 0 && (
                 <div className="mt-3">
-                  <p className="text-gray-600 text-xs font-bold uppercase tracking-widest mb-2">Suggested Approaches</p>
+                  <p className="text-neutral-600 text-xs font-bold uppercase tracking-widest mb-2">Suggested Approaches</p>
                   <div className="flex flex-wrap gap-1.5">
                     {currentComment.suggested_approaches.map((approach, i) => (
                       <span key={i} className="text-xs text-fuchsia-400 bg-fuchsia-500/10 border border-fuchsia-500/20 rounded-full px-3 py-1">
@@ -595,7 +595,7 @@ export default function CommentApprovalPage() {
                 <Button
                   onClick={handleApprove}
                   disabled={actionLoading}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-2.5 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-emerald-600/20"
+                  className="bg-emerald-600 hover:bg-emerald-500 text-neutral-100 font-bold px-6 py-2.5 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-emerald-600/20"
                 >
                   {actionLoading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
@@ -610,7 +610,7 @@ export default function CommentApprovalPage() {
                 <Button
                   onClick={handleReject}
                   disabled={actionLoading}
-                  className="bg-red-600/80 hover:bg-red-500 text-white font-bold px-6 py-2.5 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
+                  className="bg-red-600/80 hover:bg-red-500 text-neutral-100 font-bold px-6 py-2.5 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-red-600/20"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
@@ -622,7 +622,7 @@ export default function CommentApprovalPage() {
                   <Button
                     onClick={handleEditAndApprove}
                     disabled={actionLoading}
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-bold px-6 py-2.5 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-blue-600/20"
+                    className="bg-blue-600 hover:bg-blue-500 text-neutral-100 font-bold px-6 py-2.5 rounded-xl transition-all hover:scale-[1.02] shadow-lg shadow-blue-600/20"
                   >
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -635,7 +635,7 @@ export default function CommentApprovalPage() {
                   variant="ghost"
                   onClick={handleSkip}
                   disabled={comments.length <= 1}
-                  className="text-gray-400 hover:text-white font-bold px-6 py-2.5 rounded-xl hover:bg-gray-800/50"
+                  className="text-neutral-400 hover:text-neutral-100 font-bold px-6 py-2.5 rounded-xl hover:bg-neutral-800/50"
                 >
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" />
@@ -649,8 +649,8 @@ export default function CommentApprovalPage() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-gray-800/50 text-center">
-        <p className="text-gray-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
+      <footer className="max-w-7xl mx-auto px-6 py-12 border-t border-neutral-800/50 text-center">
+        <p className="text-neutral-600 text-sm">Powered by Vera.AI Intelligence Engine &copy; 2026 InnovareAI</p>
       </footer>
     </div>
   )
