@@ -264,17 +264,34 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
             })}
           </nav>
 
-          {/* User */}
+          {/* User + Theme */}
           <div className="px-4 py-3 border-t border-neutral-800/60">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 bg-violet-600 rounded-full flex items-center justify-center overflow-hidden shrink-0">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-xs font-medium text-white">{(profile?.full_name || user?.email || 'V')[0].toUpperCase()}</span>
-                )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 bg-violet-600 rounded-full flex items-center justify-center overflow-hidden shrink-0">
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-xs font-medium text-white">{(profile?.full_name || user?.email || 'V')[0].toUpperCase()}</span>
+                  )}
+                </div>
+                <span className="text-xs text-neutral-500 truncate">{profile?.full_name || user?.email}</span>
               </div>
-              <span className="text-xs text-neutral-500 truncate">{profile?.full_name || user?.email}</span>
+              <button
+                onClick={() => {
+                  const html = document.documentElement
+                  const current = html.getAttribute('data-theme')
+                  const next = current === 'light' ? 'dark' : 'light'
+                  html.setAttribute('data-theme', next)
+                  localStorage.setItem('vera-theme', next)
+                }}
+                className="p-1.5 rounded-lg text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/50 transition-all shrink-0"
+                title="Toggle theme"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                </svg>
+              </button>
             </div>
           </div>
         </aside>
