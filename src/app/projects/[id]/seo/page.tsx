@@ -1,0 +1,2 @@
+import { redirect } from 'next/navigation'
+export default function SeoPage() { redirect('./seo/overview') }
