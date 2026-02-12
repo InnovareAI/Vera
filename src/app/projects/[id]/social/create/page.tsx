@@ -46,6 +46,12 @@ const PLATFORM_ACTIVE_STYLES: Record<string, string> = {
   newsletter: 'border-amber-500/60 bg-amber-500/10 text-amber-400 shadow-amber-500/10',
 }
 
+const PREVIEW_BGS = [
+  { id: 'dark' as const, label: 'Dark', dot: 'bg-neutral-800 border-neutral-600', panel: 'bg-transparent', text: 'text-neutral-200' },
+  { id: 'white' as const, label: 'White', dot: 'bg-white border-neutral-300', panel: 'bg-white', text: 'text-neutral-900' },
+  { id: 'light' as const, label: 'Light Gray', dot: 'bg-neutral-200 border-neutral-400', panel: 'bg-neutral-100', text: 'text-neutral-800' },
+]
+
 // ═══════════════════════════════════════════════════════════════════
 // ICONS
 // ═══════════════════════════════════════════════════════════════════
@@ -118,27 +124,28 @@ function GenerationSkeleton() {
   )
 }
 
-function LinkedInPreview({ content, authorName, imageUrl }: { content: string; authorName: string; imageUrl?: string | null }) {
+function LinkedInPreview({ content, authorName, imageUrl, bg = 'dark' }: { content: string; authorName: string; imageUrl?: string | null; bg?: string }) {
+  const isLight = bg === 'white' || bg === 'light'
   return (
-    <div className="rounded-xl bg-[#1b1f23] border border-neutral-700/40 overflow-hidden">
+    <div className={`rounded-xl border overflow-hidden ${isLight ? 'bg-white border-neutral-200' : 'bg-[#1b1f23] border-neutral-700/40'}`}>
       <div className="p-4 flex items-start gap-3">
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-neutral-100 font-bold text-sm shrink-0">
           {authorName[0]?.toUpperCase() || 'U'}
         </div>
         <div className="min-w-0">
-          <p className="text-neutral-100 font-semibold text-sm">{authorName}</p>
-          <p className="text-neutral-500 text-xs">Industry Expert · 2h</p>
+          <p className={`font-semibold text-sm ${isLight ? 'text-neutral-900' : 'text-neutral-100'}`}>{authorName}</p>
+          <p className={`text-xs ${isLight ? 'text-neutral-500' : 'text-neutral-500'}`}>Industry Expert · 2h</p>
         </div>
       </div>
       <div className="px-4 pb-4">
-        <div className="text-[13px] text-neutral-200 whitespace-pre-wrap leading-[1.65]">{content}</div>
+        <div className={`text-[13px] whitespace-pre-wrap leading-[1.65] ${isLight ? 'text-neutral-800' : 'text-neutral-200'}`}>{content}</div>
       </div>
       {imageUrl && (
-        <div className="border-t border-neutral-700/30">
+        <div className={`border-t ${isLight ? 'border-neutral-200' : 'border-neutral-700/30'}`}>
           <img src={imageUrl} alt="Post image" className="w-full object-cover max-h-[400px]" />
         </div>
       )}
-      <div className="px-4 py-2.5 border-t border-neutral-700/30 flex items-center justify-around text-neutral-500 text-xs font-medium">
+      <div className={`px-4 py-2.5 border-t flex items-center justify-around text-xs font-medium ${isLight ? 'border-neutral-200 text-neutral-500' : 'border-neutral-700/30 text-neutral-500'}`}>
         <span className="flex items-center gap-1.5 cursor-default">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904m.729-7.534a2.25 2.25 0 00-2.25 2.25v4.5a2.25 2.25 0 002.25 2.25h.382" /></svg>
           Like
@@ -160,22 +167,23 @@ function LinkedInPreview({ content, authorName, imageUrl }: { content: string; a
   )
 }
 
-function TwitterPreview({ content, authorName, imageUrl }: { content: string; authorName: string; imageUrl?: string | null }) {
+function TwitterPreview({ content, authorName, imageUrl, bg = 'dark' }: { content: string; authorName: string; imageUrl?: string | null; bg?: string }) {
+  const isLight = bg === 'white' || bg === 'light'
   return (
-    <div className="rounded-xl bg-[#16181c] border border-neutral-700/40 overflow-hidden">
+    <div className={`rounded-xl border overflow-hidden ${isLight ? 'bg-white border-neutral-200' : 'bg-[#16181c] border-neutral-700/40'}`}>
       <div className="p-4 flex items-start gap-3">
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-sky-600 flex items-center justify-center text-neutral-100 font-bold text-xs shrink-0">
           {authorName[0]?.toUpperCase() || 'U'}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
-            <span className="text-neutral-100 font-bold text-sm">{authorName}</span>
+            <span className={`font-bold text-sm ${isLight ? 'text-neutral-900' : 'text-neutral-100'}`}>{authorName}</span>
             <svg className="w-4 h-4 text-sky-400" viewBox="0 0 24 24" fill="currentColor"><path d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.34 2.19c-1.39-.46-2.9-.2-3.91.81s-1.27 2.52-.81 3.91C2.63 9.33 1.75 10.57 1.75 12s.88 2.67 2.19 3.34c-.46 1.39-.2 2.9.81 3.91s2.52 1.27 3.91.81c.66 1.31 1.91 2.19 3.34 2.19s2.67-.88 3.34-2.19c1.39.46 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34zm-11.09 4.38l-3.54-3.54 1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41-5.64 5.66z" /></svg>
             <span className="text-neutral-500 text-sm">@{authorName.toLowerCase().replace(/\s/g, '')}</span>
           </div>
-          <div className="text-[14px] text-neutral-100 whitespace-pre-wrap leading-[1.5] mt-2">{content}</div>
+          <div className={`text-[14px] whitespace-pre-wrap leading-[1.5] mt-2 ${isLight ? 'text-neutral-800' : 'text-neutral-100'}`}>{content}</div>
           {imageUrl && (
-            <div className="mt-3 rounded-xl overflow-hidden border border-neutral-700/30">
+            <div className={`mt-3 rounded-xl overflow-hidden border ${isLight ? 'border-neutral-200' : 'border-neutral-700/30'}`}>
               <img src={imageUrl} alt="Post image" className="w-full object-cover max-h-[300px]" />
             </div>
           )}
@@ -203,34 +211,35 @@ function TwitterPreview({ content, authorName, imageUrl }: { content: string; au
   )
 }
 
-function MediumPreview({ content, authorName, imageUrl }: { content: string; authorName: string; imageUrl?: string | null }) {
+function MediumPreview({ content, authorName, imageUrl, bg = 'dark' }: { content: string; authorName: string; imageUrl?: string | null; bg?: string }) {
   const lines = content.split('\n').filter(l => l.trim())
   const title = lines[0] || 'Untitled'
   const body = lines.slice(1).join('\n')
   const wordCount = content.split(/\s+/).length
   const readTime = Math.max(1, Math.round(wordCount / 200))
+  const isLight = bg === 'white' || bg === 'light'
 
   return (
-    <div className="rounded-xl bg-[#1a1a1a] border border-neutral-700/40 overflow-hidden">
+    <div className={`rounded-xl border overflow-hidden ${isLight ? 'bg-white border-neutral-200' : 'bg-[#1a1a1a] border-neutral-700/40'}`}>
       {imageUrl && (
         <img src={imageUrl} alt="Article hero" className="w-full object-cover max-h-[300px]" />
       )}
       <div className="p-6">
-        <h2 className="text-xl font-bold text-neutral-100 leading-tight mb-3">{title}</h2>
+        <h2 className={`text-xl font-bold leading-tight mb-3 ${isLight ? 'text-neutral-900' : 'text-neutral-100'}`}>{title}</h2>
         <div className="flex items-center gap-3 mb-5">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-neutral-100 font-bold text-xs">
             {authorName[0]?.toUpperCase() || 'U'}
           </div>
           <div>
-            <p className="text-neutral-100 text-xs font-medium">{authorName}</p>
+            <p className={`text-xs font-medium ${isLight ? 'text-neutral-900' : 'text-neutral-100'}`}>{authorName}</p>
             <p className="text-neutral-500 text-xs">{readTime} min read</p>
           </div>
         </div>
-        <div className="border-t border-neutral-800 pt-4">
-          <div className="text-[13px] text-neutral-300 whitespace-pre-wrap leading-[1.7]">{body}</div>
+        <div className={`border-t pt-4 ${isLight ? 'border-neutral-200' : 'border-neutral-800'}`}>
+          <div className={`text-[13px] whitespace-pre-wrap leading-[1.7] ${isLight ? 'text-neutral-700' : 'text-neutral-300'}`}>{body}</div>
         </div>
       </div>
-      <div className="px-6 py-3 border-t border-neutral-800/50 flex items-center justify-between text-neutral-500">
+      <div className={`px-6 py-3 border-t flex items-center justify-between text-neutral-500 ${isLight ? 'border-neutral-200' : 'border-neutral-800/50'}`}>
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1 text-xs cursor-default">
             <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904m.729-7.534a2.25 2.25 0 00-2.25 2.25v4.5a2.25 2.25 0 002.25 2.25h.382" /></svg>
@@ -245,14 +254,15 @@ function MediumPreview({ content, authorName, imageUrl }: { content: string; aut
   )
 }
 
-function NewsletterPreview({ content, authorName, imageUrl }: { content: string; authorName: string; imageUrl?: string | null }) {
+function NewsletterPreview({ content, authorName, imageUrl, bg = 'dark' }: { content: string; authorName: string; imageUrl?: string | null; bg?: string }) {
   const lines = content.split('\n').filter(l => l.trim())
   const subjectLine = lines[0]?.replace(/^Subject:\s*/i, '') || 'Newsletter'
   const body = lines.slice(1).join('\n')
+  const isLight = bg === 'white' || bg === 'light'
 
   return (
-    <div className="rounded-xl bg-[#1c1c1e] border border-neutral-700/40 overflow-hidden">
-      <div className="px-5 py-3 bg-neutral-800/30 border-b border-neutral-700/30 flex items-center gap-3">
+    <div className={`rounded-xl border overflow-hidden ${isLight ? 'bg-white border-neutral-200' : 'bg-[#1c1c1e] border-neutral-700/40'}`}>
+      <div className={`px-5 py-3 border-b flex items-center gap-3 ${isLight ? 'bg-neutral-50 border-neutral-200' : 'bg-neutral-800/30 border-neutral-700/30'}`}>
         <div className="flex gap-1.5">
           <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
           <div className="w-2.5 h-2.5 rounded-full bg-amber-500/60" />
@@ -262,32 +272,32 @@ function NewsletterPreview({ content, authorName, imageUrl }: { content: string;
       </div>
       <div className="p-5">
         <div className="mb-4">
-          <p className="text-[11px] text-neutral-600 uppercase tracking-wider font-medium mb-1">Subject</p>
-          <p className="text-neutral-100 font-semibold text-sm">{subjectLine}</p>
+          <p className={`text-[11px] uppercase tracking-wider font-medium mb-1 ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>Subject</p>
+          <p className={`font-semibold text-sm ${isLight ? 'text-neutral-900' : 'text-neutral-100'}`}>{subjectLine}</p>
         </div>
         {imageUrl && (
           <div className="mb-4">
             <img src={imageUrl} alt="Newsletter image" className="w-full rounded-lg object-cover max-h-[300px]" />
           </div>
         )}
-        <div className="border-t border-neutral-800 pt-4">
-          <div className="text-[13px] text-neutral-300 whitespace-pre-wrap leading-[1.7]">{body}</div>
+        <div className={`border-t pt-4 ${isLight ? 'border-neutral-200' : 'border-neutral-800'}`}>
+          <div className={`text-[13px] whitespace-pre-wrap leading-[1.7] ${isLight ? 'text-neutral-700' : 'text-neutral-300'}`}>{body}</div>
         </div>
       </div>
-      <div className="px-5 py-2.5 border-t border-neutral-800/40 text-center">
-        <span className="text-neutral-600 text-[10px]">Unsubscribe | View in browser</span>
+      <div className={`px-5 py-2.5 border-t text-center ${isLight ? 'border-neutral-200' : 'border-neutral-800/40'}`}>
+        <span className={`text-[10px] ${isLight ? 'text-neutral-400' : 'text-neutral-600'}`}>Unsubscribe | View in browser</span>
       </div>
     </div>
   )
 }
 
-function PlatformPreview({ platform, content, authorName, imageUrl }: { platform: string; content: string; authorName: string; imageUrl?: string | null }) {
+function PlatformPreview({ platform, content, authorName, imageUrl, bg }: { platform: string; content: string; authorName: string; imageUrl?: string | null; bg?: string }) {
   switch (platform) {
-    case 'linkedin': return <LinkedInPreview content={content} authorName={authorName} imageUrl={imageUrl} />
-    case 'twitter': return <TwitterPreview content={content} authorName={authorName} imageUrl={imageUrl} />
-    case 'medium': return <MediumPreview content={content} authorName={authorName} imageUrl={imageUrl} />
-    case 'newsletter': return <NewsletterPreview content={content} authorName={authorName} imageUrl={imageUrl} />
-    default: return <LinkedInPreview content={content} authorName={authorName} imageUrl={imageUrl} />
+    case 'linkedin': return <LinkedInPreview content={content} authorName={authorName} imageUrl={imageUrl} bg={bg} />
+    case 'twitter': return <TwitterPreview content={content} authorName={authorName} imageUrl={imageUrl} bg={bg} />
+    case 'medium': return <MediumPreview content={content} authorName={authorName} imageUrl={imageUrl} bg={bg} />
+    case 'newsletter': return <NewsletterPreview content={content} authorName={authorName} imageUrl={imageUrl} bg={bg} />
+    default: return <LinkedInPreview content={content} authorName={authorName} imageUrl={imageUrl} bg={bg} />
   }
 }
 
@@ -322,6 +332,7 @@ export default function ContentBenchPage() {
   const [generatedContent, setGeneratedContent] = useState('')
   const [editableContent, setEditableContent] = useState('')
   const [viewMode, setViewMode] = useState<'preview' | 'edit'>('preview')
+  const [previewBg, setPreviewBg] = useState<'dark' | 'white' | 'light'>('dark')
 
   // Save state
   const [saving, setSaving] = useState(false)
@@ -895,24 +906,40 @@ export default function ContentBenchPage() {
                 </span>
               </div>
 
-              {/* View mode toggle */}
-              <div className="flex items-center bg-neutral-900 border border-neutral-800 rounded-lg p-0.5">
-                <button
-                  onClick={() => setViewMode('preview')}
-                  className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
-                    viewMode === 'preview' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-500 hover:text-neutral-300'
-                  }`}
-                >
-                  Preview
-                </button>
-                <button
-                  onClick={() => setViewMode('edit')}
-                  className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
-                    viewMode === 'edit' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-500 hover:text-neutral-300'
-                  }`}
-                >
-                  Edit
-                </button>
+              <div className="flex items-center gap-3">
+                {/* Background switcher */}
+                <div className="flex items-center gap-1.5">
+                  {PREVIEW_BGS.map((b) => (
+                    <button
+                      key={b.id}
+                      onClick={() => setPreviewBg(b.id)}
+                      title={b.label}
+                      className={`w-5 h-5 rounded-full border-2 transition-all ${b.dot} ${
+                        previewBg === b.id ? 'ring-2 ring-violet-500 ring-offset-1 ring-offset-neutral-950 scale-110' : 'opacity-60 hover:opacity-100'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                {/* View mode toggle */}
+                <div className="flex items-center bg-neutral-900 border border-neutral-800 rounded-lg p-0.5">
+                  <button
+                    onClick={() => setViewMode('preview')}
+                    className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+                      viewMode === 'preview' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-500 hover:text-neutral-300'
+                    }`}
+                  >
+                    Preview
+                  </button>
+                  <button
+                    onClick={() => setViewMode('edit')}
+                    className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-all ${
+                      viewMode === 'edit' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-500 hover:text-neutral-300'
+                    }`}
+                  >
+                    Edit
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -924,13 +951,16 @@ export default function ContentBenchPage() {
             )}
 
             {/* Content area */}
-            <div className="flex-1 min-h-0 overflow-y-auto">
+            <div className={`flex-1 min-h-0 overflow-y-auto rounded-xl p-4 transition-colors duration-200 ${
+              previewBg === 'white' ? 'bg-white' : previewBg === 'light' ? 'bg-neutral-100' : 'bg-transparent'
+            }`}>
               {viewMode === 'preview' ? (
                 <PlatformPreview
                   platform={platform}
                   content={editableContent}
                   authorName={authorName}
                   imageUrl={generatedImageUrl}
+                  bg={previewBg}
                 />
               ) : (
                 <textarea
