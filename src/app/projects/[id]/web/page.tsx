@@ -1,2 +1,5 @@
 import { redirect } from 'next/navigation'
-export default function WebPage() { redirect('./web/blog') }
+export default async function WebPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  redirect(`/projects/${id}/web/blog`)
+}

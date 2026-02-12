@@ -178,12 +178,20 @@ export default function ProjectLayout({ children }: { children: React.ReactNode 
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`/api/projects/${projectId}`)
-      if (!res.ok) throw new Error('Failed to fetch project')
-      setProject(await res.json())
+      const url = `/api/projects/${projectId}`
+      console.log('[Vera] Fetching project:', url)
+      const res = await fetch(url)
+      if (!res.ok) {
+        const body = await res.text()
+        console.error('[Vera] Project fetch failed:', res.status, body)
+        throw new Error(`Failed to fetch project (${res.status})`)
+      }
+      const data = await res.json()
+      console.log('[Vera] Project loaded:', data.name, data.id)
+      setProject(data)
     } catch (err) {
-      console.error('Failed to fetch project:', err)
-      setError('Failed to load project.')
+      console.error('[Vera] Failed to fetch project:', err)
+      setError(`Failed to load project. ${(err as Error).message}`)
     } finally {
       setLoading(false)
     }
