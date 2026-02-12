@@ -45,7 +45,7 @@ export default function StrategyOverviewPage() {
     <div className="space-y-6 max-w-5xl">
       {/* Header */}
       <div>
-        <h2 className="text-lg font-semibold text-neutral-100 mb-1">Campaign Planning</h2>
+        <h2 className="text-lg font-semibold text-neutral-100 mb-1">Planning</h2>
         <p className="text-neutral-500 text-sm">Brand health, content calendar, competitive intelligence, and research</p>
       </div>
 
