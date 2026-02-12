@@ -161,13 +161,11 @@ export default function PlanningPage() {
       <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-5">
         {/* Topic */}
         <div>
-          <label className="block text-xs font-medium text-neutral-400 mb-2">
-            What&apos;s the overarching topic?
-          </label>
+          <label className="block text-xs font-medium text-neutral-400 mb-2">Topic</label>
           <textarea
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder="e.g. How AI is changing B2B sales, or a specific LinkedIn post idea..."
+            placeholder="AI in B2B sales, product-led growth, your latest feature launch..."
             rows={2}
             className="w-full bg-neutral-800/60 border border-neutral-700/50 rounded-lg px-4 py-3 text-sm text-neutral-100 placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-violet-500/50 resize-none"
           />
