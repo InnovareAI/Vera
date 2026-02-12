@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const supabase = createAdminClient()
     const body = await request.json()
 
-    const { workspace_id, project_id, content, platform, source_url, source_title, status, theme, hook, hashtags, character_count } = body
+    const { workspace_id, project_id, content, platform, source_url, source_title, status, theme, hook, hashtags, character_count, image_url } = body
 
     if (!workspace_id || !content) {
       return NextResponse.json({ error: 'workspace_id and content are required' }, { status: 400 })
@@ -30,6 +30,7 @@ export async function POST(request: NextRequest) {
     if (hook) insertData.hook = hook
     if (hashtags) insertData.hashtags = hashtags
     if (character_count) insertData.character_count = character_count
+    if (image_url) insertData.image_url = image_url
 
     const { data, error } = await supabase
       .from('content_items')

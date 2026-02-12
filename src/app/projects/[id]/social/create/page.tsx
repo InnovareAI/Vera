@@ -118,7 +118,7 @@ function GenerationSkeleton() {
   )
 }
 
-function LinkedInPreview({ content, authorName }: { content: string; authorName: string }) {
+function LinkedInPreview({ content, authorName, imageUrl }: { content: string; authorName: string; imageUrl?: string | null }) {
   return (
     <div className="rounded-xl bg-[#1b1f23] border border-neutral-700/40 overflow-hidden">
       <div className="p-4 flex items-start gap-3">
@@ -133,6 +133,11 @@ function LinkedInPreview({ content, authorName }: { content: string; authorName:
       <div className="px-4 pb-4">
         <div className="text-[13px] text-neutral-200 whitespace-pre-wrap leading-[1.65]">{content}</div>
       </div>
+      {imageUrl && (
+        <div className="border-t border-neutral-700/30">
+          <img src={imageUrl} alt="Post image" className="w-full object-cover max-h-[400px]" />
+        </div>
+      )}
       <div className="px-4 py-2.5 border-t border-neutral-700/30 flex items-center justify-around text-neutral-500 text-xs font-medium">
         <span className="flex items-center gap-1.5 cursor-default">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 012.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 00.322-1.672V3a.75.75 0 01.75-.75 2.25 2.25 0 012.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 01-2.649 7.521c-.388.482-.987.729-1.605.729H14.23c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 00-1.423-.23H5.904m.729-7.534a2.25 2.25 0 00-2.25 2.25v4.5a2.25 2.25 0 002.25 2.25h.382" /></svg>
@@ -155,7 +160,7 @@ function LinkedInPreview({ content, authorName }: { content: string; authorName:
   )
 }
 
-function TwitterPreview({ content, authorName }: { content: string; authorName: string }) {
+function TwitterPreview({ content, authorName, imageUrl }: { content: string; authorName: string; imageUrl?: string | null }) {
   return (
     <div className="rounded-xl bg-[#16181c] border border-neutral-700/40 overflow-hidden">
       <div className="p-4 flex items-start gap-3">
@@ -169,6 +174,11 @@ function TwitterPreview({ content, authorName }: { content: string; authorName: 
             <span className="text-neutral-500 text-sm">@{authorName.toLowerCase().replace(/\s/g, '')}</span>
           </div>
           <div className="text-[14px] text-neutral-100 whitespace-pre-wrap leading-[1.5] mt-2">{content}</div>
+          {imageUrl && (
+            <div className="mt-3 rounded-xl overflow-hidden border border-neutral-700/30">
+              <img src={imageUrl} alt="Post image" className="w-full object-cover max-h-[300px]" />
+            </div>
+          )}
           <div className="flex items-center gap-8 mt-3 text-neutral-500 text-xs">
             <span className="flex items-center gap-1.5 cursor-default">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" /></svg>
@@ -193,7 +203,7 @@ function TwitterPreview({ content, authorName }: { content: string; authorName: 
   )
 }
 
-function MediumPreview({ content, authorName }: { content: string; authorName: string }) {
+function MediumPreview({ content, authorName, imageUrl }: { content: string; authorName: string; imageUrl?: string | null }) {
   const lines = content.split('\n').filter(l => l.trim())
   const title = lines[0] || 'Untitled'
   const body = lines.slice(1).join('\n')
@@ -202,6 +212,9 @@ function MediumPreview({ content, authorName }: { content: string; authorName: s
 
   return (
     <div className="rounded-xl bg-[#1a1a1a] border border-neutral-700/40 overflow-hidden">
+      {imageUrl && (
+        <img src={imageUrl} alt="Article hero" className="w-full object-cover max-h-[300px]" />
+      )}
       <div className="p-6">
         <h2 className="text-xl font-bold text-neutral-100 leading-tight mb-3">{title}</h2>
         <div className="flex items-center gap-3 mb-5">
@@ -232,7 +245,7 @@ function MediumPreview({ content, authorName }: { content: string; authorName: s
   )
 }
 
-function NewsletterPreview({ content, authorName }: { content: string; authorName: string }) {
+function NewsletterPreview({ content, authorName, imageUrl }: { content: string; authorName: string; imageUrl?: string | null }) {
   const lines = content.split('\n').filter(l => l.trim())
   const subjectLine = lines[0]?.replace(/^Subject:\s*/i, '') || 'Newsletter'
   const body = lines.slice(1).join('\n')
@@ -252,6 +265,11 @@ function NewsletterPreview({ content, authorName }: { content: string; authorNam
           <p className="text-[11px] text-neutral-600 uppercase tracking-wider font-medium mb-1">Subject</p>
           <p className="text-neutral-100 font-semibold text-sm">{subjectLine}</p>
         </div>
+        {imageUrl && (
+          <div className="mb-4">
+            <img src={imageUrl} alt="Newsletter image" className="w-full rounded-lg object-cover max-h-[300px]" />
+          </div>
+        )}
         <div className="border-t border-neutral-800 pt-4">
           <div className="text-[13px] text-neutral-300 whitespace-pre-wrap leading-[1.7]">{body}</div>
         </div>
@@ -263,13 +281,13 @@ function NewsletterPreview({ content, authorName }: { content: string; authorNam
   )
 }
 
-function PlatformPreview({ platform, content, authorName }: { platform: string; content: string; authorName: string }) {
+function PlatformPreview({ platform, content, authorName, imageUrl }: { platform: string; content: string; authorName: string; imageUrl?: string | null }) {
   switch (platform) {
-    case 'linkedin': return <LinkedInPreview content={content} authorName={authorName} />
-    case 'twitter': return <TwitterPreview content={content} authorName={authorName} />
-    case 'medium': return <MediumPreview content={content} authorName={authorName} />
-    case 'newsletter': return <NewsletterPreview content={content} authorName={authorName} />
-    default: return <LinkedInPreview content={content} authorName={authorName} />
+    case 'linkedin': return <LinkedInPreview content={content} authorName={authorName} imageUrl={imageUrl} />
+    case 'twitter': return <TwitterPreview content={content} authorName={authorName} imageUrl={imageUrl} />
+    case 'medium': return <MediumPreview content={content} authorName={authorName} imageUrl={imageUrl} />
+    case 'newsletter': return <NewsletterPreview content={content} authorName={authorName} imageUrl={imageUrl} />
+    default: return <LinkedInPreview content={content} authorName={authorName} imageUrl={imageUrl} />
   }
 }
 
@@ -291,6 +309,13 @@ export default function ContentBenchPage() {
   const [platform, setPlatform] = useState('linkedin')
   const [tone, setTone] = useState('professional')
   const [formatLength, setFormatLength] = useState('standard')
+
+  // Image generation state
+  const [imageEnabled, setImageEnabled] = useState(false)
+  const [imagePrompt, setImagePrompt] = useState('')
+  const [imageSize, setImageSize] = useState('landscape_16_9')
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null)
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false)
 
   // Generation state
   const [generating, setGenerating] = useState(false)
@@ -323,17 +348,41 @@ export default function ContentBenchPage() {
     }
   }, [projectId])
 
+  const handleGenerateImage = async () => {
+    const prompt = imagePrompt.trim() || `Professional image for ${platform} post about: ${topic}`
+    setIsGeneratingImage(true)
+    try {
+      const res = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, image_size: imageSize }),
+      })
+      const data = await res.json()
+      if (data.success && data.imageUrl) {
+        setGeneratedImageUrl(data.imageUrl)
+      } else {
+        setError(data.error || 'Failed to generate image')
+      }
+    } catch (e) {
+      console.error('Image generation error:', e)
+      setError('Failed to generate image')
+    } finally {
+      setIsGeneratingImage(false)
+    }
+  }
+
   const handleGenerate = async () => {
     if (!topic.trim()) return
     setGenerating(true)
     setError(null)
     setGeneratedContent('')
     setEditableContent('')
+    setGeneratedImageUrl(null)
     setSaved(false)
     setViewMode('preview')
 
     try {
-      const res = await fetch('/api/generate', {
+      const textPromise = fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -357,12 +406,39 @@ export default function ContentBenchPage() {
         }),
       })
 
-      const data = await res.json()
-      if (data.success && data.content) {
-        setGeneratedContent(data.content)
-        setEditableContent(data.content)
+      // If image enabled, generate in parallel
+      let imagePromise: Promise<Response> | null = null
+      if (imageEnabled) {
+        const imgPrompt = imagePrompt.trim() || `Professional image for ${platform} post about: ${topic}`
+        setIsGeneratingImage(true)
+        imagePromise = fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: imgPrompt, image_size: imageSize }),
+        })
+      }
+
+      const textRes = await textPromise
+      const textData = await textRes.json()
+      if (textData.success && textData.content) {
+        setGeneratedContent(textData.content)
+        setEditableContent(textData.content)
       } else {
-        setError(data.error || 'Failed to generate content')
+        setError(textData.error || 'Failed to generate content')
+      }
+
+      if (imagePromise) {
+        try {
+          const imgRes = await imagePromise
+          const imgData = await imgRes.json()
+          if (imgData.success && imgData.imageUrl) {
+            setGeneratedImageUrl(imgData.imageUrl)
+          }
+        } catch (e) {
+          console.error('Image generation error:', e)
+        } finally {
+          setIsGeneratingImage(false)
+        }
       }
     } catch (e) {
       console.error('Generate error:', e)
@@ -390,6 +466,7 @@ export default function ContentBenchPage() {
           theme: topic.slice(0, 80),
           hook: editableContent.split('\n')[0]?.slice(0, 120) || '',
           character_count: editableContent.length,
+          image_url: generatedImageUrl || undefined,
           status: 'pending',
         }),
       })
@@ -568,6 +645,77 @@ export default function ContentBenchPage() {
               ))}
             </select>
           </div>
+        </div>
+
+        {/* Image Generation Toggle */}
+        <div className="rounded-xl border border-neutral-800/60 bg-neutral-900/40 overflow-hidden">
+          <button
+            onClick={() => setImageEnabled(!imageEnabled)}
+            className="w-full px-3.5 py-2.5 flex items-center justify-between text-left"
+          >
+            <div className="flex items-center gap-2 min-w-0">
+              <div className={`w-8 h-4 rounded-full transition-colors relative ${imageEnabled ? 'bg-violet-500' : 'bg-neutral-700'}`}>
+                <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${imageEnabled ? 'left-[18px]' : 'left-0.5'}`} />
+              </div>
+              <span className="text-[11px] text-neutral-400 font-medium">
+                Generate Image
+              </span>
+            </div>
+            <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 0 0 1.5-1.5V5.25a1.5 1.5 0 0 0-1.5-1.5H3.75a1.5 1.5 0 0 0-1.5 1.5v14.25a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
+          </button>
+          {imageEnabled && (
+            <div className="px-3.5 pb-3 pt-0 space-y-2.5 border-t border-neutral-800/40">
+              <div>
+                <label className="block text-[10px] uppercase tracking-[0.1em] text-neutral-600 font-medium mb-1.5 mt-2">
+                  Image Prompt
+                </label>
+                <textarea
+                  value={imagePrompt}
+                  onChange={(e) => setImagePrompt(e.target.value)}
+                  placeholder={`Professional image for ${platform} post about: ${topic || 'your topic'}`}
+                  rows={2}
+                  className="w-full px-3 py-2 rounded-lg bg-neutral-800/60 border border-neutral-800 focus:border-violet-500/50 focus:outline-none text-neutral-200 placeholder-neutral-600 text-xs resize-none transition-all"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <label className="text-[10px] text-neutral-600 font-medium shrink-0">Size:</label>
+                {[
+                  { id: 'landscape_16_9', label: 'Landscape' },
+                  { id: 'square_hd', label: 'Square' },
+                  { id: 'portrait_4_3', label: 'Portrait' },
+                ].map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setImageSize(s.id)}
+                    className={`px-2.5 py-1 rounded-md text-[10px] font-medium transition-all ${
+                      imageSize === s.id
+                        ? 'bg-violet-500/15 text-violet-400 border border-violet-500/30'
+                        : 'bg-neutral-800/50 text-neutral-500 border border-transparent hover:text-neutral-400'
+                    }`}
+                  >
+                    {s.label}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={handleGenerateImage}
+                disabled={isGeneratingImage || !topic.trim()}
+                className="w-full px-3 py-2 rounded-lg bg-neutral-800 hover:bg-neutral-700 border border-neutral-700/50 text-neutral-300 text-xs font-medium transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+              >
+                {isGeneratingImage ? (
+                  <>
+                    <div className="w-3 h-3 border-2 border-neutral-500 border-t-white rounded-full animate-spin" />
+                    Generating image...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5a1.5 1.5 0 0 0 1.5-1.5V5.25a1.5 1.5 0 0 0-1.5-1.5H3.75a1.5 1.5 0 0 0-1.5 1.5v14.25a1.5 1.5 0 0 0 1.5 1.5Z" /></svg>
+                    Generate Image Only
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Brand Context */}
@@ -782,6 +930,7 @@ export default function ContentBenchPage() {
                   platform={platform}
                   content={editableContent}
                   authorName={authorName}
+                  imageUrl={generatedImageUrl}
                 />
               ) : (
                 <textarea
@@ -791,6 +940,66 @@ export default function ContentBenchPage() {
                 />
               )}
             </div>
+
+            {/* Image preview (when in edit mode or standalone) */}
+            {(generatedImageUrl || isGeneratingImage) && viewMode === 'edit' && (
+              <div className="mt-4 rounded-xl border border-neutral-800/50 bg-neutral-900/30 overflow-hidden">
+                {isGeneratingImage ? (
+                  <div className="flex items-center justify-center gap-2 py-8 text-neutral-500 text-sm">
+                    <div className="w-4 h-4 border-2 border-neutral-600 border-t-violet-400 rounded-full animate-spin" />
+                    Generating image...
+                  </div>
+                ) : generatedImageUrl ? (
+                  <div>
+                    <img src={generatedImageUrl} alt="Generated" className="w-full object-cover max-h-[300px]" />
+                    <div className="flex items-center gap-2 p-2 border-t border-neutral-800/40">
+                      <button
+                        onClick={handleGenerateImage}
+                        disabled={isGeneratingImage}
+                        className="px-3 py-1.5 text-[11px] font-medium text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 rounded-lg transition-all"
+                      >
+                        Regenerate
+                      </button>
+                      <button
+                        onClick={() => setGeneratedImageUrl(null)}
+                        className="px-3 py-1.5 text-[11px] font-medium text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                ) : null}
+              </div>
+            )}
+
+            {/* Image loading indicator in preview mode */}
+            {isGeneratingImage && viewMode === 'preview' && (
+              <div className="mt-4 rounded-xl border border-neutral-800/50 bg-neutral-900/30 overflow-hidden">
+                <div className="flex items-center justify-center gap-2 py-6 text-neutral-500 text-sm">
+                  <div className="w-4 h-4 border-2 border-neutral-600 border-t-violet-400 rounded-full animate-spin" />
+                  Generating image...
+                </div>
+              </div>
+            )}
+
+            {/* Image controls in preview mode */}
+            {generatedImageUrl && !isGeneratingImage && viewMode === 'preview' && (
+              <div className="mt-3 flex items-center gap-2">
+                <button
+                  onClick={handleGenerateImage}
+                  disabled={isGeneratingImage}
+                  className="px-3 py-1.5 text-[11px] font-medium text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 rounded-lg transition-all border border-neutral-800/50"
+                >
+                  Regenerate Image
+                </button>
+                <button
+                  onClick={() => setGeneratedImageUrl(null)}
+                  className="px-3 py-1.5 text-[11px] font-medium text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all border border-neutral-800/50"
+                >
+                  Remove Image
+                </button>
+              </div>
+            )}
 
             {/* Action bar */}
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-neutral-800/40">
