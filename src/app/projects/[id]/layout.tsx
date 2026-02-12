@@ -25,7 +25,7 @@ interface Layer {
 const LAYERS: Layer[] = [
   {
     id: 'strategy',
-    label: 'Strategy',
+    label: 'Campaign Planning',
     href: '/strategy',
     tabs: [
       { label: 'Overview', href: '' },
