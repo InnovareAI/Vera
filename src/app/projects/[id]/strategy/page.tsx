@@ -5,11 +5,53 @@ import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import type { Project } from '@/types/project'
 
-export default function StrategyOverviewPage() {
+const CHANNELS = [
+  { id: 'linkedin', label: 'LinkedIn', color: '#0a66c2' },
+  { id: 'twitter', label: 'X (Twitter)', color: '#1da1f2' },
+  { id: 'medium', label: 'Medium', color: '#00ab6c' },
+  { id: 'blog', label: 'Blog', color: '#f59e0b' },
+]
+
+const TIMEBOXES = [
+  { id: '1-week', label: '1 Week', desc: '~3 posts per channel' },
+  { id: '2-weeks', label: '2 Weeks', desc: '~5 posts per channel' },
+  { id: '1-month', label: '1 Month', desc: '~8 posts per channel' },
+]
+
+const TYPE_COLORS: Record<string, string> = {
+  'hot-take': 'bg-red-500/15 text-red-400',
+  'how-to': 'bg-blue-500/15 text-blue-400',
+  'story': 'bg-purple-500/15 text-purple-400',
+  'listicle': 'bg-amber-500/15 text-amber-400',
+  'case-study': 'bg-emerald-500/15 text-emerald-400',
+  'news-react': 'bg-cyan-500/15 text-cyan-400',
+}
+
+interface PlanItem {
+  day: string
+  platform: string
+  type: string
+  title: string
+  brief: string
+}
+
+export default function PlanningPage() {
   const params = useParams()
   const projectId = params.id as string
   const [project, setProject] = useState<Project | null>(null)
   const [loading, setLoading] = useState(true)
+
+  // Plan inputs
+  const [topic, setTopic] = useState('')
+  const [timebox, setTimebox] = useState('1-week')
+  const [selectedChannels, setSelectedChannels] = useState<string[]>(['linkedin'])
+
+  // Plan output
+  const [plan, setPlan] = useState<PlanItem[]>([])
+  const [generating, setGenerating] = useState(false)
+  const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
 
   useEffect(() => {
     if (projectId) {
@@ -20,6 +62,76 @@ export default function StrategyOverviewPage() {
     }
   }, [projectId])
 
+  const toggleChannel = (id: string) => {
+    setSelectedChannels((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+    )
+  }
+
+  const handleGenerate = async () => {
+    if (!topic.trim() || selectedChannels.length === 0) return
+    setGenerating(true)
+    setError('')
+    setPlan([])
+    setSaved(false)
+
+    try {
+      const res = await fetch('/api/generate-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          topic: topic.trim(),
+          timebox,
+          channels: selectedChannels,
+          projectContext: project ? {
+            name: project.name,
+            industry: project.industry,
+            tone: project.tone_of_voice?.style,
+            icp: project.icp,
+            products: project.products,
+          } : undefined,
+        }),
+      })
+
+      if (!res.ok) throw new Error('Failed to generate plan')
+      const data = await res.json()
+      setPlan(data.plan || [])
+    } catch (err) {
+      setError((err as Error).message || 'Something went wrong')
+    } finally {
+      setGenerating(false)
+    }
+  }
+
+  const handleSaveAll = async () => {
+    if (!plan.length || !project) return
+    setSaving(true)
+
+    try {
+      const saves = plan.map((item) =>
+        fetch('/api/content-items', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            project_id: projectId,
+            workspace_id: project.workspace_id,
+            platform: item.platform,
+            content_type: item.type,
+            title: item.title,
+            body: item.brief,
+            status: 'draft',
+          }),
+        })
+      )
+      await Promise.all(saves)
+      setSaved(true)
+    } catch {
+      setError('Failed to save some items')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
@@ -28,254 +140,176 @@ export default function StrategyOverviewPage() {
     )
   }
 
-  if (!project) {
-    return (
-      <div className="text-center py-20">
-        <p className="text-neutral-500 text-sm">Could not load project data.</p>
-      </div>
-    )
-  }
-
-  const icp = project.icp
-  const tone = project.tone_of_voice
-  const platforms = project.enabled_platforms || []
-  const products = project.products || []
+  // Group plan by day
+  const dayGroups: Record<string, PlanItem[]> = {}
+  plan.forEach((item) => {
+    if (!dayGroups[item.day]) dayGroups[item.day] = []
+    dayGroups[item.day].push(item)
+  })
 
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-8 max-w-4xl">
       {/* Header */}
       <div>
-        <h2 className="text-lg font-semibold text-neutral-100 mb-1">Planning</h2>
-        <p className="text-neutral-500 text-sm">Brand health, content calendar, competitive intelligence, and research</p>
+        <h2 className="text-lg font-semibold text-neutral-100 mb-1">Campaign Planning</h2>
+        <p className="text-neutral-500 text-sm">
+          Define your topic, pick channels and a timeframe — AI builds the plan.
+        </p>
       </div>
 
-      {/* Brand Health Card */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
-        <div className="flex items-start gap-4">
-          <div
-            className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-semibold text-white shrink-0"
-            style={{ background: project.brand_colors?.primary || '#7c3aed' }}
-          >
-            {project.name[0]?.toUpperCase()}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-semibold text-neutral-100">{project.name}</h3>
-            {project.industry && (
-              <p className="text-xs text-violet-400 mt-0.5">{project.industry}</p>
-            )}
-            {project.description && (
-              <p className="text-sm text-neutral-400 mt-2 leading-relaxed line-clamp-2">{project.description}</p>
-            )}
-            {project.website_url && (
-              <a href={project.website_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-neutral-500 hover:text-violet-400 mt-2 transition-colors">
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.86-2.754a4.5 4.5 0 00-1.242-7.244l-4.5-4.5a4.5 4.5 0 00-6.364 6.364L4.757 8.25" /></svg>
-                {project.website_url.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-              </a>
-            )}
-          </div>
-          <Link
-            href={`/projects/${projectId}/settings`}
-            className="px-3 py-1.5 text-xs font-medium text-neutral-400 hover:text-neutral-200 bg-neutral-800 hover:bg-neutral-700 rounded-lg transition-all shrink-0"
-          >
-            Edit
-          </Link>
+      {/* Input Section */}
+      <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-6 space-y-5">
+        {/* Topic */}
+        <div>
+          <label className="block text-xs font-medium text-neutral-400 mb-2">
+            What&apos;s the overarching topic?
+          </label>
+          <textarea
+            value={topic}
+            onChange={(e) => setTopic(e.target.value)}
+            placeholder="e.g. How AI is changing B2B sales, or a specific LinkedIn post idea..."
+            rows={2}
+            className="w-full bg-neutral-800/60 border border-neutral-700/50 rounded-lg px-4 py-3 text-sm text-neutral-100 placeholder-neutral-600 focus:outline-none focus:ring-1 focus:ring-violet-500/50 resize-none"
+          />
         </div>
 
-        {/* Platform badges */}
-        {platforms.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-neutral-800/60">
-            <span className="text-xs font-medium text-neutral-600 self-center mr-1">Platforms</span>
-            {platforms.map((p) => (
-              <span key={p} className="px-2 py-0.5 text-xs rounded bg-neutral-800 text-neutral-400 capitalize">
-                {p === 'twitter' ? 'X (Twitter)' : p}
-              </span>
+        {/* Timebox */}
+        <div>
+          <label className="block text-xs font-medium text-neutral-400 mb-2">Timeframe</label>
+          <div className="flex gap-2">
+            {TIMEBOXES.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setTimebox(t.id)}
+                className={`flex-1 px-4 py-2.5 rounded-lg border text-sm transition-all ${
+                  timebox === t.id
+                    ? 'bg-violet-500/15 border-violet-500/40 text-violet-300'
+                    : 'bg-neutral-800/40 border-neutral-700/50 text-neutral-400 hover:text-neutral-300 hover:border-neutral-600'
+                }`}
+              >
+                <span className="font-medium">{t.label}</span>
+                <span className="block text-xs mt-0.5 opacity-60">{t.desc}</span>
+              </button>
             ))}
           </div>
+        </div>
+
+        {/* Channels */}
+        <div>
+          <label className="block text-xs font-medium text-neutral-400 mb-2">Channels</label>
+          <div className="flex flex-wrap gap-2">
+            {CHANNELS.map((ch) => {
+              const active = selectedChannels.includes(ch.id)
+              return (
+                <button
+                  key={ch.id}
+                  onClick={() => toggleChannel(ch.id)}
+                  className={`px-4 py-2 rounded-lg border text-sm font-medium transition-all ${
+                    active
+                      ? 'border-violet-500/40 text-neutral-100'
+                      : 'bg-neutral-800/40 border-neutral-700/50 text-neutral-500 hover:text-neutral-300 hover:border-neutral-600'
+                  }`}
+                  style={active ? { backgroundColor: ch.color + '20', borderColor: ch.color + '60' } : {}}
+                >
+                  {ch.label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Generate */}
+        <button
+          onClick={handleGenerate}
+          disabled={!topic.trim() || selectedChannels.length === 0 || generating}
+          className="w-full py-3 bg-violet-600 hover:bg-violet-500 disabled:bg-neutral-800 disabled:text-neutral-600 text-white font-medium rounded-lg transition-all text-sm"
+        >
+          {generating ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+              </svg>
+              Generating plan...
+            </span>
+          ) : (
+            'Generate Content Plan'
+          )}
+        </button>
+
+        {error && (
+          <p className="text-xs text-red-400 mt-2">{error}</p>
         )}
       </div>
 
-      {/* Two-column: ICP + Tone */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* ICP Card */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-neutral-200">Ideal Customer Profile</h3>
-            <Link href={`/projects/${projectId}/settings`} className="text-xs text-neutral-600 hover:text-neutral-400 transition-colors">Edit</Link>
+      {/* Generated Plan */}
+      {plan.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-neutral-200">
+              Your Plan — {plan.length} posts across {selectedChannels.length} channel{selectedChannels.length > 1 ? 's' : ''}
+            </h3>
+            <button
+              onClick={handleSaveAll}
+              disabled={saving || saved}
+              className={`px-4 py-2 text-xs font-medium rounded-lg transition-all ${
+                saved
+                  ? 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
+                  : 'bg-violet-600 hover:bg-violet-500 text-white'
+              }`}
+            >
+              {saved ? 'Saved as Drafts' : saving ? 'Saving...' : 'Save All as Drafts'}
+            </button>
           </div>
 
-          {(!icp?.target_roles?.length && !icp?.target_industries?.length && !icp?.pain_points?.length && !icp?.goals?.length && !icp?.company_size) ? (
-            <div className="text-center py-6">
-              <p className="text-xs text-neutral-600 mb-3">No ICP configured yet</p>
-              <Link href={`/projects/${projectId}/settings`} className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors">Set up ICP</Link>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {icp?.target_roles && icp.target_roles.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-500 mb-1.5">Target Roles</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {icp.target_roles.map((r, i) => (
-                      <span key={i} className="px-2 py-0.5 text-xs rounded-md bg-violet-500/10 text-violet-400">{r}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {icp?.target_industries && icp.target_industries.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-500 mb-1.5">Industries</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {icp.target_industries.map((ind, i) => (
-                      <span key={i} className="px-2 py-0.5 text-xs rounded-md bg-violet-500/8 text-violet-400">{ind}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {icp?.company_size && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-500 mb-1">Company Size</p>
-                  <p className="text-xs text-neutral-400">{icp.company_size} employees</p>
-                </div>
-              )}
-              {icp?.pain_points && icp.pain_points.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-500 mb-1.5">Pain Points</p>
-                  <ul className="space-y-1">
-                    {icp.pain_points.slice(0, 3).map((pp, i) => (
-                      <li key={i} className="text-xs text-neutral-400 flex items-start gap-1.5">
-                        <span className="text-neutral-600 mt-0.5">-</span> {pp}
-                      </li>
-                    ))}
-                    {icp.pain_points.length > 3 && (
-                      <li className="text-xs text-neutral-600">+{icp.pain_points.length - 3} more</li>
-                    )}
-                  </ul>
-                </div>
-              )}
-              {icp?.goals && icp.goals.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-500 mb-1.5">Goals</p>
-                  <ul className="space-y-1">
-                    {icp.goals.slice(0, 3).map((g, i) => (
-                      <li key={i} className="text-xs text-neutral-400 flex items-start gap-1.5">
-                        <span className="text-neutral-600 mt-0.5">-</span> {g}
-                      </li>
-                    ))}
-                    {icp.goals.length > 3 && (
-                      <li className="text-xs text-neutral-600">+{icp.goals.length - 3} more</li>
-                    )}
-                  </ul>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Tone Card */}
-        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-neutral-200">Tone of Voice</h3>
-            <Link href={`/projects/${projectId}/settings`} className="text-xs text-neutral-600 hover:text-neutral-400 transition-colors">Edit</Link>
-          </div>
-
-          {(!tone?.style && !tone?.formality && !tone?.personality?.length) ? (
-            <div className="text-center py-6">
-              <p className="text-xs text-neutral-600 mb-3">No tone configured yet</p>
-              <Link href={`/projects/${projectId}/settings`} className="text-xs font-medium text-violet-400 hover:text-violet-300 transition-colors">Set up tone</Link>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="grid grid-cols-2 gap-3">
-                {tone?.style && (
-                  <div>
-                    <p className="text-xs font-medium text-neutral-500 mb-1">Style</p>
-                    <p className="text-sm text-neutral-200 capitalize">{tone.style}</p>
-                  </div>
-                )}
-                {tone?.formality && (
-                  <div>
-                    <p className="text-xs font-medium text-neutral-500 mb-1">Formality</p>
-                    <p className="text-sm text-neutral-200 capitalize">{tone.formality}</p>
-                  </div>
-                )}
+          {Object.entries(dayGroups).map(([day, items]) => (
+            <div key={day} className="space-y-2">
+              <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">{day}</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {items.map((item, i) => {
+                  const ch = CHANNELS.find((c) => c.id === item.platform)
+                  return (
+                    <div
+                      key={`${day}-${i}`}
+                      className="bg-neutral-900 border border-neutral-800 rounded-xl p-4 hover:border-neutral-700/60 transition-all"
+                    >
+                      <div className="flex items-center gap-2 mb-2">
+                        <span
+                          className="px-2 py-0.5 text-[10px] font-semibold rounded uppercase tracking-wide"
+                          style={{
+                            backgroundColor: (ch?.color || '#7c3aed') + '20',
+                            color: ch?.color || '#7c3aed',
+                          }}
+                        >
+                          {ch?.label || item.platform}
+                        </span>
+                        <span className={`px-2 py-0.5 text-[10px] font-medium rounded capitalize ${TYPE_COLORS[item.type] || 'bg-neutral-700/30 text-neutral-400'}`}>
+                          {item.type}
+                        </span>
+                      </div>
+                      <h4 className="text-sm font-medium text-neutral-100 mb-1 leading-snug">{item.title}</h4>
+                      <p className="text-xs text-neutral-500 leading-relaxed">{item.brief}</p>
+                    </div>
+                  )
+                })}
               </div>
-              {tone?.personality && tone.personality.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-500 mb-1.5">Personality</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {tone.personality.map((p, i) => (
-                      <span key={i} className="px-2 py-0.5 text-xs rounded-md bg-violet-500/10 text-violet-400">{p}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {tone?.dos && tone.dos.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-500 mb-1.5">Dos</p>
-                  <ul className="space-y-1">
-                    {tone.dos.slice(0, 3).map((d, i) => (
-                      <li key={i} className="text-xs text-neutral-400 flex items-start gap-1.5">
-                        <span className="text-emerald-500 mt-0.5">+</span> {d}
-                      </li>
-                    ))}
-                    {tone.dos.length > 3 && <li className="text-xs text-neutral-600">+{tone.dos.length - 3} more</li>}
-                  </ul>
-                </div>
-              )}
-              {tone?.donts && tone.donts.length > 0 && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-500 mb-1.5">Don&apos;ts</p>
-                  <ul className="space-y-1">
-                    {tone.donts.slice(0, 3).map((d, i) => (
-                      <li key={i} className="text-xs text-neutral-400 flex items-start gap-1.5">
-                        <span className="text-red-400 mt-0.5">-</span> {d}
-                      </li>
-                    ))}
-                    {tone.donts.length > 3 && <li className="text-xs text-neutral-600">+{tone.donts.length - 3} more</li>}
-                  </ul>
-                </div>
-              )}
             </div>
-          )}
-        </div>
-      </div>
-
-      {/* Products */}
-      {products.length > 0 && products[0].name && (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-xl p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-neutral-200">Products & Services</h3>
-            <Link href={`/projects/${projectId}/settings`} className="text-xs text-neutral-600 hover:text-neutral-400 transition-colors">Edit</Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {products.filter(p => p.name).map((product, i) => (
-              <div key={i} className="p-4 bg-neutral-800/40 border border-neutral-800 rounded-lg">
-                <p className="text-sm font-medium text-neutral-200 mb-1">{product.name}</p>
-                {product.description && (
-                  <p className="text-xs text-neutral-500 line-clamp-2">{product.description}</p>
-                )}
-              </div>
-            ))}
-          </div>
+          ))}
         </div>
       )}
 
-      {/* Quick Links */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {[
-          { title: 'Research Hub', desc: 'Discover trends, topics, and audience signals', href: `/projects/${projectId}/strategy/research` },
-          { title: 'Content Calendar', desc: 'Plan and schedule your content across all channels', href: `/projects/${projectId}/strategy/calendar` },
-          { title: 'Competitive Intel', desc: 'Track competitor content and ad strategies', href: `/projects/${projectId}/strategy/competitive` },
-        ].map((item) => (
-          <Link
-            key={item.title}
-            href={item.href}
-            className="bg-neutral-900 border border-neutral-800 rounded-xl p-5 hover:border-neutral-700/60 hover:bg-neutral-800/30 transition-all group"
-          >
-            <h3 className="text-sm font-medium text-neutral-200 mb-1 group-hover:text-neutral-100 transition-colors">{item.title}</h3>
-            <p className="text-xs text-neutral-500 leading-relaxed">{item.desc}</p>
-          </Link>
-        ))}
-      </div>
+      {/* Empty state hint */}
+      {plan.length === 0 && !generating && (
+        <div className="text-center py-12">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-neutral-800/60 mb-4">
+            <svg className="w-6 h-6 text-neutral-600" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+            </svg>
+          </div>
+          <p className="text-sm text-neutral-500 mb-1">No plan generated yet</p>
+          <p className="text-xs text-neutral-600">Enter a topic, pick your channels and timeframe, then hit generate.</p>
+        </div>
+      )}
     </div>
   )
 }
